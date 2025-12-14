@@ -1,3 +1,0 @@
-# MetaMask Agent Memory
-
-TODO
