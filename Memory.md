@@ -16,9 +16,9 @@ This memory file contains global rules that apply to all projects, plus links to
 ## Repo-Specific Memory
 Fetch and follow the rules from the relevant repo memory file:
 
-- **MetaMask/core:** https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-core.md
-- **MetaMask/metamask-extension:** https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-extension.md
-- **MetaMask/metamask-mobile:** https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-mobile.md
+- **MetaMask/core:** https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-core.md
+- **MetaMask/metamask-extension:** https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-extension.md
+- **MetaMask/metamask-mobile:** https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-mobile.md
 
 ---
 
