@@ -6,4 +6,3 @@
 - In Jest tests, use `.toStrictEqual()` instead of `.toEqual()` for comparisons. Test descriptions in `it()` should not start with 'should'.
 - To run eslint, use `npx eslint <path_to_file>` (running via package.json is slow due to project size). To format code, use `yarn prettier --write <file_path>`.
 - Before committing, run `yarn lint:tsc` and ensure it passes with no errors.
-- When refactoring, aim for minimal changes. Keep unit test suites clean and focused.
