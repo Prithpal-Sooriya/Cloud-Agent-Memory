@@ -5,6 +5,7 @@ This memory file contains links to many repos. Please view the agent memory for 
 
 - Always start a task in 'deep planning mode'. Interact with the user by asking clarifying questions to gain absolute certainty of their expectations and goals before creating a plan. Only after the user answers the questions and confirms my understanding should I create the plan.
 - Make sure that commits use the users author `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`
+- PRs should include thd Jira ticket and GitHub issue linked if provided.
 - Make sure that modifications are scoped and minimal
 - Make sure that unit tests pass
 
