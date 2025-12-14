@@ -10,6 +10,8 @@ This memory file contains links to many repos. Please view the agent memory for 
 
 ## Repo: MetaMask/core
 
+https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-core.md
+
 ## Repo: MetaMask/metamask-extension
 
 https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-extension.md
