@@ -1,25 +1,24 @@
 # Memory
-This memory file contains links to many repos. Please view the agent memory for the repo you are working in.
+
+This memory file contains global rules that apply to all projects, plus links to repo-specific memory files. 
+
+**Instructions:**
+- Always follow the **Global** rules below.
+- Identify which repo you are working in and fetch the corresponding repo-specific memory file for additional rules.
 
 ## Global
-
 - Always start a task in 'deep planning mode'. Interact with the user by asking clarifying questions to gain absolute certainty of their expectations and goals before creating a plan. Only after the user answers the questions and confirms my understanding should I create the plan.
 - Make sure that commits use the users author `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`
-- PRs should include thd Jira ticket and GitHub issue linked if provided.
-- Make sure that modifications are scoped and minimal
-- Make sure that unit tests pass
+- PRs should include the Jira ticket and GitHub issue linked if provided.
+- Make sure that modifications are scoped and minimal.
+- Make sure that unit tests pass.
 
-## Repo: MetaMask/core
+## Repo-Specific Memory
+Fetch and follow the rules from the relevant repo memory file:
 
-https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-core.md
-
-## Repo: MetaMask/metamask-extension
-
-https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-extension.md
-
-## Repo: MetaMask/metamask-mobile
-
-https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-mobile.md
+- **MetaMask/core:** https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-core.md
+- **MetaMask/metamask-extension:** https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-extension.md
+- **MetaMask/metamask-mobile:** https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/blob/main/MetaMask/metamask-mobile.md
 
 ---
 
