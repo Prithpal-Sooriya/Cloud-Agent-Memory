@@ -4,7 +4,8 @@ This memory file contains global rules that apply to all projects, plus links to
 
 **Instructions:**
 - Always follow the **Global** rules below.
-- Identify which repo you are working in and fetch the corresponding repo-specific memory file for additional rules.
+- Identify which repo you are working in and **immediately fetch** the corresponding repo-specific memory file—do not ask for permission, just fetch and read it.
+  - If you cannot find your repo, then only use the global rules below.
 
 ## Global
 - Always start a task in 'deep planning mode'. Interact with the user by asking clarifying questions to gain absolute certainty of their expectations and goals before creating a plan. Only after the user answers the questions and confirms my understanding should I create the plan.
