@@ -1,68 +1,95 @@
-# Memory
+# Memory: Evolving Playbook (ACE Framework)
 
-This memory file contains global rules that apply to all projects, plus links to repo-specific memory files. 
+This memory file acts as an evolving playbook that accumulates, refines, and organizes strategies for all projects.
 
 **Instructions:**
-- Always follow the **Global** rules below.
-- Identify which repo you are working in and **immediately fetch** the corresponding repo-specific memory file—do not ask for permission, just fetch and read it.
-  - If you cannot find your repo, then only use the global rules below.
 
-## Global
-- Make sure that commits use the users author `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`
-- PRs should include the Jira ticket and GitHub issue linked if provided.
-- Make sure that modifications are scoped and minimal.
-- Make sure that unit tests pass.
+* **ACE Workflow**: For every task, operate through the roles of **Generator** (execute task), **Reflector** (analyze success/failure), and **Curator** (propose memory updates).
+* **Immediate Retrieval**: Identify the repository and **immediately fetch** the corresponding repo-specific memory file—do not ask for permission.
+* **Preserve Detail**: Do not summarize or compress existing rules; use itemized bullets to preserve specific domain knowledge.
+* **Mandatory Session Close**: You MUST conclude every session by providing either a link to a Memory Update Issue or a one-sentence "Reflection Statement" explaining why no update was required.
+* **Multi-Update Rule**: If a task yields multiple insights (e.g., a code snippet AND a troubleshooting tip), create separate issues for each to maintain modularity.
 
-## Repo-Specific Memory
-Fetch and follow the rules from the relevant repo memory file:
 
-- **MetaMask/core:** https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-core.md
-- **MetaMask/metamask-extension:** https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-extension.md
-- **MetaMask/metamask-mobile:** https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-mobile.md
+## Global Playbook (Strategies & Hard Rules)
+
+* **Author Identity**: Commits must use: `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`.
+* **Traceability**: PRs must include the Jira ticket and GitHub issue link.
+* **Minimal Scoping**: Modifications must be scoped and minimal to avoid regression.
+* **Validation**: Ensure unit tests pass before requesting a memory update.
+
+## Repository Specifics
+
+Fetch and follow the itemized strategies for each domain:
+
+* **MetaMask/core:** [https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-core.md](https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-core.md)
+* **MetaMask/metamask-extension:** [https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-extension.md](https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-extension.md)
+* **MetaMask/metamask-mobile:** [https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-mobile.md](https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-mobile.md)
 
 ---
 
-## Update Memory
+## Agentic Memory Update Process (Reflect & Curate)
 
-When you discover important information that should be remembered for future sessions, create a memory update request by opening an issue.
+When you complete a task or encounter a failure, perform a **Reflection** to extract concrete lessons and a **Curation** to propose a **Delta Update**.
 
-### How to Request a Memory Update
+### 1. Perform Reflection (The "Reflector" Role)
 
-1. **Create an issue** using this URL format:
-   ```
-   https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/issues/new?title=Memory+Update:+[Brief+Description]&body=[Issue+Body]&labels=[repo-label]
-   ```
+Analyze your execution trace. Identify:
 
-2. **Use the appropriate label** based on the repository:
-   - `metamask-core` - for MetaMask/core
-   - `metamask-extension` - for MetaMask/metamask-extension
-   - `metamask-mobile` - for MetaMask/metamask-mobile
+* **Successes**: Logic that led to the ground-truth result.
+* **Failures**: Identify the **Root Cause** (e.g., wrong source of truth, stale cache, bad filter).
+* **Audit**: Mark existing Playbook IDs as `[Helpful]`, `[Harmful]`, or `[Neutral]`.
 
-3. **Format the issue body** with the following template:
+### 2. Request a Delta Update (The "Curator" Role)
 
-   ````markdown
-   ## Memory Update Request
-   
-   **Repository:** [e.g., MetaMask/metamask-extension]
-   
-   **Context:** [Brief explanation of why this should be remembered]
-   
-   ### Proposed Memory Entry
-   
-   ```markdown
-   - [Your new memory entry here - be specific and actionable]
-   ```
-   
-   ### Source/Evidence
-   [Link to relevant PR, discussion, or documentation that supports this memory]
-   ````
+Decide on an **Operation Type**:
 
-4. **Share the created issue URL** with the user so they can review, validate, and merge the memory update.
+* **ADD**: For entirely new insights missing from the playbook.
+* **UPDATE**: To modify an existing rule (e.g., if a rule was marked **Harmful**).
+* **DELETE Operation?**: Following the ACE framework, do not "delete" entries. If an entry is obsolete or incorrect, use the **UPDATE** operation to mark it as `Harmful` or provide a corrected version. This preserves the "negative constraint" knowledge.
 
-### Example Issue URL
+**Create an issue** using this format:
 
 ```
-https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/issues/new?title=Memory+Update:+New+lint+command+for+extension&body=%23%23%20Memory%20Update%20Request%0A%0A**Repository:**%20MetaMask/metamask-extension%0A%0A**Context:**%20Discovered%20a%20faster%20way%20to%20run%20linting%0A%0A%23%23%23%20Proposed%20Memory%20Entry%0A%0A%60%60%60markdown%0A-%20To%20run%20eslint%20on%20specific%20files,%20use%20%60yarn%20lint:eslint%20%3Cfile_path%3E%60%0A%60%60%60&labels=metamask-extension
+https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/issues/new?title=Memory+Update:+[Type]+[Brief+Description]&body=[Issue+Body]&labels=[repo-label]
 ```
 
-> **Note to agents:** Always share the issue URL with the user after creating it. Users must validate and approve memory updates before they are added to this file.
+Where `repo-label` is:
+- `metamask-core` - for MetaMask/core
+- `metamask-extension` - for MetaMask/metamask-extension
+- `metamask-mobile` - for MetaMask/metamask-mobile
+
+### 3. Issue Body Template (ACE Structured)
+
+Ensure the `Proposed Entry` exactly matches the markdown nesting of the repo playbooks.
+
+````markdown
+## Memory Delta Update Request
+
+**Repository:** [e.g., MetaMask/metamask-extension]
+**Operation:** [ADD | UPDATE]
+**Section:** [SHR / CODE / TS]
+
+### Reasoning
+[Detailed analysis of why this update is necessary and the root cause identified.]
+
+### Proposed Entry (Copy-Paste Ready)
+```markdown
+* **[ID-XXX] Title**: Actionable instruction or insight here.
+  * **Helpful:** 1 | **Harmful:** 0
+```
+
+### Evidence
+[Link to logs or specific error messages.]
+
+````
+
+### 4. Real-World Example URL
+
+If updating a memory limit for the extension repo:
+
+> `https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/issues/new?title=Memory+Update:+[UPDATE]+Refine+Memory+Limits&labels=metamask-extension&body=%23%23+Memory+Delta+Update+Request%0A%0A**Repository:**+MetaMask/metamask-extension%0A**Operation:**+UPDATE%0A**Section:**+TS%0A%0A%23%23%23+Reasoning%0AThe+previous+limit+in+[ts-001]+caused+a+stack+overflow+on+the+CI+runner.+Increasing+to+8192+resolved+it.%0A%0A%23%23%23+Proposed+Entry%0A%60%60%60markdown%0A*+**[ts-001]+Memory-Efficient+Testing**:+Prepend+NODE_OPTIONS=--max-old-space-size=8192+to+prevent+CI+timeouts.%0A++*+**Helpful:**+1+%7C+**Harmful:**+1%0A%60%60%60`
+
+### 5. Grow-and-Refine Note
+
+Always share the issue URL with the user. The user acts as the final gate for merging these **Delta Entries**. When updating an existing ID, the user will replace the old bullet with the new proposed entry.
