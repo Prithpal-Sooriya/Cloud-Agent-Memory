@@ -13,7 +13,7 @@ This memory file acts as an evolving playbook that accumulates, refines, and org
 
 ## Global Playbook (Strategies & Hard Rules)
 
-* **Author Identity**: Commits must use: `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`.
+* **Commit Author Identity**: All commits MUST include the author flag: `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`. When amending commits, always verify the author is set correctly.
 * **Traceability**: PRs must include the Jira ticket and GitHub issue link.
 * **Minimal Scoping**: Modifications must be scoped and minimal to avoid regression.
 * **Validation**: Ensure unit tests pass before requesting a memory update.
