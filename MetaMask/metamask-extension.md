@@ -13,6 +13,8 @@ These are environment-specific guidelines and mandatory workflows.
 * **[shr-002] Pre-Commit Validation**: Before pushing any code, you must execute `yarn lint:tsc`. Commits are only permitted if this check passes with zero errors.
   * **Helpful:** 1 | **Harmful:** 0
 
+* **[shr-003] Dependency Upgrade Scoping**: When upgrading dependencies, only modify `package.json` and `yarn.lock`. If TypeScript or lint errors appear in other files, verify they are directly caused by the upgrade before touching them. Pre-existing issues should not be addressed in the upgrade PR.
+  * **Helpful:** 0 | **Harmful:** 0
 
 ## Useful Code Snippets and Templates (CODE)
 
