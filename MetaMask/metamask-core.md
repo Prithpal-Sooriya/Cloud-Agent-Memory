@@ -27,4 +27,13 @@ Reusable patterns and specific syntax requirements.
 ## Troubleshooting and Pitfalls (TS)
 Lessons learned from past execution failures or resource constraints.
 
-*No entries yet.*
+* **[ts-001] Lint Cleanup Process**: When running lint cleanup, use two commands in sequence:
+  1. `yarn eslint <file> --fix --prune-suppressions` - fixes lint issues and removes unused suppressions from `eslint-suppressions.json`
+  2. `yarn prettier --write <files> eslint-suppressions.json` - formats files including the suppressions file (needs trailing newline)
+  * **Helpful:** 1 | **Harmful:** 0
+
+* **[ts-002] Changelog CI Requirement**: The CI "Check changelog" job fails if you modify a package without updating its `CHANGELOG.md`. Add entries under `## [Unreleased]` with a link to the PR: `([#XXXX](https://github.com/MetaMask/core/pull/XXXX))`.
+  * **Helpful:** 1 | **Harmful:** 0
+
+* **[ts-003] Private Member Hash Syntax**: The repo enforces using hash syntax (`#memberName`) for private class members instead of TypeScript's `private memberName`. ESLint will flag `private readonly` as violations.
+  * **Helpful:** 1 | **Harmful:** 0
