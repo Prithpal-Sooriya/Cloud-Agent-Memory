@@ -22,6 +22,9 @@ Reusable patterns and specific syntax requirements.
 * **[code-002] Test Description Style**: Test descriptions in `it()` should not start with 'should'.
   * **Helpful:** 1 | **Harmful:** 0
 
+* **[code-003] Redux Selector Default State Pattern**: When creating selectors that access `state.engine.backgroundState?.ControllerName`, always provide a fallback using the controller's default state function to prevent crashes during app initialization. Pattern: `state.engine.backgroundState?.ControllerName ?? getDefaultControllerNameState()`.
+  * **Helpful:** 1 | **Harmful:** 0
+
 ## Troubleshooting and Pitfalls (TS)
 Lessons learned from past execution failures or resource constraints.
 
