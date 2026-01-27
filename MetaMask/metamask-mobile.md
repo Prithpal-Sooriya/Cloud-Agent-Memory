@@ -24,6 +24,9 @@ Reusable patterns and specific syntax requirements.
 
 * **[code-003] Redux Selector Default State Pattern**: When creating selectors that access `state.engine.backgroundState?.ControllerName`, always provide a fallback using the controller's default state function to prevent crashes during app initialization. Pattern: `state.engine.backgroundState?.ControllerName ?? getDefaultControllerNameState()`.
   * **Helpful:** 1 | **Harmful:** 0
+ 
+* **[code-004] Inline Platform Conditionals**: For simple platform-specific logic (e.g., SafeAreaView edges, styling differences), use inline ternary conditionals directly in JSX rather than creating utility files. Example: `edges={Platform.OS === 'ios' ? ['left', 'right'] : ['left', 'right', 'bottom']}`. This keeps changes minimal and avoids triggering SonarCloud coverage requirements for new code.
+  * **Helpful:** 1 | **Harmful:** 0
 
 ## Troubleshooting and Pitfalls (TS)
 Lessons learned from past execution failures or resource constraints.
