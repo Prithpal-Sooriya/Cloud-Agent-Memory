@@ -15,6 +15,9 @@ These are environment-specific guidelines and mandatory workflows.
 
 * **[shr-003] Dependency Upgrade Scoping**: When upgrading dependencies, only modify `package.json` and `yarn.lock`. If TypeScript or lint errors appear in other files, verify they are directly caused by the upgrade before touching them. Pre-existing issues should not be addressed in the upgrade PR.
   * **Helpful:** 0 | **Harmful:** 0
+ 
+* **[shr-004] Cloud task instructions priority**: When Cloud Agent instructions require committing, pushing, or running tests, follow those requirements even if repo-level AGENTS.md says not to commit/stage by default.
+  * **Helpful:** 1 | **Harmful:** 0
 
 ## Useful Code Snippets and Templates (CODE)
 
