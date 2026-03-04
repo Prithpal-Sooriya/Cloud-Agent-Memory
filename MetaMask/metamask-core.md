@@ -18,6 +18,9 @@ These are environment-specific guidelines and mandatory workflows.
 
 * **[shr-005] Changelog Exceptions**: For ESLint cleanup PRs (adding return types, renaming identifiers, fixing lint violations) that don't change implementation behavior, **do not add changelog entries**. Changelogs are for changes that impact consumers of the package.
   * **Helpful:** 1 | **Harmful:** 0
+ 
+* **[shr-006] Review-Comment Resolution Requires Code Push**: When asked to resolve PR review comments, implement the requested code changes and push in the same turn; do not stop at drafting reply text. Include commit hash and push confirmation. If the request is wording-only, explicitly state that no code changes were made.
+  * **Helpful:** 1 | **Harmful:** 0
 
 ## Useful Code Snippets and Templates (CODE)
 Reusable patterns and specific syntax requirements.
