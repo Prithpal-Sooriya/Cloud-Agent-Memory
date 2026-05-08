@@ -12,6 +12,9 @@ These are environment-specific guidelines and mandatory workflows.
 
 * **[shr-003] Project Type**: The project is a React Native application written in TypeScript.
   * **Helpful:** 1 | **Harmful:** 0
+ 
+* **[shr-004] Reviewer-Scope Fidelity**: When a reviewer requests a specific structure or minimal adjustment, implement exactly that requested scope first; avoid additional DRY/architectural refactors unless explicitly requested.
+  * **Helpful:** 1 | **Harmful:** 0
 
 ## Useful Code Snippets and Templates (CODE)
 Reusable patterns and specific syntax requirements.
