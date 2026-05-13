@@ -4,7 +4,7 @@ This is an evolving playbook. Rules are structured as itemized bullets with uniq
 ## Strategies and Hard Rules (SHR)
 These are environment-specific guidelines and mandatory workflows.
 
-* **[shr-001] Environment Setup**: To initialize the development environment, run `yarn && yarn setup:expo`. This must be completed before running tests or the TypeScript linter (it applies necessary library patches).
+* **[shr-001] Environment Setup**: To initialize the development environment, run `corepack enable` to install yarn then `yarn && yarn setup:expo`. This must be completed before running tests or the TypeScript linter (it applies necessary library patches).
   * **Helpful:** 1 | **Harmful:** 0
 
 * **[shr-002] Pre-Commit Validation**: Before pushing any code, you must execute `yarn lint:tsc`. Commits are only permitted if this check passes with zero errors.
