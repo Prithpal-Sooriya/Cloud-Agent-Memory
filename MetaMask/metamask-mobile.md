@@ -15,6 +15,9 @@ These are environment-specific guidelines and mandatory workflows.
  
 * **[shr-004] Reviewer-Scope Fidelity**: When a reviewer requests a specific structure or minimal adjustment, implement exactly that requested scope first; avoid additional DRY/architectural refactors unless explicitly requested.
   * **Helpful:** 1 | **Harmful:** 0
+ 
+* **[shr-005] PR Template Compliance for PR Publishing**: Before creating a PR, always search standard template paths (`.github/pull-request-template.md`, `PULL_REQUEST_TEMPLATE.md`, `.github/PULL_REQUEST_TEMPLATE.md`, `.github/PULL_REQUEST_TEMPLATE/*.md`, `PULL_REQUEST_TEMPLATE/*.md`) and use the discovered template structure in the PR body. If no template is found, state that explicitly in the PR summary and use a minimal structured body (`Summary`, `Testing`).
+ * **Helpful:** 1 | **Harmful:** 0
 
 ## Useful Code Snippets and Templates (CODE)
 Reusable patterns and specific syntax requirements.
