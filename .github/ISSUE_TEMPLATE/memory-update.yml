@@ -1,0 +1,105 @@
+name: Memory Delta Update
+description: Propose an ADD or UPDATE to a repo-specific ACE playbook.
+title: "Memory Update: [TYPE] Brief description"
+labels: ["memory-update"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form to propose a delta update to one of the repo-specific
+        playbooks under [MetaMask/](../tree/main/MetaMask).
+
+        **Labels**: this template auto-applies `memory-update`. The matching
+        repo label (`metamask-core`, `metamask-extension`, or `metamask-mobile`)
+        should be attached via the URL `labels=` query parameter — see
+        `Memory.md` for the canonical URL shape. Cloud agents with shell
+        access should prefer `gh issue create` (also documented in `Memory.md`),
+        which sets all labels in one shot.
+
+  - type: dropdown
+    id: repository
+    attributes:
+      label: Repository
+      description: Which playbook does this update target?
+      options:
+        - MetaMask/core
+        - MetaMask/metamask-extension
+        - MetaMask/metamask-mobile
+    validations:
+      required: true
+
+  - type: dropdown
+    id: operation
+    attributes:
+      label: Operation
+      description: |
+        - **ADD**: A new insight missing from the playbook.
+        - **UPDATE**: Modify an existing rule (e.g., mark it suspect, refine wording, replace).
+        Per ACE, we do not DELETE — superseded entries should be UPDATE'd to capture the negative-knowledge signal.
+      options:
+        - ADD
+        - UPDATE
+    validations:
+      required: true
+
+  - type: dropdown
+    id: section
+    attributes:
+      label: Section
+      description: Which section of the playbook?
+      options:
+        - SHR — Strategies and Hard Rules
+        - CODE — Useful Code Snippets and Templates
+        - TS — Troubleshooting and Pitfalls
+    validations:
+      required: true
+
+  - type: input
+    id: target_id
+    attributes:
+      label: Target ID
+      description: |
+        For UPDATE: the existing ID being changed (e.g., `shr-003`).
+        For ADD: leave as `NEW` — the curator will assign the next ID at merge time.
+      value: "NEW"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reasoning
+    attributes:
+      label: Reasoning
+      description: |
+        What is the root cause this update addresses? Why does the playbook need this delta?
+        Anchor in concrete evidence from the session that produced this insight — not a generic explanation.
+      placeholder: |
+        e.g., While running [shr-001] setup on a fresh runner, `yarn install` failed because
+        Corepack was disabled. The current rule does not call this out. Updating to include
+        `corepack enable` prevents future agents from hitting the same wall.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed_entry
+    attributes:
+      label: Proposed Entry (Copy-Paste Ready)
+      description: |
+        The exact markdown bullet to land in the playbook. Match the indentation and structure
+        of existing entries. Use `[shr-NEW]` / `[code-NEW]` / `[ts-NEW]` for ADD — the curator
+        will assign the real ID.
+      render: markdown
+      value: |
+        - **[shr-NEW] Title**: Actionable instruction or insight here.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Links to logs, error messages, commits, PR review threads, or anything else that grounds the proposal.
+      placeholder: |
+        - CI run: https://github.com/.../actions/runs/123
+        - Failing command output: ...
+    validations:
+      required: false

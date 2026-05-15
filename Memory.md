@@ -5,9 +5,11 @@ This memory file acts as an evolving playbook that accumulates, refines, and org
 **Instructions:**
 
 - **ACE Workflow**: For every task, operate through the roles of **Generator** (execute task), **Reflector** (analyze success/failure), and **Curator** (propose memory updates).
-- **Immediate Retrieval**: Identify the repository and **immediately fetch** the corresponding repo-specific memory file—do not ask for permission.
+- **Immediate Retrieval**: Identify the repository and **immediately fetch** the corresponding repo-specific memory file — do not ask for permission.
 - **Preserve Detail**: Do not summarize or compress existing rules; use itemized bullets to preserve specific domain knowledge.
-- **Mandatory Session Close**: You MUST conclude every session by providing either a link to a Memory Update Issue or a one-sentence "Reflection Statement" explaining why no update was required.
+- **Mandatory Session Close**: You MUST conclude every session with one of:
+  - `UPDATE_NEEDED` — one or more Memory Update issue links (one per insight per the Multi-Update Rule below).
+  - `CLEAN_RUN` — a single sentence describing what made this run frictionless, after honestly completing the Reflector checklist (Section 1).
 - **Multi-Update Rule**: If a task yields multiple insights (e.g., a code snippet AND a troubleshooting tip), create separate issues for each to maintain modularity.
 
 ## Global Playbook (Strategies & Hard Rules)
@@ -33,65 +35,133 @@ When you complete a task or encounter a failure, perform a **Reflection** to ext
 
 ### 1. Perform Reflection (The "Reflector" Role)
 
-Analyze your execution trace. Identify:
+Open-ended introspection ("did it go well?") is not acceptable — it produces false-positive `CLEAN_RUN` verdicts and loses the real lessons. You MUST answer each of the following with **concrete evidence from this session's execution trace**. If an answer truly is "none", say so explicitly and name what you checked.
 
-- **Successes**: Logic that led to the ground-truth result.
-- **Failures**: Identify the **Root Cause** (e.g., wrong source of truth, stale cache, bad filter).
-- **Audit**: Mark existing Playbook IDs as `[Helpful]`, `[Harmful]`, or `[Neutral]`.
+1. **Backtracks**: List every moment you abandoned an approach and tried something different. For each, cite the tool call (or reasoning step) and the trigger that caused the pivot.
+2. **Stuck windows**: List any stretch of ≥3 consecutive tool calls where you were debugging the same problem. What unblocked you? Was the unblock something a playbook rule could have shortcut?
+3. **Errors absorbed**: List every non-zero exit, failed test, lint failure, or tool error. For each, was it preventable with a new or existing playbook rule?
+4. **Playbook rules applied**: For each rule ID you actually relied on (not just read), state whether it produced the intended outcome. If any rule misled you, flag it for an UPDATE with `Status: suspect` (see Section 4).
+5. **Verdict**: Conclude with exactly one of:
+   - `UPDATE_NEEDED` — proceed to Curation (Section 2) and file one issue per insight.
+   - `CLEAN_RUN` — single sentence naming what made the run frictionless. The user will challenge this if it looks like a no-op; only use when items 1–4 genuinely produced nothing.
 
-### 2. Request a Delta Update (The "Curator" Role)
+**Mid-session checkpoint** (recommended): if you've spent ≥5 tool calls debugging the same error, pause and jot a one-line reflection candidate before continuing. Lessons fade fast once the blocker is resolved.
 
-Decide on an **Operation Type**:
+### 2. Curate a Delta Update (The "Curator" Role)
 
-- **ADD**: For entirely new insights missing from the playbook.
-- **UPDATE**: To modify an existing rule (e.g., if a rule was marked **Harmful**).
-- **DELETE Operation?**: Following the ACE framework, do not "delete" entries. If an entry is obsolete or incorrect, use the **UPDATE** operation to mark it as `Harmful` or provide a corrected version. This preserves the "negative constraint" knowledge.
+Pick an **Operation Type**:
 
-**Create an issue** using this format:
+- **ADD**: For entirely new insights missing from the playbook. Use `[shr-NEW]` / `[code-NEW]` / `[ts-NEW]` as the placeholder ID — the curator (human) will assign the real ID at merge time. This avoids ID collisions across parallel agent runs.
+- **UPDATE**: To modify an existing rule (refine wording, mark suspect, supersede). Reference the existing ID directly.
+- **No DELETE**: Per ACE, do not delete entries. If an entry is obsolete or wrong, UPDATE it with a `Status` tag (Section 4) and/or a corrected version. This preserves the negative-knowledge signal.
+
+### 3. Create the Memory Update Issue
+
+There are two supported flows. **Prefer the `gh` CLI when shell access is available** — it sets all labels in one shot and avoids URL encoding the markdown body.
+
+#### Flow A — `gh` CLI (preferred for cloud agents)
+
+````bash
+gh issue create \
+  --repo Prithpal-Sooriya/Cloud-Agent-Memory \
+  --title "Memory Update: [UPDATE] Refine memory limits" \
+  --label memory-update \
+  --label metamask-extension \
+  --body-file - <<'EOF'
+## Memory Delta Update Request
+
+**Repository:** MetaMask/metamask-extension
+**Operation:** UPDATE
+**Section:** TS
+**Target ID:** ts-001
+
+### Reasoning
+The previous limit in [ts-001] caused a stack overflow on the CI runner
+during the integration suite. Bumping to 8192 resolved it; logs attached.
+
+### Proposed Entry (Copy-Paste Ready)
+```markdown
+- **[ts-001] Memory-Efficient Testing**: Prepend NODE_OPTIONS=--max-old-space-size=8192 to prevent CI timeouts on integration runs.
+```
+
+### Evidence
+- Failing run: https://github.com/.../actions/runs/123
+- Fix commit: <sha>
+EOF
+````
+
+Labels (always pass both):
+
+- `memory-update` (always)
+- One of `metamask-core`, `metamask-extension`, `metamask-mobile` (matches the target repo)
+
+#### Flow B — Issue template via web UI (humans, or agents without shell)
+
+The form (defined in `.github/ISSUE_TEMPLATE/memory-update.yml`) has dropdowns for Repository / Operation / Section and required fields for Reasoning / Proposed Entry.
+
+**The agent / human building the URL MUST include the repo label** via the `labels` query parameter — the URL is the only way to attach it ahead of submission. The template auto-applies `memory-update`; the URL must add the matching repo label (`metamask-core`, `metamask-extension`, or `metamask-mobile`).
+
+Base URL shape:
 
 ```
-https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/issues/new?title=Memory+Update:+[Type]+[Brief+Description]&body=[Issue+Body]&labels=[repo-label]
+https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/issues/new?template=memory-update.yml&labels=memory-update,<repo-label>
 ```
 
-Where `repo-label` is:
+Concrete example for a `metamask-extension` update:
 
-- `metamask-core` - for MetaMask/core
-- `metamask-extension` - for MetaMask/metamask-extension
-- `metamask-mobile` - for MetaMask/metamask-mobile
+```
+https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/issues/new?template=memory-update.yml&labels=memory-update,metamask-extension
+```
 
-### 3. Issue Body Template (ACE Structured)
+**Optional — prefill form fields**: GitHub Issue Forms accept query parameters matching each field's `id`, so the agent can pre-populate the whole form. Useful keys (URL-encode values; `/` → `%2F`, spaces → `+`):
 
-Ensure the `Proposed Entry` exactly matches the markdown nesting of the repo playbooks.
+- `title=Memory+Update%3A+%5BUPDATE%5D+Refine+memory+limits`
+- `repository=MetaMask%2Fmetamask-extension`
+- `operation=UPDATE`
+- `section=TS+%E2%80%94+Troubleshooting+and+Pitfalls` (must match the dropdown option text exactly)
+- `target_id=ts-001`
+- `reasoning=...`
+- `proposed_entry=...`
+- `evidence=...`
+
+A fully-prefilled URL is long but valid; the human reviewer just confirms and clicks Submit.
+
+#### Body schema (canonical)
+
+Whichever flow is used, the issue body should follow this shape (mirrored in `.github/ISSUE_TEMPLATE/memory-update.md`):
 
 ````markdown
 ## Memory Delta Update Request
 
 **Repository:** [e.g., MetaMask/metamask-extension]
 **Operation:** [ADD | UPDATE]
-**Section:** [SHR / CODE / TS]
+**Section:** [SHR | CODE | TS]
+**Target ID:** [existing ID for UPDATE; `NEW` for ADD]
 
 ### Reasoning
 
-[Detailed analysis of why this update is necessary and the root cause identified.]
+[Concrete root cause anchored in this session's trace.]
 
 ### Proposed Entry (Copy-Paste Ready)
 
 ```markdown
-- **[ID-XXX] Title**: Actionable instruction or insight here.
-  - **Helpful:** 1 | **Harmful:** 0
+- **[shr-NEW] Title**: Actionable instruction or insight here.
 ```
 
 ### Evidence
 
-[Link to logs or specific error messages.]
+[Links to logs, errors, commits, PRs.]
 ````
 
-### 4. Real-World Example URL
+### 4. Status Tags (replaces Helpful/Harmful counters)
 
-If updating a memory limit for the extension repo:
+The playbook no longer tracks per-bullet `Helpful` / `Harmful` counters — in practice they were never incremented and added noise. Instead, an entry may carry an **optional inline status tag** that appears only when something interesting has happened:
 
-> `https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/issues/new?title=Memory+Update:+[UPDATE]+Refine+Memory+Limits&labels=metamask-extension&body=%23%23+Memory+Delta+Update+Request%0A%0A**Repository:**+MetaMask/metamask-extension%0A**Operation:**+UPDATE%0A**Section:**+TS%0A%0A%23%23%23+Reasoning%0AThe+previous+limit+in+[ts-001]+caused+a+stack+overflow+on+the+CI+runner.+Increasing+to+8192+resolved+it.%0A%0A%23%23%23+Proposed+Entry%0A%60%60%60markdown%0A*+**[ts-001]+Memory-Efficient+Testing**:+Prepend+NODE_OPTIONS=--max-old-space-size=8192+to+prevent+CI+timeouts.%0A++*+**Helpful:**+1+%7C+**Harmful:**+1%0A%60%60%60`
+- `_Status: suspect — see #<issue>_` — rule fired but produced the wrong outcome; flagged for review.
+- `_Status: deprecated — replaced by [shr-007]_` — superseded; kept on the page as negative knowledge.
+
+Default state: **no tag**. Don't add a status line unless you're capturing one of the above.
 
 ### 5. Grow-and-Refine Note
 
-Always share the issue URL with the user. The user acts as the final gate for merging these **Delta Entries**. When updating an existing ID, the user will replace the old bullet with the new proposed entry.
+Always share the issue URL with the user. The user acts as the final gate for merging these **Delta Entries** — including assigning real IDs to `[*-NEW]` placeholders and replacing the old bullet on UPDATEs.
