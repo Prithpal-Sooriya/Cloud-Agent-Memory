@@ -4,27 +4,26 @@ This memory file acts as an evolving playbook that accumulates, refines, and org
 
 **Instructions:**
 
-* **ACE Workflow**: For every task, operate through the roles of **Generator** (execute task), **Reflector** (analyze success/failure), and **Curator** (propose memory updates).
-* **Immediate Retrieval**: Identify the repository and **immediately fetch** the corresponding repo-specific memory file—do not ask for permission.
-* **Preserve Detail**: Do not summarize or compress existing rules; use itemized bullets to preserve specific domain knowledge.
-* **Mandatory Session Close**: You MUST conclude every session by providing either a link to a Memory Update Issue or a one-sentence "Reflection Statement" explaining why no update was required.
-* **Multi-Update Rule**: If a task yields multiple insights (e.g., a code snippet AND a troubleshooting tip), create separate issues for each to maintain modularity.
-
+- **ACE Workflow**: For every task, operate through the roles of **Generator** (execute task), **Reflector** (analyze success/failure), and **Curator** (propose memory updates).
+- **Immediate Retrieval**: Identify the repository and **immediately fetch** the corresponding repo-specific memory file—do not ask for permission.
+- **Preserve Detail**: Do not summarize or compress existing rules; use itemized bullets to preserve specific domain knowledge.
+- **Mandatory Session Close**: You MUST conclude every session by providing either a link to a Memory Update Issue or a one-sentence "Reflection Statement" explaining why no update was required.
+- **Multi-Update Rule**: If a task yields multiple insights (e.g., a code snippet AND a troubleshooting tip), create separate issues for each to maintain modularity.
 
 ## Global Playbook (Strategies & Hard Rules)
 
-* **Commit Author Identity**: All commits MUST include the author flag: `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`. When amending commits, always verify the author is set correctly.
-* **Traceability**: PRs must include the Jira ticket and GitHub issue link.
-* **Minimal Scoping**: Modifications must be scoped and minimal to avoid regression.
-* **Validation**: Ensure unit tests pass before requesting a memory update.
+- **Commit Author Identity**: All commits MUST include the author flag: `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`. When amending commits, always verify the author is set correctly.
+- **Traceability**: PRs must include the Jira ticket and GitHub issue link.
+- **Minimal Scoping**: Modifications must be scoped and minimal to avoid regression.
+- **Validation**: Ensure unit tests pass before requesting a memory update.
 
 ## Repository Specifics
 
 Fetch and follow the itemized strategies for each domain:
 
-* **MetaMask/core:** [https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-core.md](https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-core.md)
-* **MetaMask/metamask-extension:** [https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-extension.md](https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-extension.md)
-* **MetaMask/metamask-mobile:** [https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-mobile.md](https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-mobile.md)
+- **MetaMask/core:** [https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-core.md](https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-core.md)
+- **MetaMask/metamask-extension:** [https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-extension.md](https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-extension.md)
+- **MetaMask/metamask-mobile:** [https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-mobile.md](https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/MetaMask/metamask-mobile.md)
 
 ---
 
@@ -36,17 +35,17 @@ When you complete a task or encounter a failure, perform a **Reflection** to ext
 
 Analyze your execution trace. Identify:
 
-* **Successes**: Logic that led to the ground-truth result.
-* **Failures**: Identify the **Root Cause** (e.g., wrong source of truth, stale cache, bad filter).
-* **Audit**: Mark existing Playbook IDs as `[Helpful]`, `[Harmful]`, or `[Neutral]`.
+- **Successes**: Logic that led to the ground-truth result.
+- **Failures**: Identify the **Root Cause** (e.g., wrong source of truth, stale cache, bad filter).
+- **Audit**: Mark existing Playbook IDs as `[Helpful]`, `[Harmful]`, or `[Neutral]`.
 
 ### 2. Request a Delta Update (The "Curator" Role)
 
 Decide on an **Operation Type**:
 
-* **ADD**: For entirely new insights missing from the playbook.
-* **UPDATE**: To modify an existing rule (e.g., if a rule was marked **Harmful**).
-* **DELETE Operation?**: Following the ACE framework, do not "delete" entries. If an entry is obsolete or incorrect, use the **UPDATE** operation to mark it as `Harmful` or provide a corrected version. This preserves the "negative constraint" knowledge.
+- **ADD**: For entirely new insights missing from the playbook.
+- **UPDATE**: To modify an existing rule (e.g., if a rule was marked **Harmful**).
+- **DELETE Operation?**: Following the ACE framework, do not "delete" entries. If an entry is obsolete or incorrect, use the **UPDATE** operation to mark it as `Harmful` or provide a corrected version. This preserves the "negative constraint" knowledge.
 
 **Create an issue** using this format:
 
@@ -55,6 +54,7 @@ https://github.com/Prithpal-Sooriya/Cloud-Agent-Memory/issues/new?title=Memory+U
 ```
 
 Where `repo-label` is:
+
 - `metamask-core` - for MetaMask/core
 - `metamask-extension` - for MetaMask/metamask-extension
 - `metamask-mobile` - for MetaMask/metamask-mobile
@@ -71,17 +71,19 @@ Ensure the `Proposed Entry` exactly matches the markdown nesting of the repo pla
 **Section:** [SHR / CODE / TS]
 
 ### Reasoning
+
 [Detailed analysis of why this update is necessary and the root cause identified.]
 
 ### Proposed Entry (Copy-Paste Ready)
+
 ```markdown
-* **[ID-XXX] Title**: Actionable instruction or insight here.
-  * **Helpful:** 1 | **Harmful:** 0
+- **[ID-XXX] Title**: Actionable instruction or insight here.
+  - **Helpful:** 1 | **Harmful:** 0
 ```
 
 ### Evidence
-[Link to logs or specific error messages.]
 
+[Link to logs or specific error messages.]
 ````
 
 ### 4. Real-World Example URL
