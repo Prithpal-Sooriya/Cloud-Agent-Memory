@@ -2,8 +2,6 @@
 
 This is an evolving playbook. Rules are structured as itemized bullets with unique IDs to allow for incremental updates and to prevent "context collapse".
 
-Entries may carry an optional `_Status:_` tag (e.g. `suspect`, `deprecated`) — see the root `Memory.md` for conventions.
-
 ## Strategies and Hard Rules (SHR)
 
 These are environment-specific guidelines and mandatory workflows.

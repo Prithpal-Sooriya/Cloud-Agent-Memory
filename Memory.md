@@ -40,7 +40,7 @@ Open-ended introspection ("did it go well?") is not acceptable — it produces f
 1. **Backtracks**: List every moment you abandoned an approach and tried something different. For each, cite the tool call (or reasoning step) and the trigger that caused the pivot.
 2. **Stuck windows**: List any stretch of ≥3 consecutive tool calls where you were debugging the same problem. What unblocked you? Was the unblock something a playbook rule could have shortcut?
 3. **Errors absorbed**: List every non-zero exit, failed test, lint failure, or tool error. For each, was it preventable with a new or existing playbook rule?
-4. **Playbook rules applied**: For each rule ID you actually relied on (not just read), state whether it produced the intended outcome. If any rule misled you, flag it for an UPDATE with `Status: suspect` (see Section 4).
+4. **Playbook rules applied**: For each rule ID you actually relied on (not just read), state whether it produced the intended outcome. If any rule misled you, flag it for an UPDATE that supersedes or corrects the rule.
 5. **Verdict**: Conclude with exactly one of:
    - `UPDATE_NEEDED` — proceed to Curation (Section 2) and file one issue per insight.
    - `CLEAN_RUN` — single sentence naming what made the run frictionless. The user will challenge this if it looks like a no-op; only use when items 1–4 genuinely produced nothing.
@@ -52,8 +52,8 @@ Open-ended introspection ("did it go well?") is not acceptable — it produces f
 Pick an **Operation Type**:
 
 - **ADD**: For entirely new insights missing from the playbook. Use `[shr-NEW]` / `[code-NEW]` / `[ts-NEW]` as the placeholder ID — the curator (human) will assign the real ID at merge time. This avoids ID collisions across parallel agent runs.
-- **UPDATE**: To modify an existing rule (refine wording, mark suspect, supersede). Reference the existing ID directly.
-- **No DELETE**: Per ACE, do not delete entries. If an entry is obsolete or wrong, UPDATE it with a `Status` tag (Section 4) and/or a corrected version. This preserves the negative-knowledge signal.
+- **UPDATE**: To modify an existing rule (refine wording, supersede with a corrected version). Reference the existing ID directly.
+- **No DELETE**: Per ACE, do not delete entries. If an entry is obsolete or wrong, UPDATE it with a corrected version. This preserves the negative-knowledge signal.
 
 ### 3. Create the Memory Update Issue
 
@@ -153,15 +153,6 @@ Whichever flow is used, the issue body should follow this shape (mirrored in `.g
 [Links to logs, errors, commits, PRs.]
 ````
 
-### 4. Status Tags (replaces Helpful/Harmful counters)
-
-The playbook no longer tracks per-bullet `Helpful` / `Harmful` counters — in practice they were never incremented and added noise. Instead, an entry may carry an **optional inline status tag** that appears only when something interesting has happened:
-
-- `_Status: suspect — see #<issue>_` — rule fired but produced the wrong outcome; flagged for review.
-- `_Status: deprecated — replaced by [shr-007]_` — superseded; kept on the page as negative knowledge.
-
-Default state: **no tag**. Don't add a status line unless you're capturing one of the above.
-
-### 5. Grow-and-Refine Note
+### 4. Grow-and-Refine Note
 
 Always share the issue URL with the user. The user acts as the final gate for merging these **Delta Entries** — including assigning real IDs to `[*-NEW]` placeholders and replacing the old bullet on UPDATEs.
