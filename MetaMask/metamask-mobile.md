@@ -24,6 +24,7 @@ Reusable patterns and specific syntax requirements.
 - **[code-006] ESLint conventions in metamask-mobile**: When writing new TypeScript files in this repo, apply these two repo-wide rules up front to avoid an extra `npx eslint` cycle:
   - `@typescript-eslint/array-type`: use `T[]` and `readonly T[]`. Both `Array<T>` and `ReadonlyArray<T>` are forbidden by ESLint.
   - `jsdoc/check-indentation`: JSDoc continuation lines must keep a single space after the leading `*`. Do **not** indent list items, code blocks, or wrapped sentences past that single space, even when the result reads less "pretty".
+- **[code-007] TanStack Query Mutation Hook Test Boilerplate**: When writing Jest tests for TanStack Query `useMutation` hooks (v4), override the notifyManager at module scope with `notifyManager.setBatchNotifyFunction((cb) => cb())` to avoid `unstable_batchedUpdates` teardown crashes, and clear the QueryClient caches in `afterEach` (`getMutationCache().clear()`, `getQueryCache().clear()`, `clear()`). See `app/components/UI/Card/hooks/useCardFreeze.test.ts` for a canonical example.
  
 ## Troubleshooting and Pitfalls (TS)
 
