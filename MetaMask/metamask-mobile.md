@@ -10,7 +10,7 @@ These are environment-specific guidelines and mandatory workflows.
 - **[shr-002] Pre-Commit Validation**: Before `git push`, run `yarn lint:tsc` and ensure zero errors — required even for test-only changes (`*.test.ts(x)`). Jest + ESLint passing locally is not a substitute: `tsc`-only inference quirks (e.g. `it.each` heterogenous-union narrowing) surface only here. Re-run after every refactor, however small.
 - **[shr-003] Project Type**: The project is a React Native application written in TypeScript.
 - **[shr-004] Reviewer-Scope Fidelity**: When a reviewer requests a specific structure or minimal adjustment, implement exactly that requested scope first; avoid additional DRY/architectural refactors unless explicitly requested.
-- **[shr-005] PR Template Compliance**: Before creating a PR, search the standard template locations (`**/PULL_REQUEST_TEMPLATE.md` and `**/PULL_REQUEST_TEMPLATE/*.md`, case-insensitive, under repo root and `.github/`) and follow the discovered template structure in the PR body. If none is found, state that explicitly in the PR summary and use a minimal `Summary` + `Testing` body.
+- **[shr-005] PR Template Compliance**: Before creating a PR, search for the repo's PR template — `metamask-mobile`'s canonical template lives at `.github/pull-request-template.md` (lowercase, hyphenated). Follow the discovered template structure in the PR body. If none is found after checking both casings, state that explicitly in the PR summary and use a minimal Summary + Testing body.
 
 ## Useful Code Snippets and Templates (CODE)
 
