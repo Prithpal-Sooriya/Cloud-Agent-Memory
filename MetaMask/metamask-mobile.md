@@ -32,6 +32,11 @@ Reusable patterns and specific syntax requirements.
   - `no-void`: don't prefix promises with `void`; keep the bare `.catch(...)`.
   - `jsdoc/check-indentation`: continuation lines must keep a single space after `*` — no extra indentation for list items, code blocks, or wrapped sentences. Multi-line bullets are rejected; keep each bullet on a single line or split into separate paragraphs.
 - **[code-007] TanStack Query Mutation Hook Test Boilerplate**: For Jest tests around TanStack Query v4 `useMutation` hooks, override the notifyManager at module scope with `notifyManager.setBatchNotifyFunction((cb) => cb())` to avoid `unstable_batchedUpdates` teardown crashes, and clear caches in `afterEach` (`getMutationCache().clear()`, `getQueryCache().clear()`, `clear()`). Canonical example: `app/components/UI/Card/hooks/useCardFreeze.test.ts`.
+- **[code-008] Minimal JSDoc style in metamask-mobile**: Do not add block JSDoc to types/functions/constants whose name + signature already conveys their intent. Reach for a comment only when there's a non-obvious trade-off, override semantic, or external reference to anchor (e.g. an OpenAPI spec URL). When a comment is justified, prefer a single `/** ... */` one-liner over a paragraph. Concrete shape this should take:
+  - **Drop entirely**: block JSDoc on interfaces whose field names speak for themselves, on private helpers (`buildXyz`, `parseXyz`), on factory-style consts (`SUGGESTED_X_IDS`), and on hook wrappers that are one line of code.
+  - **Keep short**: one-line comments naming an override (e.g. `/** When provided, bypass storage... */` on an optional param) or pointing at an external spec.
+  - **Keep block**: only for non-obvious multi-step pipelines or constraints the implementation can't express (e.g. "stays subscribed to redux through select", "gated on feature flag X").
+  - The agent's default tone of "be helpful and explain everything" produces JSDoc that obscures rather than informs; bias toward removing comments and let the code carry the meaning.
 
 ## Troubleshooting and Pitfalls (TS)
 
