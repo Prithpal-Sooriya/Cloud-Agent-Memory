@@ -37,6 +37,7 @@ Reusable patterns and specific syntax requirements.
   - **Keep short**: one-line comments naming an override (e.g. `/** When provided, bypass storage... */` on an optional param) or pointing at an external spec.
   - **Keep block**: only for non-obvious multi-step pipelines or constraints the implementation can't express (e.g. "stays subscribed to redux through select", "gated on feature flag X").
   - The agent's default tone of "be helpful and explain everything" produces JSDoc that obscures rather than informs; bias toward removing comments and let the code carry the meaning.
+- **[code-009] Avoid cross-test rejection bleed in "inflight" chains**: for module-level serialised-write chains (e.g. `inflight = inflight.then(...)` batchers/queues), do NOT let the chain re-throw. Use `inflight = inflight.then(async () => { try { await process(batch); resolvers.forEach(r => r()); } catch (e) { rejecters.forEach(r => r(e)); } })`. Failures still propagate through the per-submit promises that the caller awaits; the inflight chain itself never rejects and therefore never leaks an unhandled rejection across test boundaries. Symptom of the bug: test B fails with "unhandled rejection" whose source pointer lands inside test A.
 
 ## Troubleshooting and Pitfalls (TS)
 
