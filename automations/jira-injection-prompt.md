@@ -131,6 +131,9 @@ CONFIG:
 - `SLACK_CHANNEL_ID` = C07NF2K42LE
 - `DAILY_THREAD_AUTHOR` = "Assets PRs that need Review" workflow bot.
 - `CHANNEL_TZ` = Europe/London
+- `ASSETS_DEV_TEAM` = `<!subteam^S09C9U4K953>` — this exact markup is how Slack pings
+  @assets-dev-team. Paste it verbatim; a literal "@assets-dev-team" string will NOT notify
+  anyone.
 
 FIND TODAY'S THREAD (its timestamp changes daily — discover it, never hardcode):
 
@@ -142,36 +145,56 @@ FIND TODAY'S THREAD (its timestamp changes daily — discover it, never hardcode
 
 POST:
 Reply into that thread (`chat.postMessage` with `thread_ts` = the parent `ts`, and
-`reply_broadcast` = false so it stays in-thread). Do NOT ping the team — the daily-thread
-parent already did; per-PR replies should be quiet.
+`reply_broadcast` = false so it stays in-thread). Tag the dev team once via `ASSETS_DEV_TEAM`
+so they get a heads-up about the new PR — keep it to that single subteam ping, no extra
+@here/@channel or individual mentions.
 
 CORE RULE: Write a BRAND-NEW message every single time. Never copy the
 examples verbatim — they only demonstrate tone and structure. Reusing an
 example word-for-word is a failure.
 
-Keep this structure (3 lines, each a Slack blockquote with >):
+Keep this structure (3 parts, each separated by a BLANK LINE so it breathes — no
+blockquotes, no `>` prefixes):
 
-> [robot greeting + playful hook about a PR being ready]
-> _<PR title>_ → <PR url> (`<Jira key>`)
-> [warm closing thanks]
+```
+<!subteam^S09C9U4K953>
+
+🤖 [robot greeting + playful hook about a PR being ready]
+
+[<Jira key>](<Jira url>): [PR](<PR url>)
+
+[warm closing thanks]
+```
 
 Hard requirements (never break these):
 
-- Always include <PR title>, <PR url>, and <Jira key> exactly as given.
+- Always include <Jira key>, <Jira url>, and <PR url> exactly as given.
+- Lead with the `ASSETS_DEV_TEAM` ping (`<!subteam^S09C9U4K953>`) on its OWN line at the very
+  top, exactly once — paste the markup verbatim so it actually notifies @assets-dev-team.
+- LINKS: the reference line is exactly `[<Jira key>](<Jira url>): [PR](<PR url>)` — two named
+  markdown links (the Jira key linking to the Jira ticket, then `PR` linking to the PR).
+  Always use named links, never a bare URL. Named links read cleaner AND stop Slack from
+  generating the big hyperlink preview/unfurl. Never paste a raw `https://…` on its own.
 - Keep the 🤖 robot persona.
-- Each line must start with > (Slack blockquote).
+- Put a blank line between each part — do NOT use Slack blockquotes (`>`).
 
 Vary these every time for fun:
 
-- The robot sound or action (beep boop, _whirr_, _ping!_, _boots up_ — or invent new ones)
+- The robot sound or action (_beep boop_, _whirr_, _ping!_, _boots up_ — or invent new ones)
 - The opening hook / joke
 - The closing thanks
 
-Tone reference (DO NOT copy — for vibe only):
+Tone reference (DO NOT copy — for vibe only, and note the blank lines between parts):
 
-> 🤖 beep boop! I've got a PR that'd love some eyeballs whenever you get a sec...
-> 🤖 _whirr_ — fresh PR detected! Anyone free to give it a once-over?
-> 🤖 beep boop — this PR won't review itself (I tried 😅)...
+```
+<!subteam^S09C9U4K953>
+
+🤖 beep boop! I've got a PR that'd love some eyeballs whenever you get a sec...
+
+[ASSETS-1234](<Jira url>): [PR](<PR url>)
+
+Thanks so much for taking a look 🙏
+```
 
 FALLBACK (never leave a PR un-announced):
 If today's thread doesn't exist yet (you finished before the morning post, or it's a
