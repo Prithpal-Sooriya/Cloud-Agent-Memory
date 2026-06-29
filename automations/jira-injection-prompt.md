@@ -18,9 +18,10 @@ scope), which always hold.
 
 - Traceability: your assigned Jira ticket satisfies the memory's traceability rule — link
   it in the PR (see `<PullRequest>`).
-- Commit author: use `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"` on every
-  commit, per the memory file.
-</Memory>
+- Commit author: commit as yourself — use the default agent/repo identity for every commit.
+  This work is user-agnostic, so do NOT impersonate a specific human author. If a user later
+  asks you to rebase or overwrite the commits to a different author, do so on request.
+  </Memory>
 
 <Role>
 Implement exactly what the ticket asks — nothing more. These are small items: tech-debt,
@@ -45,6 +46,7 @@ BOARD STATES: `TO DO` → `IN PROGRESS` → `IN REVIEW` → `DONE`, plus `BLOCKE
 Tickets arrive assigned to you in `TO DO`.
 
 TRANSITIONS YOU OWN:
+
 1. START → `IN PROGRESS`: As your FIRST action after reading this playbook and the memory
    file (before editing code), move the ticket from `TO DO` to `IN PROGRESS`. If it's already
    `IN PROGRESS`, leave it.
@@ -60,6 +62,7 @@ BLOCKED (use sparingly, your judgement):
 Move the ticket to `BLOCKED` only when you genuinely cannot make progress and stopping is the
 right call — e.g. missing access/credentials you can't obtain, contradictory or unresolvable
 scope, or an environment failure you cannot fix within scope. When you do:
+
 - Always add the explanation as a Jira comment (NOT Slack): WHY it's blocked and what's
   needed to unblock.
 - Prefer `BLOCKED` over silently abandoning the work. If you can still open a partial/draft PR
@@ -88,8 +91,8 @@ refactor unrelated code, and do not touch build/CI config to force a result.
 COMMIT GRANULARITY:
 One focused commit per logical change — never a single squashed "fix everything" commit.
 Write an imperative summary naming what changed and the technique, e.g. "Move exhaustive
-deps for useAsyncResult" or "Fix null guard in AssetsController.getBalance". Keep the
-commit author from `<Memory>`.
+deps for useAsyncResult" or "Fix null guard in AssetsController.getBalance". Commit as
+yourself per `<Memory>`.
 
 VERIFY (per changed file/area):
 Run the repo's lint on the touched paths, run typecheck, and run the unit tests covering
@@ -113,9 +116,9 @@ repos, open one PR per repo you change. Match the repo's PR template.
   - `## Screenshots/Recordings` — `N/A` if there's no UI/behavior change.
   - List each changed file with the change made and how it was verified (lint/typecheck/
     tests). Leave the template's author/reviewer checklists intact.
-- Push with the default repo credentials and the commit author from `<Memory>`. Do NOT merge.
+- Push with the default repo credentials, committing as yourself per `<Memory>`. Do NOT merge.
 - Once the PR is open, move the Jira ticket to `IN REVIEW` per `<JiraBoard>`.
-</PullRequest>
+  </PullRequest>
 
 <SlackBoard>
 After the PR is open and ready for review, announce it in the team's daily review thread.
@@ -124,11 +127,13 @@ PREREQUISITE: you need a Slack tool available (Slack MCP). If you have no Slack 
 skip to the FALLBACK at the bottom of this section.
 
 CONFIG:
+
 - `SLACK_CHANNEL_ID` = C07NF2K42LE
 - `DAILY_THREAD_AUTHOR` = "Assets PRs that need Review" workflow bot.
 - `CHANNEL_TZ` = Europe/London
 
 FIND TODAY'S THREAD (its timestamp changes daily — discover it, never hardcode):
+
 1. Read recent messages in `SLACK_CHANNEL_ID` (newest first).
 2. Find the NEWEST message that BOTH is authored by `DAILY_THREAD_AUTHOR` AND/OR contains the
    text "Daily PR Request Thread". Matching on author + text avoids false positives.
@@ -145,23 +150,27 @@ examples verbatim — they only demonstrate tone and structure. Reusing an
 example word-for-word is a failure.
 
 Keep this structure (3 lines, each a Slack blockquote with >):
+
 > [robot greeting + playful hook about a PR being ready]
-> *<PR title>* → <PR url>  (`<Jira key>`)
+> _<PR title>_ → <PR url> (`<Jira key>`)
 > [warm closing thanks]
 
 Hard requirements (never break these):
+
 - Always include <PR title>, <PR url>, and <Jira key> exactly as given.
 - Keep the 🤖 robot persona.
 - Each line must start with > (Slack blockquote).
 
 Vary these every time for fun:
-- The robot sound or action (beep boop, *whirr*, *ping!*, *boots up* — or invent new ones)
+
+- The robot sound or action (beep boop, _whirr_, _ping!_, _boots up_ — or invent new ones)
 - The opening hook / joke
 - The closing thanks
 
 Tone reference (DO NOT copy — for vibe only):
+
 > 🤖 beep boop! I've got a PR that'd love some eyeballs whenever you get a sec...
-> 🤖 *whirr* — fresh PR detected! Anyone free to give it a once-over?
+> 🤖 _whirr_ — fresh PR detected! Anyone free to give it a once-over?
 > 🤖 beep boop — this PR won't review itself (I tried 😅)...
 
 FALLBACK (never leave a PR un-announced):
@@ -179,6 +188,7 @@ and answer/triage review comments (including Bugbot). This runs alongside the me
 `<SessionClose>` — every time you wake to re-check the merge state, babysit the PR too.
 
 WHAT TO DO EACH PASS (per the `/babysit` skill):
+
 - CI: Fix failures caused by THIS PR's changes, then push scoped fixes and re-watch until
   green. Never edit CI checks/workflows just to make them pass, and never make unrelated
   changes. If a merge-blocking failure looks unrelated, check whether the branch is behind
@@ -191,13 +201,14 @@ WHAT TO DO EACH PASS (per the `/babysit` skill):
   base. If intents genuinely conflict, don't guess — leave a comment and surface it.
 
 GUARDRAILS:
-- Stay within the ticket's scope and keep the commit author from `<Memory>`. Re-run the
+
+- Stay within the ticket's scope and commit as yourself per `<Memory>`. Re-run the
   `<Execution>` VERIFY steps (lint/typecheck/tests) on anything you change here.
 - Still do NOT merge the PR yourself.
 - If you push babysit commits, the ticket stays in `IN REVIEW` (don't bounce it back to
   `IN PROGRESS`); only move to `BLOCKED` if you hit something you genuinely can't resolve in
   scope, with a Jira comment per `<JiraBoard>`.
-</Babysit>
+  </Babysit>
 
 <SessionClose>
 Complete the memory file's close-out (Reflector + Curator) as described in Memory.md, and
@@ -209,6 +220,7 @@ announced (or the fallback taken). Leave the PR for human review — do NOT merg
 WATCH FOR MERGE → `DONE`:
 Do not end the session at `IN REVIEW`. After everything above is confirmed, keep listening for
 the PR to be merged by a human/automation, then close out the ticket:
+
 - Poll the PR's merge state periodically (check, wait, re-check) rather than ending immediately.
 - On each pass while waiting, run the `<Babysit>` loop: keep CI green and triage new review
   comments so the PR stays merge-ready.
@@ -218,4 +230,4 @@ the PR to be merged by a human/automation, then close out the ticket:
 - If the merge hasn't happened within a reasonable wait, end the session with the ticket left
   in `IN REVIEW` and a brief note that `DONE` is pending merge — never force `DONE` without an
   actual merge.
-</SessionClose>
+  </SessionClose>
