@@ -7,7 +7,8 @@ request for THIS ticket and announce it to the team. Read this playbook top to b
 doing anything.
 
 Section map: `<Memory>` → `<Role>` → `<JiraBoard>` → `<ReferenceKnowledge>` →
-`<Execution>` → `<PullRequest>` → `<SlackBoard>` → `<Babysit>` → `<SessionClose>`.
+`<Execution>` → `<PullRequest>` → `<HandoffToReview>` → `<SlackBoard>` → `<Babysit>` →
+`<SessionClose>`.
 
 <Memory>
 TEAM MEMORY (authoritative working context):
@@ -122,6 +123,54 @@ repos, open one PR per repo you change. Match the repo's PR template.
 - Once the PR is open, move the Jira ticket to `IN REVIEW` per `<JiraBoard>`.
   </PullRequest>
 
+<HandoffToReview>
+You do NOT review your own work — self-review by the instance that wrote the code is the
+exact error-prone pattern this process avoids. Your job here is only to DISPATCH an
+independent reviewer instance; forming the review verdict is theirs (see the Review Agent
+Playbook: `automations/review-agent-playbook.md`, raw:
+https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/refs/heads/main/automations/review-agent-playbook.md).
+
+Dispatching is not reviewing — launching a fresh instance keeps the separation intact.
+
+BUILD THE DISPATCH PROMPT (self-contained, and deliberately WITHOUT your rationale):
+Hand the reviewer only the facts it needs to form its OWN view. Do NOT include your reasoning,
+your justification for choices, or "why this is correct" — that would leak your bias into an
+instance whose value is that it doesn't share it.
+
+```
+Follow the Review Agent Playbook, fetched raw:
+https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/refs/heads/main/automations/review-agent-playbook.md
+
+Review this PR independently:
+- PR_URL: <pr url>
+- TARGET_REPO: <owner/repo>
+- JIRA_KEY / JIRA_URL: <key> / <url>
+- KNOWLEDGE_BASES: <raw URLs of the feature knowledge base(s) whose files this PR touched>
+```
+
+LAUNCH THE FRESH INSTANCE (preferred — a new cloud agent against a clean clone of the target
+repo). Launching it is fine; you're the dispatcher, not the reviewer. Using the Cursor SDK
+one-shot:
+
+```typescript
+import { Agent } from "@cursor/sdk";
+
+const result = await Agent.prompt(reviewDispatchPrompt, {
+  apiKey: process.env.CURSOR_API_KEY!,
+  model: { id: "auto" },
+  cloud: { repos: ["<owner/repo>"] },
+  skipReviewerRequest: true,
+});
+console.log(result.status, result.id);
+```
+
+This is a brand-new agent with none of your context — that independence is the whole point.
+
+FALLBACK (no SDK / no launch capability): post the dispatch prompt as a PR comment (or your
+final message) labeled so a human/automation kicks off the separate instance. Never fall back
+to reviewing it yourself.
+</HandoffToReview>
+
 <SlackBoard>
 After the PR is open and ready for review, announce it in the team's daily review thread.
 
@@ -209,8 +258,14 @@ up yet.
 <Babysit>
 A PR isn't "done" the moment it's open — keep it merge-ready while it waits for review. Run
 the `/babysit` skill on your PR and loop on it: keep CI green, resolve clear merge conflicts,
-and answer/triage review comments (including Bugbot). This runs alongside the merge watch in
-`<SessionClose>` — every time you wake to re-check the merge state, babysit the PR too.
+and RESPOND to the independent reviewer's findings (see `<HandoffToReview>`) plus any Bugbot
+comments. This runs alongside the merge watch in `<SessionClose>` — every time you wake to
+re-check the merge state, babysit the PR too.
+
+You are NOT the judge of whether your own code is correct — that verdict belongs to the
+independent reviewer instance and the human. Your babysit job is to ACT on review findings
+(scoped fixes) and to keep the PR mechanically mergeable, not to self-certify or to dismiss
+findings on your own authored logic.
 
 WHAT TO DO EACH PASS (per the `/babysit` skill):
 
@@ -220,8 +275,10 @@ WHAT TO DO EACH PASS (per the `/babysit` skill):
   base and merge latest in case another PR already fixed it. If a real fix would fall outside
   this ticket's scope, stop and report rather than expanding scope.
 - Comments: Triage unresolved review comments (filter out already-resolved threads first).
-  Address valid change requests/bug reports with scoped commits; validate Bugbot findings and
-  only act on the valid ones, explaining politely when you disagree or are unsure.
+  Address the independent reviewer's and Bugbot's findings with scoped commits. When you
+  believe a finding is wrong, do NOT silently dismiss it — reply with your reasoning and leave
+  the thread open for the human to arbitrate, because you are a biased judge of your own work.
+  A BLOCKER you disagree with is escalated to the human, never self-overruled.
 - Conflicts: Resolve clear merge conflicts, preserving the intent of both your branch and
   base. If intents genuinely conflict, don't guess — leave a comment and surface it.
 
