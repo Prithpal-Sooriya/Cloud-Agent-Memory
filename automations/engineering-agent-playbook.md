@@ -45,16 +45,19 @@ status. If you have no Jira write access, skip the transitions but note this in 
 `<SessionClose>` and leave a Jira comment if you can.
 
 BOARD STATES: `TO DO` → `IN PROGRESS` → `IN REVIEW` → `DONE`, plus `BLOCKED` (exceptional).
-Tickets arrive assigned to you in `TO DO`.
+Tickets arrive in `TO DO`.
 
 TRANSITIONS YOU OWN:
 
-1. START → `IN PROGRESS`: As your FIRST action after reading this playbook and the memory
-   file (before editing code), move the ticket from `TO DO` to `IN PROGRESS`. If it's already
-   `IN PROGRESS`, leave it.
-2. PR OPEN → `IN REVIEW`: Immediately after the pull request is open and ready (see
+1. ASSIGN → yourself: As your FIRST action after reading this playbook and the memory file
+   (before any transition or code edit), assign the ticket to yourself — the "Cursor" Jira
+   user, account ID `712020:0bd2e6b4-c9b8-43cf-96f6-7f240b857a3c`. If it's already assigned
+   to Cursor, leave it.
+2. START → `IN PROGRESS`: Immediately after assigning, move the ticket from `TO DO` to
+   `IN PROGRESS`. If it's already `IN PROGRESS`, leave it.
+3. PR OPEN → `IN REVIEW`: Immediately after the pull request is open and ready (see
    `<PullRequest>`), move the ticket to `IN REVIEW`. Do this even if you also posted to Slack.
-3. PR MERGED → `DONE`: You never merge the PR yourself (see `<PullRequest>`), but the merge
+4. PR MERGED → `DONE`: You never merge the PR yourself (see `<PullRequest>`), but the merge
    is YOUR signal to close the ticket. After the PR is open, keep listening for it to be
    merged by a human/automation; once merged, move the ticket to `DONE`. The listening
    mechanic lives in `<SessionClose>`. Only `DONE` on an actual merge — never on close
