@@ -173,6 +173,10 @@ blockquotes, no `>` prefixes):
 
 Hard requirements (never break these):
 
+- POST ONCE, EVER: Slack gets exactly ONE message per PR — the announcement when the PR
+  first opens. Never post follow-ups about the same PR (CI fixes, label changes, babysit
+  commits, re-pushes, status updates, corrections). If something changes after the
+  announcement, keep it internal: a PR comment or Jira comment, never the Slack channel.
 - Always include <Jira key>, <Jira url>, and <PR url> exactly as given.
 - Lead with the `ASSETS_DEV_TEAM` ping (`<!subteam^S09C9U4K953>`) on its OWN line at the very
   top, exactly once — paste the markup verbatim so it actually notifies @assets-dev-team.
@@ -232,6 +236,8 @@ GUARDRAILS:
 
 - Stay within the ticket's scope and commit as yourself per `<Memory>`. Re-run the
   `<Execution>` VERIFY steps (lint/typecheck/tests) on anything you change here.
+- No Slack posts from this loop — the one-post-per-PR rule in `<SlackBoard>` applies.
+  Communicate babysit updates via PR/Jira comments only.
 - Still do NOT merge the PR yourself.
 - If you push babysit commits, the ticket stays in `IN REVIEW` (don't bounce it back to
   `IN PROGRESS`); only move to `BLOCKED` if you hit something you genuinely can't resolve in
