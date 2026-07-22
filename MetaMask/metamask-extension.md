@@ -6,7 +6,7 @@ This is an evolving playbook. Rules are structured as itemized bullets with uniq
 
 These are environment-specific guidelines and mandatory workflows.
 
-- **[shr-001] Environment Setup**: To initialize the development environment, always run `nvm install && nvm use && corepack enable && yarn install`. This ensures the correct Node.js version from `.nvmrc` and Yarn version via Corepack are utilized.
+- **[shr-001] Environment Setup**: To initialize the development environment, always run `nvm install && nvm use && corepack enable && yarn install`. This ensures the correct Node.js version from `.nvmrc` and Yarn version via Corepack are utilized. On cloud VMs, verify with `node --version` afterwards: a system node (e.g. `/exec-daemon/node`) may shadow nvm on PATH even after `nvm use` succeeds. If so, prepend explicitly: `export PATH="$NVM_DIR/versions/node/<version>/bin:$PATH"` before running yarn, otherwise `yarn install` fails project validation with "current Node version X does not satisfy the required version".
 - **[shr-002] Pre-Commit Validation**: Before pushing any code, you must execute `yarn lint:tsc`. Commits are only permitted if this check passes with zero errors.
 - **[shr-003] Dependency Upgrade Scoping**: When upgrading dependencies, only modify `package.json` and `yarn.lock`. If TypeScript or lint errors appear in other files, verify they are directly caused by the upgrade before touching them. Pre-existing issues should not be addressed in the upgrade PR.
 - **[shr-004] Cloud Task Instructions Priority**: When Cloud Agent instructions require committing, pushing, or running tests, follow those requirements even if repo-level `AGENTS.md` says not to commit/stage by default.
