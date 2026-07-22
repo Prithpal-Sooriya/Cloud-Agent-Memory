@@ -51,7 +51,7 @@ TRANSITIONS YOU OWN:
 
 1. ASSIGN → yourself: As your FIRST action after reading this playbook and the memory file
    (before any transition or code edit), assign the ticket to yourself — the "Cursor" Jira
-   user, account ID `712020:0bd2e6b4-c9b8-43cf-96f6-7f240b857a3c`. If it's already assigned
+   user, account ID `712020:53544bc4-bfd1-4941-b1c4-c0222a8d7cf4`. If it's already assigned
    to Cursor, leave it.
 2. START → `IN PROGRESS`: Immediately after assigning, move the ticket from `TO DO` to
    `IN PROGRESS`. If it's already `IN PROGRESS`, leave it.
