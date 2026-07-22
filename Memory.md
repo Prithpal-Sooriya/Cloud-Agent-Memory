@@ -14,10 +14,11 @@ This memory file acts as an evolving playbook that accumulates, refines, and org
 
 ## Global Playbook (Strategies & Hard Rules)
 
-- **Commit Author Identity**: All commits MUST include the author flag: `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`. When amending commits, always verify the author is set correctly.
-- **Traceability**: PRs must include the Jira ticket and GitHub issue link.
-- **Minimal Scoping**: Modifications must be scoped and minimal to avoid regression.
-- **Validation**: Ensure unit tests pass before requesting a memory update.
+- **[shr-001] Commit Author Identity**: All commits MUST include the author flag: `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`. When amending commits, always verify the author is set correctly.
+- **[shr-002] Traceability**: PRs must include the Jira ticket and GitHub issue link.
+- **[shr-004] Minimal Scoping**: Modifications must be scoped and minimal to avoid regression.
+- **[shr-005] Validation**: Ensure unit tests pass before requesting a memory update.
+- **[shr-006] Memory-repo gh writes need the write-issues PAT**: On Cursor cloud VMs the default `gh` auth is read-only; `gh issue create` / `gh label create` against Prithpal-Sooriya/Cloud-Agent-Memory fail with 403. Prefix with `GH_TOKEN="$CLOUD_AGENT_WRITE_ISSUES_PAT"` (injected secret) for all memory-update issue creation commands.
 
 ## Repository Specifics
 
