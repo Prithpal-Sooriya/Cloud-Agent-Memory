@@ -6,7 +6,7 @@ This is an evolving playbook. Rules are structured as itemized bullets with uniq
 
 These are environment-specific guidelines and mandatory workflows.
 
-- **[shr-001] Environment Setup**: To initialize the development environment, run `corepack enable` to install yarn then `yarn && yarn setup:expo`. This must be completed before running tests or the TypeScript linter (it applies necessary library patches).
+- **[shr-001] Environment Setup**: To initialize the development environment, run `corepack enable` to install yarn then `yarn && yarn setup:expo`. This must be completed before running tests or the TypeScript linter (it applies necessary library patches). In headless/background runs, export `COREPACK_ENABLE_DOWNLOAD_PROMPT=0` first — otherwise Corepack blocks forever on an interactive "Do you want to continue? [Y/n]" prompt the first time it downloads the pinned Yarn version.
 - **[shr-002] Pre-Commit Validation**: Before `git push`, run `yarn lint:tsc` and ensure zero errors — required even for test-only changes (`*.test.ts(x)`). Jest + ESLint passing locally is not a substitute: `tsc`-only inference quirks (e.g. `it.each` heterogenous-union narrowing) surface only here. Re-run after every refactor, however small.
 - **[shr-003] Project Type**: The project is a React Native application written in TypeScript.
 - **[shr-004] Reviewer-Scope Fidelity**: When a reviewer requests a specific structure or minimal adjustment, implement exactly that requested scope first; avoid additional DRY/architectural refactors unless explicitly requested.
