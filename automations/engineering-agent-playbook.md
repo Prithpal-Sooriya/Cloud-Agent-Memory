@@ -104,7 +104,7 @@ your changes. Confirm everything is green before opening the PR.
 Open ONE pull request against the target repo. If the ticket genuinely spans multiple
 repos, open one PR per repo you change. Match the repo's PR template.
 
-- LABELS: `team-assets`, plus `<FILL IN: dispatch label, e.g. agent-assets>` so these PRs
+- LABELS: `team-assets`, `agent-assets` so these PRs
   stay filterable (the in-flight reminder automation will rely on this label).
 - TITLE: conventional commit style — `chore: <summary>` for cleanup/tech-debt,
   `fix: <summary>` for bugs.
