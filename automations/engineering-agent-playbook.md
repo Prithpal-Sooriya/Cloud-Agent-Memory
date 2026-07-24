@@ -142,7 +142,7 @@ FIND TODAY'S THREAD (its timestamp changes daily — discover it, never hardcode
 2. Find the NEWEST message that BOTH is authored by `DAILY_THREAD_AUTHOR` AND/OR contains the
    text "Daily PR Request Thread". Matching on author + text avoids false positives.
 3. Confirm its date (in `CHANNEL_TZ`) is TODAY. If yes, take its `ts` as the thread parent.
-   If no message matches today, use the FALLBACK to yesterday. If all else fails then FALLBACK below.
+   If no message matches today, do NOT post — go to the FALLBACK below.
 
 POST:
 Reply into that thread (`chat.postMessage` with `thread_ts` = the parent `ts`, and
@@ -201,12 +201,13 @@ Tone reference (DO NOT copy — for vibe only, and note the blank lines between 
 Thanks so much for taking a look 🙏
 ```
 
-FALLBACK (never leave a PR un-announced):
-If today's thread doesn't exist yet (you finished before the morning post, or it's a
-weekend/holiday) OR you have no Slack access: add a comment on the Jira ticket with the PR
-link so it's still traceable, and — if you do have Slack — post the same friendly message as
-a normal top-level message in `SLACK_CHANNEL_ID` with a soft note that today's thread isn't
-up yet.
+FALLBACK (no thread → no Slack post):
+If you cannot find today's thread (you finished before the morning post, it's a
+weekend/holiday, or the search simply comes up empty) OR you have no Slack access: do NOT
+post to Slack at all — no top-level channel messages, and never reply into an older day's
+thread. Instead, add a comment on the Jira ticket with the PR link so the announcement is
+still traceable, and note in your `<SessionClose>` that the Slack announcement was skipped
+because the daily thread wasn't found.
 </SlackBoard>
 
 <Babysit>
