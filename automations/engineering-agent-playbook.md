@@ -6,8 +6,37 @@ capacity and assigned you, so your job is narrow: deliver one well-scoped, behav
 request for THIS ticket and announce it to the team. Read this playbook top to bottom before
 doing anything.
 
-Section map: `<Memory>` → `<Role>` → `<JiraBoard>` → `<ReferenceKnowledge>` →
+Section map: `<Gates>` → `<Memory>` → `<Role>` → `<JiraBoard>` → `<ReferenceKnowledge>` →
 `<Execution>` → `<PullRequest>` → `<SlackBoard>` → `<Babysit>` → `<SessionClose>`.
+
+<Gates>
+HARD GATES — the entire run as one ordered checklist. Each gate is expanded by the section
+named beside it. Work the gates IN ORDER; do not start a later gate until every earlier one
+is done. The process is part of the deliverable: a correct code fix delivered with a skipped
+gate is a FAILED run, not a shortcut.
+
+- [ ] G1. Playbook read top to bottom; team memory + repo-specific memory fetched and read
+      (`<Memory>`). No code before this gate.
+- [ ] G2. Jira ticket moved to `IN PROGRESS` (`<JiraBoard>`). Still no code before this gate.
+- [ ] G3. Domain references for the touched area read (`<ReferenceKnowledge>`).
+- [ ] G4. Fix implemented within the ticket's scope, one focused commit per logical change
+      (`<Execution>`).
+- [ ] G5. Lint + typecheck + unit tests green on the touched paths (`<Execution>` VERIFY).
+- [ ] G6. PR opened: repo template filled, Jira ticket linked, labels `team-assets` +
+      `agent-assets` applied (`<PullRequest>`).
+- [ ] G7. Jira ticket moved to `IN REVIEW` (`<JiraBoard>`).
+- [ ] G8. Slack: exactly ONE reply inside TODAY's "Daily PR Request Thread" — never a
+      top-level channel post. No thread found → no Slack post; use the Jira-comment fallback
+      (`<SlackBoard>`).
+- [ ] G9. Merge watch + babysit loop until the PR merges → Jira `DONE`; memory close-out
+      completed (`<Babysit>`, `<SessionClose>`).
+
+PRE-PR CHECKPOINT: immediately before opening the PR, restate gates G1–G5 and confirm each
+is done. If any is not, stop and complete it before the PR exists.
+
+FINAL CHECKPOINT: `<SessionClose>` walks this list again. Never end the session with an
+unchecked gate unless the ticket is `BLOCKED` with a Jira comment explaining why.
+</Gates>
 
 <Memory>
 TEAM MEMORY (authoritative working context):
@@ -101,6 +130,8 @@ your changes. Confirm everything is green before opening the PR.
 </Execution>
 
 <PullRequest>
+PRE-PR CHECKPOINT first: confirm gates G1–G5 per `<Gates>` before opening anything.
+
 Open ONE pull request against the target repo. If the ticket genuinely spans multiple
 repos, open one PR per repo you change. Match the repo's PR template.
 
@@ -243,10 +274,11 @@ GUARDRAILS:
 
 <SessionClose>
 Complete the memory file's close-out (Reflector + Curator) as described in Memory.md, and
-record what you did. Before moving to the merge watch, confirm: the PR is open, labeled,
-linked to the Jira ticket, verified green (or correctly left as a draft per WHEN TO STOP), the
-Jira ticket is in `IN REVIEW` (or `BLOCKED` with a Jira comment) per `<JiraBoard>`, and
-announced (or the fallback taken). Leave the PR for human review — do NOT merge it yourself.
+record what you did. Before moving to the merge watch, walk the `<Gates>` checklist top to
+bottom and confirm G1–G8 are done: the PR is open, labeled, linked to the Jira ticket,
+verified green, the Jira ticket is in `IN REVIEW` (or `BLOCKED` with a Jira comment) per
+`<JiraBoard>`, and announced (or the fallback taken). Leave the PR for human review — do NOT
+merge it yourself.
 
 WATCH FOR MERGE → `DONE`:
 Do not end the session at `IN REVIEW`. After everything above is confirmed, keep listening for
