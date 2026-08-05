@@ -14,12 +14,17 @@ This memory file acts as an evolving playbook that accumulates, refines, and org
 
 ## Global Playbook (Strategies & Hard Rules)
 
+### Strategies & Hard Rules (SHR)
+
 - **[shr-001] Commit Author Identity**: All commits MUST include the author flag: `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`. When amending commits, always verify the author is set correctly.
 - **[shr-002] Traceability**: PRs must include the Jira ticket and GitHub issue link.
-- **[shr-003] Jira Branch Naming**: If a Jira ticket is attached to the task, rename the working branch to `<ticket-id>/<short-description>` before pushing (e.g., `ASSETS-2528/tron-activity-tab-bug`).
-- **[shr-004] Minimal Scoping**: Modifications must be scoped and minimal to avoid regression.
-- **[shr-005] Validation**: Ensure unit tests pass before requesting a memory update.
-- **[shr-006] Memory-repo gh writes need the write-issues PAT**: On Cursor cloud VMs the default `gh` auth is read-only; `gh issue create` / `gh label create` against Prithpal-Sooriya/Cloud-Agent-Memory fail with 403. Prefix with `GH_TOKEN="$CLOUD_AGENT_WRITE_ISSUES_PAT"` (injected secret) for all memory-update issue creation commands.
+- **[shr-003] Minimal Scoping**: Modifications must be scoped and minimal to avoid regression.
+- **[shr-004] Validation**: Ensure unit tests pass before requesting a memory update.
+- **[shr-005] Memory-repo gh writes need the write-issues PAT**: On Cursor cloud VMs the default `gh` auth is read-only; `gh issue create` / `gh label create` against Prithpal-Sooriya/Cloud-Agent-Memory fail with 403. Prefix with `GH_TOKEN="$CLOUD_AGENT_WRITE_ISSUES_PAT"` (injected secret) for all memory-update issue creation commands.
+
+### Troubleshooting and Pitfalls (TS)
+
+- **[ts-001] Prefer explicit Node 24 PATH on cloud VMs**: After `nvm install/use 24`, set `PATH="$HOME/.nvm/versions/node/$(nvm current)/bin:$PATH"` and `hash -r`. `nvm use` alone can leave `/exec-daemon/node` (often Node 22) winning `which node`.
 
 ## Repository Specifics
 
