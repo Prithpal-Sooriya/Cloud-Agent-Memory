@@ -21,6 +21,7 @@ This memory file acts as an evolving playbook that accumulates, refines, and org
 - **[shr-003] Minimal Scoping**: Modifications must be scoped and minimal to avoid regression.
 - **[shr-004] Validation**: Ensure unit tests pass before requesting a memory update.
 - **[shr-005] Memory-repo gh writes need the write-issues PAT**: On Cursor cloud VMs the default `gh` auth is read-only; `gh issue create` / `gh label create` against Prithpal-Sooriya/Cloud-Agent-Memory fail with 403. Prefix with `GH_TOKEN="$CLOUD_AGENT_WRITE_ISSUES_PAT"` (injected secret) for all memory-update issue creation commands.
+- **[shr-006] Read Agent-Setup / playbook links first**: When a Jira description includes an Agent-Setup block or `engineering-agent-playbook.md` link (or `JIRA_INTEGRATION_PLAYBOOK_URL`), fetch and follow it before coding. It defines board transitions (TO DO → IN PROGRESS → IN REVIEW), Slack announcement format, and one-post-per-PR rules that are easy to miss from the webhook payload alone.
 
 ### Troubleshooting and Pitfalls (TS)
 
