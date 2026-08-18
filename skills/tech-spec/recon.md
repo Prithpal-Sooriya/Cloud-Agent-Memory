@@ -1,28 +1,12 @@
----
-name: tech-spec-recon
-description: Read-only codebase exploration that produces grounded notes for a tech spec. Hunts for reusable components, established conventions, existing infrastructure to lean on, and gaps the feature will need to fill. Use when starting a tech spec for a new feature, when the user asks to "explore the codebase for X", "find existing patterns for Y", "what can we reuse for Z", or as the first phase of tech-spec authoring before architecture or UI decisions are made.
----
+# Recon
 
-# Tech Spec Recon
-
-Produce a grounded codebase reconnaissance report scoped to a specific feature. Every claim cites at least one file path. Output is structured so downstream skills (`tech-spec-architect`, `tech-spec-snippet`, `tech-spec-ui-surfaces`) can find what they need.
-
-## When to use
-
-Use at the start of tech-spec authoring, after the PRD/feature description exists but before architecture decisions are locked. Also use mid-spec when a new question surfaces ("does the codebase already have a toast-with-buttons component?").
-
-Inputs required:
-
-- **Feature context** — PRD doc, recording transcript, or at minimum a paragraph describing what's being built and which surfaces it touches
-- **Codebase access** — Read, Grep, Glob (or equivalents). Read-only
-
-Without feature context, do not start exploring. Ask the user for it.
+Produce a grounded codebase reconnaissance report scoped to the feature. Every claim cites at least one file path.
 
 ## How to do the recon
 
 ### 1. Scope yourself
 
-Before reading anything, list the 3–6 areas of the codebase the feature is likely to touch. Write them down. Examples for a watchlist feature: storage layer, query/state hooks, feature flag plumbing, the surfaces named in the PRD (Token Details page, Homepage, Swap/Bridge picker), and analytics events. Do not map outside these areas. Recon scope creep is the main failure mode.
+Before reading anything, list the 3–6 areas of the codebase the feature is likely to touch. Write them down. Examples for a watchlist feature: storage layer, query/state hooks, feature flag plumbing, the surfaces named in the PRD, and analytics events. Do not map outside these areas. Recon scope creep is the main failure mode.
 
 ### 2. Explore in the four buckets
 
@@ -94,12 +78,10 @@ Write to `.specs/<feature-slug>/recon.md`. Structure:
 {Optional. Anything important that doesn't fit the buckets — e.g. "two parallel toast implementations exist, the new one in `src/components/Toast/v2` should be preferred." Keep terse.}
 ```
 
-After writing the file, echo a brief summary inline (1–2 sentences per bucket, no file paths) so the user can decide whether to drill in or move on.
+## Do not
 
-## What this skill does not do
-
-- It does not propose architecture. That's `tech-spec-architect`'s job.
-- It does not write snippets. That's `tech-spec-snippet`'s job, which consumes recon output.
-- It does not refactor or modify code. Read-only.
-- It does not exhaustively catalogue the codebase. Stay scoped to what the feature touches.
-- It does not invent file paths. Every citation must be a real path that was read.
+- Propose architecture.
+- Write snippets.
+- Refactor or modify code.
+- Exhaustively catalogue the codebase.
+- Invent file paths. Every citation must be a real path that was read.

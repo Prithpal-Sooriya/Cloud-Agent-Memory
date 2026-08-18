@@ -1,30 +1,18 @@
----
-name: tech-spec-architect
-description: Produce the Architecture section of a tech spec, either by proposing options for the user to choose between (Mode A) or by stress-testing a chosen architecture and writing it up (Mode B). Use when the user asks to "propose an architecture for X", "validate this architecture", "draft the architecture section", or as the second phase of tech-spec authoring after recon. Calls tech-spec-snippet for embedded snippets.
----
+# Architecture
 
-# Tech Spec Architect
+Produce the **Architecture section only**. Two modes; the caller (orchestrator / user) already picked.
 
-Produce the **Architecture section only** of a tech spec. Two modes; the caller picks.
-
-## When to use
-
-After `tech-spec-recon` has been run and a PRD/feature description exists. Before `tech-spec-ui-surfaces` and `tech-spec-decompose`.
-
-The skill produces section 2 (Architecture) and its subsections. It does **not** produce Feature Summary, UI Surfaces, Analytics, Out of Scope, or Task Breakdown. Other skills own those.
+This phase produces section 2 (Architecture) and its subsections. It does **not** produce Feature Summary, UI Surfaces, Analytics, Out of Scope, or Task Breakdown.
 
 ## Inputs
 
 Required:
 
-- **Feature context** — PRD or 1-paragraph description, including which surfaces are touched
-- **Mode** — `propose` or `validate`. If the caller didn't pick one, ask. Do not infer.
-- **Recon output** — path to `.specs/<feature>/recon.md` if it exists. If it doesn't, run `tech-spec-recon` first or ask the user to.
+- Feature context (including surfaces)
+- Mode — `propose` (A) or `validate` (B)
+- Recon output at `.specs/<feature>/recon.md`
 
-Mode-specific:
-
-- **Mode A (propose)**: nothing extra
-- **Mode B (validate)**: the user's proposed architecture, in any form (1 sentence, a sketch, a list of decisions)
+Mode B also needs the user's proposed architecture, in any form.
 
 ## Mode A — Propose
 
@@ -39,7 +27,7 @@ For each decision the user picks, expand into a subsection (see *Subsection shap
 
 ## Mode B — Validate
 
-The user has already chosen an architecture. Your job is to stress-test it, then write it up.
+The user has already chosen an architecture. Stress-test it, then write it up.
 
 For each decision in the user's proposed architecture, before documenting it:
 
@@ -63,12 +51,12 @@ type, library choice. Cite stakeholders if relevant ("Discussed with @Person").}
 "If profiling finds this too heavy, split into 2 separate query hooks."
 "We use E2EE over AUS because our boundary doesn't require backend reads."}
 
-{Snippet placeholder — invoke tech-spec-snippet for this subsection}
+{Snippet placeholder — queue a snippet request for this subsection}
 ```
 
 ## How to produce snippets
 
-Do **not** write snippets inline yourself. For each subsection that needs a snippet, invoke `tech-spec-snippet` with:
+Do **not** write snippets inline in this phase. For each subsection that needs a snippet, queue a request for the Snippets phase:
 
 - Scope: what the snippet is (e.g. "the watchlist storage path constant and helpers")
 - Purpose: what role it plays in the spec (e.g. "pin the storage contract")
@@ -76,7 +64,7 @@ Do **not** write snippets inline yourself. For each subsection that needs a snip
 - Fidelity hint: precise for contracts, illustrative for wiring
 - Codebase pointers: from recon
 
-If the caller is `tech-spec-synthesize` or a human in Claude Code, snippet invocations can run in parallel across subsections.
+Leave a `**Snippet:** see .specs/<feature>/snippets/<snippet-slug>.md` placeholder in the architecture file. The Snippets phase writes the file; Synthesize inlines it.
 
 ## Output format
 
@@ -120,12 +108,12 @@ We do not need to build a custom core controller or service."}
   resolved, this section is deleted and the decisions get expanded above.}
 ```
 
-After writing the file, echo a brief summary inline (decisions made, open questions, snippet invocations queued).
+After writing the file, echo a brief summary inline (decisions made, open questions, snippet requests queued).
 
-## What this skill does not do
+## Do not
 
-- It does not write the Feature Summary, UI Surfaces, Analytics, Out of Scope, or Task Breakdown.
-- It does not write snippets directly. It calls `tech-spec-snippet` for them.
-- It does not silently override the user in Mode B. It flags conflicts and waits.
-- It does not propose 2-3 options for decisions that have an obvious answer from recon. No false-choice theatre.
-- It does not modify the codebase. Read-only.
+- Write Feature Summary, UI Surfaces, Analytics, Out of Scope, or Task Breakdown.
+- Write snippet bodies here.
+- Silently override the user in Mode B. Flag conflicts and wait.
+- Propose 2–3 options for decisions that have an obvious answer from recon.
+- Generate snippets for unresolved decisions.

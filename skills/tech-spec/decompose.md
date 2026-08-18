@@ -1,31 +1,22 @@
----
-name: tech-spec-decompose
-description: Produce the Task Breakdown section of a tech spec — dependency-ordered phases with parallelizability callouts and a 2-week sanity check. Use when the user asks to "break this down into tasks", "produce the task breakdown", "decompose the spec", or as the final authoring phase after architecture and UI surfaces are settled.
----
-
-# Tech Spec Decompose
+# Decompose
 
 Produce the Task Breakdown section: dependency-ordered phases, items named (not estimated), parallelizability called out in the heading, and a 2-week sanity check at the end.
-
-## When to use
-
-After `tech-spec-architect` and `tech-spec-ui-surfaces` have run. Decompose consumes their outputs plus the Out of Scope list (from the user or from the spec-in-progress).
-
-If architecture or UI surfaces are missing, ask the user to run those first. Don't invent phases without grounded inputs.
 
 ## Inputs
 
 Required:
 
-- **Architecture output** — `.specs/<feature>/architecture.md` (for Phase 1: business logic items)
-- **UI surface files** — `.specs/<feature>/ui-surfaces/*.md` (for Phase 2: one item per surface)
-- **Out of Scope list** — explicit list of items NOT to include in phases
+- Architecture output — `.specs/<feature>/architecture.md` (for Phase 1: business logic items)
+- UI surface files — `.specs/<feature>/ui-surfaces/*.md` (for Phase 2: one item per surface)
+- Out of Scope list — explicit list of items NOT to include in phases
 
 Optional:
 
-- **Stakeholders** — for Phase 3 review items (e.g. "analytics schema review with @Person")
-- **Feature flag plan** — if Phase 0 needs anything beyond standard FF setup
-- **Foundation work specific to this feature** — schema migrations, new infrastructure, etc.
+- Stakeholders — for Phase 3 review items (e.g. "analytics schema review with @Person")
+- Feature flag plan — if Phase 0 needs anything beyond standard FF setup
+- Foundation work specific to this feature — schema migrations, new infrastructure, etc.
+
+If architecture or UI surfaces are missing, go back to those phases. Don't invent phases without grounded inputs.
 
 ## Phase convention
 
@@ -44,7 +35,7 @@ Default item: feature flag setup. Add foundation items only if architecture expl
 
 ### 2. Phase 1 — Business logic
 
-Walk through architecture's hook/module list and create one item per named entity. Items are the entity name as written in architecture, e.g. `useTokenWatchlistQuery`, not "build the watchlist query hook." Brevity matches the WatchList spec's style.
+Walk through architecture's hook/module list and create one item per named entity. Items are the entity name as written in architecture, e.g. `useTokenWatchlistQuery`, not "build the watchlist query hook."
 
 If the convenience hook (e.g. `useTokenWatchlist`) wraps the others, list it last in the same phase — it's a thin layer on top.
 
@@ -119,10 +110,9 @@ Write to `.specs/<feature-slug>/task-breakdown.md`. Structure:
 
 After writing the file, echo a brief inline summary: phase counts, weighted total, verdict.
 
-## What this skill does not do
+## Do not
 
-- It does not estimate effort in hours, days, or story points. Items are named work units; estimation is for the team that picks up the spec.
-- It does not invent items that aren't in architecture or UI surfaces. If architecture has 4 hooks, Phase 1 has 4 items.
-- It does not silently include Out of Scope work in phases. Flags conflicts instead.
-- It does not modify the codebase. Output-only.
-- It does not assign owners to tasks. That's the team's call during sprint planning.
+- Estimate effort in hours, days, or story points. Items are named work units; estimation is for the team that picks up the spec.
+- Invent items that aren't in architecture or UI surfaces. If architecture has 4 hooks, Phase 1 has 4 items.
+- Silently include Out of Scope work in phases. Flag conflicts instead.
+- Assign owners to tasks. That's the team's call during sprint planning.
