@@ -23,8 +23,8 @@ _No entries yet._
 
 Lessons learned from past execution failures or resource constraints.
 
-- **[ts-001] Lint Cleanup Process**: When running lint cleanup, use two commands in sequence:
+- **[ts-001] Lint Cleanup Process**: Format with **oxfmt**, not Prettier — `yarn prettier --check` passes on files that `lint:misc:check` rejects (oxfmt also sorts imports; Prettier does not). Use two commands in sequence:
   1. `yarn eslint <file> --fix --prune-suppressions` — fixes lint issues and removes unused suppressions from `eslint-suppressions.json`.
-  2. `yarn prettier --write <files> eslint-suppressions.json` — formats files including the suppressions file (needs trailing newline).
+  2. `yarn lint:misc --write <files>` (i.e. `oxfmt`), then verify with `yarn lint:misc:check` — the CI `Lint (lint:misc:check)` job.
 - **[ts-002] Changelog CI Requirement**: The CI "Check changelog" job fails if you modify a package without updating its `CHANGELOG.md`. Add entries under `## [Unreleased]` with a link to the PR: `([#XXXX](https://github.com/MetaMask/core/pull/XXXX))`.
 - **[ts-003] Private Member Hash Syntax**: The repo enforces using hash syntax (`#memberName`) for private class members instead of TypeScript's `private memberName`. ESLint will flag `private readonly` as violations.
