@@ -19,6 +19,7 @@ The skill is **read-only until an explicit user gate**. Nothing on disk or on Gi
 - **Read-only on the codebase until the apply gate.** Triage and audit only read files and run `gh` queries.
 - **Follow `[shr-005]` for `gh` writes on cloud VMs.** Prefix every write with `GH_TOKEN="$CLOUD_AGENT_WRITE_ISSUES_PAT"` — the default cloud `gh` auth is read-only and silently returns placeholder rows for search endpoints.
 - **Author every commit per `[shr-001]`.** `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`.
+- **Compress prose before committing.** Every applied bullet passes through the concision rules in [style.md](style.md). Technical substance stays byte-exact (commands, paths, addresses, error strings, URLs, IDs, code fences); prose fluff is cut. See [apply.md](apply.md) §4.3.
 
 ## Workspace
 
@@ -41,9 +42,9 @@ Copy this checklist and keep it updated in your working notes:
 Memory curation progress:
 - [ ] Intake (confirm repo + write auth)
 - [ ] Triage (list + parse open memory-update issues)
-- [ ] Audit (dedupe / target-id / section / evidence)
+- [ ] Audit (dedupe / target-id / section / evidence / style)
 - [ ] Audit gate (user approves verdicts)
-- [ ] Apply (branch, edit, commit — per repo label)
+- [ ] Apply (branch, edit, compress-to-style, commit — per repo label)
 - [ ] PR (push, open draft, verify body invariant)
 ```
 
@@ -100,6 +101,7 @@ Read [apply.md](apply.md). One branch and one commit-series per repo label:
 - Commits authored per `[shr-001]`.
 - ADD → assign next sequential ID in the target section, substitute for `[*-NEW]`, append at section end.
 - UPDATE → locate the existing bullet by ID, replace the body verbatim, keep the ID.
+- **Every bullet is compressed per [style.md](style.md) before commit.** Verbatim-preserve rules keep every token an agent might grep for. If a proposal is already tight, this is a no-op.
 
 If nothing survives triage+audit for a given repo label, skip that branch entirely — do not open an empty PR.
 
@@ -123,3 +125,5 @@ Hand back the PR URL and end the session. The human closes the loop by reviewing
 - **Fabricated IDs.** Never assign an ID that skips numbers or reuses a retired one. The next ID is `max(existing) + 1` in the target section — no exceptions.
 - **Non-draft PRs.** Never pass `--draft=false` or omit `--draft`.
 - **Placeholder leakage.** No `[shr-NEW]` / `[code-NEW]` / `[ts-NEW]` may survive into a committed bullet. Grep the diff before pushing; abort if any placeholder remains.
+- **Verbatim-pasted verbosity.** Never commit a proposal's prose unchanged when it repeats itself, hedges, or opens with pleasantries — pass it through [style.md](style.md). The apply step is not a cp; it is a compress + apply.
+- **Silent rewrites of technical substance.** The style pass touches prose only. Never re-word a command, path, address, error string, URL, ID, or fenced code block. If a compression would change grep behaviour, revert it.

@@ -87,6 +87,16 @@ body:
         The exact markdown bullet to land in the playbook. Match the indentation and structure
         of existing entries. Use `[shr-NEW]` / `[code-NEW]` / `[ts-NEW]` for ADD — the curator
         will assign the real ID.
+
+        **Style: keep it tight.** Playbook bullets are field notes, not
+        incident reports. Drop pleasantries and narrator connectives
+        ("which is why", "note that"), prefer fragments and `;` / ` — `
+        over multi-sentence prose, and split any buried "(1) …, (2) …"
+        enumeration into sub-bullets. Preserve verbatim every command,
+        path, address, error string, URL, and code fence. See
+        `skills/update-memory/style.md` for the full rules — the
+        `update-memory` skill compresses to this style before merging,
+        so a tight proposal saves the curator a rewrite.
       render: markdown
       value: |
         - **[shr-NEW] Title**: Actionable instruction or insight here.
