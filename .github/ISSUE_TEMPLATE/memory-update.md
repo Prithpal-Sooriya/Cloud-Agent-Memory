@@ -29,6 +29,17 @@ labels: ["memory-update"]
 
 ### Proposed Entry (Copy-Paste Ready)
 
+<!--
+  Style: keep it tight. Playbook bullets are field notes, not incident
+  reports. Drop pleasantries and narrator connectives ("which is why",
+  "note that"), prefer fragments and `;` / ` — ` over multi-sentence
+  prose, and split any buried "(1) …, (2) …" enumeration into
+  sub-bullets. Preserve verbatim every command, path, address, error
+  string, URL, and code fence. See `skills/update-memory/style.md` for
+  the full rules — the `update-memory` skill compresses to this style
+  before merging, so a tight proposal saves the curator a rewrite.
+-->
+
 ```markdown
 - **[shr-NEW] Title**: Actionable instruction or insight here.
 ```

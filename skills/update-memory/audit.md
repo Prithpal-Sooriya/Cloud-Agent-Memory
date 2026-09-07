@@ -73,6 +73,22 @@ If, after dedupe, two or more `APPLY` UPDATEs still target the same `target_id`,
 
 Anything targeting a file the skill does not own (new `MetaMask/<something>.md`, `.github/*`, `automations/*`, `skills/*`) → opt out with `out-of-scope: <path>`. The skill only edits `Memory.md` and existing `MetaMask/*.md` playbooks.
 
+### 2.10 `verbose` (informational, does not opt out)
+
+Not a blocker — a heads-up for the audit gate. Flag a proposal as
+`verbose` when any of the following hold on its `proposed_entry`:
+
+- Body length exceeds ~800 characters and does not use sub-bullets.
+- Body contains a buried enumeration ("(1) …, (2) …, (3) …") in prose
+  rather than as sub-bullets.
+- Body opens with a pleasantry / narrator phrase ("Note that…", "It is
+  worth noting…", "One thing to keep in mind…").
+
+Verbose proposals are still applied — the Apply phase runs the
+[style.md](style.md) compression pass on them (see [apply.md](apply.md)
+§4.3). The `verbose` flag exists only so the human at the audit gate
+can preview the rewrite intent, and so the PR body can note it.
+
 ## 3. Emit the verdict table
 
 For each issue print one line:
@@ -87,7 +103,7 @@ Group by repo label so the user reviews each PR-bound batch together. Example:
 ```
 == metamask-extension ==
 #87  APPLY                       → MetaMask/metamask-extension.md::SHR  (updates shr-002)
-#88  APPLY                       → MetaMask/metamask-extension.md::TS   (assigns ts-008)
+#88  APPLY  [verbose]            → MetaMask/metamask-extension.md::TS   (assigns ts-008)
 #85  OPT_OUT (dedupe → #88)      → MetaMask/metamask-extension.md::TS
 #82  APPLY                       → MetaMask/metamask-extension.md::TS   (assigns ts-009)
 

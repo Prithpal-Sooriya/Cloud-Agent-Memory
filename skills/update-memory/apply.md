@@ -58,7 +58,26 @@ Process proposals in ascending issue-number order (deterministic). For each:
 3. Replace that range with the `proposed_entry` body **verbatim**, but re-insert the original `target_id` in the `[…]` token. If the author left the placeholder `[<prefix>-NEW]` in an UPDATE proposal (a common author bug), substitute the real ID silently — do NOT invent a new one.
 4. The ID never changes on UPDATE. Per ACE, obsolete rules are superseded in place.
 
-### 4.3 Commit
+### 4.3 Compress to house style
+
+Read [style.md](style.md). Rewrite the bullet's prose per the concision
+rules **before** staging the edit. Rules of thumb:
+
+- Drop pleasantries, hedging, and narrator connectives ("which is why",
+  "so that", "note that", "the fact that", redundant `the / a / an`).
+- Merge two consecutive sentences into one with `;` or ` — ` when the
+  second is a direct consequence of the first.
+- Split any buried enumeration ("(1) …, (2) …, (3) …") into sub-bullets.
+- **Preserve verbatim** every command, path, address, error string,
+  URL, ID token, and fenced code block. See [style.md](style.md) for
+  the full verbatim-preserve list.
+- Never drop `not / never / no / only / except / must`.
+- Compressed length ≤ proposal length. If it grew, undo.
+
+If the proposal is already tight, this pass is a no-op — do not
+compress for the sake of compressing.
+
+### 4.4 Commit
 
 ```bash
 git add <target-file>
