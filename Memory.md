@@ -60,7 +60,7 @@ Open-ended introspection ("did it go well?") is not acceptable — it produces f
 
 Pick an **Operation Type**:
 
-- **ADD**: For entirely new insights missing from the playbook. Use `[shr-NEW]` / `[code-NEW]` / `[ts-NEW]` as the placeholder ID — the curator (human) will assign the real ID at merge time. This avoids ID collisions across parallel agent runs.
+- **ADD**: For entirely new insights missing from the playbook. Use `[shr-NEW]` / `[code-NEW]` / `[ts-NEW]` as the placeholder ID — the curator assigns the real ID when the issue is applied. This avoids ID collisions across parallel agent runs.
 - **UPDATE**: To modify an existing rule (refine wording, supersede with a corrected version). Reference the existing ID directly.
 - **No DELETE**: Per ACE, do not delete entries. If an entry is obsolete or wrong, UPDATE it with a corrected version. This preserves the negative-knowledge signal.
 
@@ -164,4 +164,4 @@ Whichever flow is used, the issue body should follow this shape (mirrored in `.g
 
 ### 4. Grow-and-Refine Note
 
-Always share the issue URL with the user. The user acts as the final gate for merging these **Delta Entries** — including assigning real IDs to `[*-NEW]` placeholders and replacing the old bullet on UPDATEs.
+Always share the issue URL with the user. Curation — assigning real IDs to `[*-NEW]` placeholders, replacing the old bullet on UPDATEs, and deciding which proposals survive — runs unattended via the `update-memory` skill (`skills/update-memory/SKILL.md`), which batches its decisions into one draft PR per playbook. The user's gate is reviewing and merging that PR, not approving each **Delta Entry** along the way.

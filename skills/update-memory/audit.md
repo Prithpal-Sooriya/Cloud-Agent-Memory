@@ -67,7 +67,7 @@ Mark the canonical as `APPLY`; mark all siblings as `OPT_OUT (dedupe → #<canon
 
 ### 2.8 `duplicate-target` (UPDATE conflict)
 
-If, after dedupe, two or more `APPLY` UPDATEs still target the same `target_id`, stop and surface at the audit gate. The user picks one; the skill flips the losers to `OPT_OUT (duplicate-target → #<winner>)`. Never merge two UPDATE bodies into one.
+If, after dedupe, two or more `APPLY` UPDATEs still target the same `target_id`, pick the winner with the §2.7 tiebreakers (evidence quality, then `updatedAt`, then issue number) and flip the losers to `OPT_OUT (duplicate-target → #<winner>)`. Never merge two UPDATE bodies into one, and never stall the batch waiting for a human to choose — note in the PR body that the collision was resolved automatically so the reviewer can second-guess it there.
 
 ### 2.9 `out-of-scope`
 
@@ -75,7 +75,7 @@ Anything targeting a file the skill does not own (new `MetaMask/<something>.md`,
 
 ### 2.10 `verbose` (informational, does not opt out)
 
-Not a blocker — a heads-up for the audit gate. Flag a proposal as
+Not a blocker — a note for the PR body. Flag a proposal as
 `verbose` when any of the following hold on its `proposed_entry`:
 
 - Body length exceeds ~800 characters and does not use sub-bullets.
@@ -86,8 +86,8 @@ Not a blocker — a heads-up for the audit gate. Flag a proposal as
 
 Verbose proposals are still applied — the Apply phase runs the
 [style.md](style.md) compression pass on them (see [apply.md](apply.md)
-§4.3). The `verbose` flag exists only so the human at the audit gate
-can preview the rewrite intent, and so the PR body can note it.
+§4.3). The `verbose` flag exists only so the PR body can name which
+bullets were rewritten and the reviewer can diff the compression.
 
 ## 3. Emit the verdict table
 
@@ -113,8 +113,13 @@ Group by repo label so the user reviews each PR-bound batch together. Example:
 ...
 ```
 
-## 4. Gate
+## 4. Continue to Apply
 
-Print the table and **stop**. Explicitly prompt: "Approve verdicts, or edit any of them, before I branch and commit."
+Print the table and go straight on to [apply.md](apply.md). There is no approval step: the verdicts above are the skill's decision, and the draft PR is where a human disagrees with them.
 
-Only proceed to [apply.md](apply.md) when the user says something equivalent to "apply", "proceed", "ship it", or edits the table and confirms.
+Two things to carry forward so the decision stays auditable:
+
+- Every verdict, including the opt-outs, lands in the PR body — the audit trail is the PR, not this printout.
+- Any verdict that hinged on a tiebreaker (`dedupe`, `duplicate-target`) or on a borderline `no-evidence` judgement gets a one-line note on its PR-body row saying what tipped it.
+
+If a proposal is genuinely undecidable — mutually contradictory bodies, or a target file that changed underneath the batch — opt it out with the closest reason and say so in the PR body. Leaving one issue open for the next run is always better than blocking the whole batch.

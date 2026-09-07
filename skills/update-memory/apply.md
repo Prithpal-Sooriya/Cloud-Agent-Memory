@@ -7,12 +7,10 @@ Goal: for each repo label with at least one `APPLY` proposal, create a branch, e
 Before branching, sync with origin to avoid ID-collision with a parallel curation run:
 
 ```bash
-git fetch origin
-git checkout main
-git pull --ff-only origin main
+git fetch origin main
 ```
 
-If `pull --ff-only` fails, stop — the local `main` has drifted. The user resolves.
+Branch off `origin/main` rather than the local `main`, so a stale or drifted local branch never needs a human to untangle it. Only a failing `fetch` (network, auth) is a hard stop — retry it first.
 
 ## 2. Create one branch per repo label
 
@@ -20,7 +18,7 @@ For each repo label with `APPLY` proposals:
 
 ```bash
 BRANCH="update-memory/$(date -u +%Y%m%d)-<repo-label>"
-git checkout -b "$BRANCH" main
+git checkout -b "$BRANCH" origin/main
 ```
 
 Example: `update-memory/20260907-metamask-extension`.
@@ -99,10 +97,10 @@ One commit per applied issue. No squashing at this stage — the human reviewer 
 After all commits for a branch, before pushing:
 
 ```bash
-git diff main -- <target-file> | rg '\[(shr|code|ts)-NEW\]'
+git diff origin/main -- <target-file> | rg '\[(shr|code|ts)-NEW\]'
 ```
 
-Must return zero matches. If any placeholder survives, `git reset --soft main`, fix the offending proposal manually, and re-commit. Never push a branch whose diff still contains a `-NEW` token.
+Must return zero matches. If any placeholder survives, `git reset --soft origin/main`, fix the substitution yourself, and re-commit. Never push a branch whose diff still contains a `-NEW` token.
 
 ## 6. Push
 
@@ -115,4 +113,4 @@ GH_TOKEN="${CLOUD_AGENT_WRITE_ISSUES_PAT:-$GH_TOKEN}" \
 
 ## 7. Hand off to PR phase
 
-For each pushed branch, invoke [pr.md](pr.md) with the applied + opted-out lists and the final ID-assignment table for that repo label. The PR opens draft; nothing else happens automatically.
+For each pushed branch, invoke [pr.md](pr.md) with the applied + opted-out lists, the final ID-assignment table, and the judgement notes for that repo label. The PR opens draft; nothing else happens automatically.
