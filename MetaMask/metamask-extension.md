@@ -10,6 +10,9 @@ These are environment-specific guidelines and mandatory workflows.
 - **[shr-002] Pre-Commit Validation**: Before pushing any code, you must execute `yarn lint:tsc`. Commits are only permitted if this check passes with zero errors.
 - **[shr-003] Dependency Upgrade Scoping**: When upgrading dependencies, only modify `package.json` and `yarn.lock`. If TypeScript or lint errors appear in other files, verify they are directly caused by the upgrade before touching them. Pre-existing issues should not be addressed in the upgrade PR.
 - **[shr-004] Cloud Task Instructions Priority**: When Cloud Agent instructions require committing, pushing, or running tests, follow those requirements even if repo-level `AGENTS.md` says not to commit/stage by default.
+- **[shr-005] Search for in-flight PRs before implementing an issue fix**: Popular MetaMask issues often already have a community PR open. Before coding, run `gh api -X GET search/issues -f q='repo:MetaMask/<repo> is:pr is:open in:title <fix keywords>'` and search the issue number itself (`q='repo:... <issue-number>'`) to catch duplicates; call out any duplicate PR in the summary and PR body so the reviewer can pick.
+    - Unquoted `in:title` with the *fix* phrasing (`in:title ERC-1155 transfer amount` found the PR after three keyword searches found nothing).
+    - Read the issue number off a matching PR's `Fixes #N` line instead of hunting the issue separately — satisfies `[shr-002]` traceability in one call.
 
 ## Useful Code Snippets and Templates (CODE)
 
