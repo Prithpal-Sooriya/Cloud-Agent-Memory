@@ -1,0 +1,7 @@
+{
+  "mcpServers": {
+    "kandev": {
+      "url": "http://localhost:41005/mcp"
+    }
+  }
+}
