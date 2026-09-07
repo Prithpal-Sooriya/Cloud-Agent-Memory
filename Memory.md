@@ -26,6 +26,7 @@ This memory file acts as an evolving playbook that accumulates, refines, and org
 ### Troubleshooting and Pitfalls (TS)
 
 - **[ts-001] Prefer explicit Node 24 PATH on cloud VMs**: After `nvm install/use 24`, set `PATH="$HOME/.nvm/versions/node/$(nvm current)/bin:$PATH"` and `hash -r`. `nvm use` alone can leave `/exec-daemon/node` (often Node 22) winning `which node`.
+- **[ts-002] Prefix every `gh issue list` on this repo with the write-issues PAT**: Cursor cloud VMs' default `gh` token is read-only. `gh issue list --search` returns placeholder `{number:0}` rows; `gh issue list --label` / unfiltered `--state open` can return a real empty array `[]` with exit 0 — both look like "no issues", not a 403. Always `GH_TOKEN="$CLOUD_AGENT_WRITE_ISSUES_PAT" gh issue list ...` against Prithpal-Sooriya/Cloud-Agent-Memory.
 
 ## Repository Specifics
 
