@@ -8,7 +8,7 @@ These are environment-specific guidelines and mandatory workflows.
 
 - **[shr-001] Environment Setup**: To initialize the development environment, run `nvm use && yarn install` in the root directory.
 - **[shr-002] Project Type**: This is a monorepo that contains many packages.
-- **[shr-003] Type Checking**: Run `build:clean` to run type checking during build.
+- **[shr-003] Type Checking**: To type-check changes, run the **root** `yarn build` (`tsc --build tsconfig.build.json`), which resolves TS project references across the monorepo in dependency order. Package-level `yarn build:clean` fails with TS6305 ("Output file .../dist/index.d.ts has not been built") whenever workspace dependencies lack `dist/` output (fresh clone or after `build:only-clean`); use it only when dependency dists already exist, or run the root build first.
 - **[shr-004] Changelog Requirements**: Once a PR is made, update the related files changelog to reflect the file changes. Add the correct PR link to the changelog. Changelog users are developers consuming the package.
 - **[shr-005] Changelog Exceptions**: For ESLint cleanup PRs (adding return types, renaming identifiers, fixing lint violations) that don't change implementation behavior, **do not add changelog entries**. Changelogs are for changes that impact consumers of the package.
 - **[shr-006] Review-Comment Resolution Requires Code Push**: When asked to resolve PR review comments, implement the requested code changes and push in the same turn; do not stop at drafting reply text. Include commit hash and push confirmation. If the request is wording-only, explicitly state that no code changes were made.
