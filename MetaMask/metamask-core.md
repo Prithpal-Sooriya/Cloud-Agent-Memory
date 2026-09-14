@@ -25,6 +25,10 @@ Reusable patterns and specific syntax requirements.
   4. Call `getAssets` — parks on the gated `fetchV5MultiAccountBalances`.
   5. Unlock-trigger flows: let the first `activateTracking(messenger)` settle disarmed, then publish `KeyringController:lock`, arm, publish `KeyringController:unlock` — `#stop()` clears subscriptions so `#start()` re-runs `#runStartupRefresh` with the gate armed.
   6. Gate ALL Accounts API calls (including `fetchV2SupportedNetworks`) so the data source's 20-minute chains-refresh interval doesn't fire mid-test.
+- **[code-002] Widening `AssetsControllerState` with a required field — make internal-typed update producers generic**: `tempHealAssetsInfoMetadata` returns `AssetsControllerStateInternal` (persisted semantic mirror; middleware sees it via `getAssetsState: () => this.state as AssetsControllerStateInternal`) and is returned directly inside `this.update(...)` in the constructor — compiled only while the internal type was structurally identical to `AssetsControllerState`. Adding a REQUIRED public-state field (e.g. transient `assetsLoadingStatus`) causes TS2322 there.
+  1. Fix: make such helpers generic — `tempHealAssetsInfoMetadata<State extends AssetsControllerStateInternal = AssetsControllerStateInternal>(...): State`.
+  2. Do NOT add transient fields to `AssetsControllerStateInternal` — the cast keeps middleware on the narrower persisted view by design.
+  3. Transient (non-persisted) state fields: metadata `persist: false` (+ `includeInStateLogs`/`includeInDebugSnapshot`/`usedInUi: true`) — no migration needed; assert non-persistence via `deriveStateFromMetadata(state, controller.metadata, 'persist')`.
 
 ## Troubleshooting and Pitfalls (TS)
 
