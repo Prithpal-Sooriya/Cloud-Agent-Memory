@@ -18,7 +18,13 @@ These are environment-specific guidelines and mandatory workflows.
 
 Reusable patterns and specific syntax requirements.
 
-_No entries yet._
+- **[code-001] Gating Accounts API calls in AssetsController tests — flush before arming**: `AccountsApiDataSource` populates `activeChains` asynchronously via a constructor-time `fetchV2SupportedNetworks` call. Arming a query-API gate before that resolves makes `getAssets` skip the gated balances call (no active chains) and settle synchronously — mid-flight state assertions observe `{}`. Deterministic pattern:
+  1. Construct controller.
+  2. `await flushPromises()` with the gate DISARMED — construction-time networks fetch resolves, populating `activeChains`.
+  3. Arm.
+  4. Call `getAssets` — parks on the gated `fetchV5MultiAccountBalances`.
+  5. Unlock-trigger flows: let the first `activateTracking(messenger)` settle disarmed, then publish `KeyringController:lock`, arm, publish `KeyringController:unlock` — `#stop()` clears subscriptions so `#start()` re-runs `#runStartupRefresh` with the gate armed.
+  6. Gate ALL Accounts API calls (including `fetchV2SupportedNetworks`) so the data source's 20-minute chains-refresh interval doesn't fire mid-test.
 
 ## Troubleshooting and Pitfalls (TS)
 
