@@ -18,10 +18,7 @@ These are environment-specific guidelines and mandatory workflows.
 
 Reusable patterns and specific syntax requirements.
 
-- **[code-002] Widening `AssetsControllerState` with a required field — make internal-typed update producers generic**: `tempHealAssetsInfoMetadata` returns `AssetsControllerStateInternal` (persisted semantic mirror; middleware sees it via `getAssetsState: () => this.state as AssetsControllerStateInternal`) and is returned directly inside `this.update(...)` in the constructor — compiled only while the internal type was structurally identical to `AssetsControllerState`. Adding a REQUIRED public-state field (e.g. transient `assetsLoadingStatus`) causes TS2322 there.
-  1. Fix: make such helpers generic — `tempHealAssetsInfoMetadata<State extends AssetsControllerStateInternal = AssetsControllerStateInternal>(...): State`.
-  2. Do NOT add transient fields to `AssetsControllerStateInternal` — the cast keeps middleware on the narrower persisted view by design.
-  3. Transient (non-persisted) state fields: metadata `persist: false` (+ `includeInStateLogs`/`includeInDebugSnapshot`/`usedInUi: true`) — no migration needed; assert non-persistence via `deriveStateFromMetadata(state, controller.metadata, 'persist')`.
+_No entries yet._
 
 ## Troubleshooting and Pitfalls (TS)
 
