@@ -13,6 +13,7 @@ These are environment-specific guidelines and mandatory workflows.
 - **[shr-005] Changelog Exceptions**: For ESLint cleanup PRs (adding return types, renaming identifiers, fixing lint violations) that don't change implementation behavior, **do not add changelog entries**. Changelogs are for changes that impact consumers of the package.
 - **[shr-006] Review-Comment Resolution Requires Code Push**: When asked to resolve PR review comments, implement the requested code changes and push in the same turn; do not stop at drafting reply text. Include commit hash and push confirmation. If the request is wording-only, explicitly state that no code changes were made.
 - **[shr-007] Regenerate messenger action types**: When adding methods to a controller/service's `MESSENGER_EXPOSED_METHODS` in metamask-core, regenerate the `*-method-action-types.ts` file with `yarn messenger-action-types:generate` (package script backed by `packages/messenger-cli`); never hand-edit it. Method JSDoc is copied verbatim into the generated public action-type docs — write the JSDoc carefully before generating.
+- **[shr-008] Terse JSDoc/comments only**: In MetaMask repos, keep JSDoc to a one-to-two-line summary plus only the necessary `@param`/`@returns`/`@throws` tags. No multi-paragraph essays, rationale, or inline examples in code comments — rationale belongs in the PR description or README. Remember method JSDoc is copied verbatim into generated files (e.g. `*-method-action-types.ts`), so verbosity is amplified.
 
 ## Useful Code Snippets and Templates (CODE)
 
