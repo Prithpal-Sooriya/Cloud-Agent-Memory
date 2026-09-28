@@ -25,9 +25,9 @@ _No entries yet._
 
 Lessons learned from past execution failures or resource constraints.
 
-- **[ts-001] Lint Cleanup Process**: Format with **oxfmt**, not Prettier — `yarn prettier --check` passes on files that `lint:misc:check` rejects (oxfmt also sorts imports; Prettier does not). Use two commands in sequence:
-  1. `yarn eslint <file> --fix --prune-suppressions` — fixes lint issues and removes unused suppressions from `eslint-suppressions.json`.
-  2. `yarn lint:misc --write <files>` (i.e. `oxfmt`), then verify with `yarn lint:misc:check` — the CI `Lint (lint:misc:check)` job.
+- **[ts-001] Lint Cleanup Process (Oxlint, not ESLint — ESLint was migrated away)**: Format with **oxfmt** (`yarn lint:misc`), not Prettier — `yarn prettier --check` passes on files that `lint:misc:check` rejects (oxfmt also sorts imports; Prettier does not). There is no `eslint` script anymore; ESLint tooling was removed during the Oxlint migration. Use two commands in sequence:
+  1. `yarn oxlint <files> [--fix]` (or repo-wide `yarn lint:oxlint [--fix --prune-suppressions]`) for lint violations.
+  2. `yarn lint:misc --write <files>` (oxfmt), then verify with `yarn lint:misc:check` — the CI `Lint (lint:misc:check)` job.
 - **[ts-002] Changelog CI Requirement**: The CI "Check changelog" job fails if you modify a package without updating its `CHANGELOG.md`. Add entries under `## [Unreleased]` with a link to the PR: `([#XXXX](https://github.com/MetaMask/core/pull/XXXX))`.
 - **[ts-003] Private Member Hash Syntax**: The repo enforces using hash syntax (`#memberName`) for private class members instead of TypeScript's `private memberName`. ESLint will flag `private readonly` as violations.
 - **[ts-004] superstruct StructError message format**: In @metamask/superstruct v3.4+, a failing `define`/`definePattern` struct (e.g. `CaipAssetTypeStruct`) throws ``Expected a value of type `StructName`, but received: `value` `` — not classic superstruct's "Expected a StructName, but received ...". Nested failures are prefixed with the dotted path: `At path: importedAssets.1 -- Expected a value of type ...`. Write jest `toThrow` regexes accordingly (e.g. /At path: importedAssets\.1 -- Expected a value of type `CaipAssetType`/u).
