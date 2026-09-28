@@ -28,6 +28,11 @@ Reusable patterns and specific syntax requirements.
   6. **Assertions via `toStrictEqual`/`toMatchObject`/`toBeDefined` on the `lookUp` result — avoid `as` casts**; the only cast lives inside the typed accessor.
   7. **Shared fixture builders for scenario state + combined events** in `src/__fixtures__/<scenario>/wsEvents.ts` / `wsWallet.ts` (e.g. `buildEthAndUsdcBalanceUpdatedEvent`, `buildEthHeldUnpricedState`, `buildUsdcHeldAndPricedState` + exported seeded consts like `SEEDED_USDC_PRICE`) so pipeline-level and controller-level tests share them.
   8. Numeric-range assertions on captured market data stay (e.g. USDC peg 0.9–1.1) with a one-line `//` comment only where the name doesn't carry it.
+- **[code-002] Core integration-test authoring gotchas (oxlint/jest/jsdoc)**:
+  - `jest(expect-expect)` counts only raw `expect(` in the test body — assertion helpers like `expectAmount` do not count; give helper-only tests one explicit raw expect.
+  - jsdoc `require-param` fires on destructured arrow params even with a type annotation (`({ balance, decimals }: CapturedBalance)`) — use a named parameter.
+  - Use `toStrictEqual` for same-shape expectands (key sets, state slices).
+  - With yarn broken (lavamoat postinstall on Node 26), run `../../node_modules/.bin/oxlint <files>`, `.bin/oxfmt <files>`, and root `node_modules/.bin/tsc --build tsconfig.build.json` directly — the direct tsc build fully type-checks the monorepo and replaces the `yarn build` gate.
 
 ## Troubleshooting and Pitfalls (TS)
 
