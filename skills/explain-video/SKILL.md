@@ -1,7 +1,7 @@
 ---
 name: explain-video
 description: >-
-  Makes a short Manim explainer with a computer voice. Use when the user asks
+  Makes a short Manim explainer with a local Kokoro voice. Use when the user asks
   for a short video, an explainer video, Manim, or manim-voiceover. Asks for
   facts and pronunciations, then asks whether to keep the file local or add it
   to a pull request description, before any render.
@@ -41,11 +41,22 @@ Explain [TOPIC] to me as a short video.
 Write the script in ASD-STE100 Simplified English.
 Show each idea as a diagram, not as long text.
 Animate it with Manim. Use one scene per idea.
-Add a computer voice with manim-voiceover.
+Add the local Kokoro voice with manim-voiceover.
 Render a draft, check the frames, fix the layout.
 ```
 
-Use a synthetic computer voice already available to `manim-voiceover`. Do not pick a cloned or neural voice.
+Use the local Kokoro 82M voice. Run [setup.sh](setup.sh) once before the first render. It installs Manim, manim-voiceover, and Kokoro 82M into `~/.venvs/explain-video`, and caches the model weights. Render with that venv's `manim`. In the scene, pass `KokoroService` from [kokoro_service.py](kokoro_service.py) to `set_speech_service`:
+
+```python
+from manim_voiceover import VoiceoverScene
+from kokoro_service import KokoroService
+
+class Explainer(VoiceoverScene):
+    def construct(self):
+        self.set_speech_service(KokoroService())  # af_heart, local, 24 kHz
+```
+
+Default voice: `af_heart`. Pick another voice with `KokoroService(voice=...)` or the `KOKORO_VOICE` env var. The voice runs on your machine. Do not use a cloud voice. Do not clone a person's voice.
 
 Render a low-quality draft. Read one frame from each scene. Fix overlap, clipped text, and labels that sit on the diagram. Render the draft again once. If the layout is still wrong, stop and show the frames. Do not keep looping.
 
