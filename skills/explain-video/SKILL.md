@@ -142,6 +142,12 @@ Add a one-line note under the video that says the walkthrough is AI-generated. A
 
 > 🤖 AI-generated walkthrough — script, animation, and voice made by an agent
 
-The description can play a video only from a GitHub-hosted URL. Do not invent that URL. Do not commit the mp4 to get one. If you cannot upload the file from the shell, stop. Give the local path and ask the user to drop the file into the pull request description. When they send the attachment URL, add it with `gh pr edit`.
+The description plays a video from a GitHub-hosted asset URL. Upload the video directly using the GitHub CLI:
+```bash
+gh pr edit <pr-num> --attach <video-path>
+```
+If `--attach` succeeds, format the PR body to place the video URL under the `## Video Walkthrough` section with the AI disclosure note.
+
+If `gh` does not support `--attach` (older than v2.99.0) or the upload fails, stop. Give the local path and ask the user to drop the file into the pull request description. When they send the attachment URL, add it with `gh pr edit`. Do not commit the mp4 to get a URL.
 
 A description edit is not a commit. If any step needs a commit, stop and ask the user to sign it. Do not push an unsigned commit. Do not pass `--no-gpg-sign`.
