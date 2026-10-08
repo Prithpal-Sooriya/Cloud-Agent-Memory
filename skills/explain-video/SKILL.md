@@ -1,10 +1,10 @@
 ---
 name: explain-video
 description: >-
-  Makes a short Manim explainer with a local Kokoro voice. Use when the user asks
-  for a short video, an explainer video, Manim, or manim-voiceover. Asks for
-  facts and pronunciations, then asks whether to keep the file local or add it
-  to a pull request description, before any render.
+  Makes a short technical explainer video with a local Kokoro voice. Uses Videowright
+  (Motion Engineering style) by default, with Manim as an optional alternative for
+  math and equations. Asks for facts and pronunciations, then asks whether to keep
+  the file local or add it to a pull request description, before any render.
 ---
 
 # Explain as a short video
@@ -18,8 +18,11 @@ Read [pronunciations.md](pronunciations.md) before asking. Ask only what is stil
 1. Topic, who it is for, and the one thing they should understand at the end.
 2. Facts that must be exact: names, numbers, paths, ticket ids. Do not invent these. If a fact is missing, ask. Do not guess.
 3. How many ideas. One scene per idea. A short video is 4 to 6 scenes unless the user sets another count.
-4. Pronunciations for words that are not already in [pronunciations.md](pronunciations.md): names, acronyms, symbols, and ticket ids. Ask for the spoken form. On-screen labels keep the real spelling. The voice uses the spoken form.
-5. Where the finished file goes:
+4. Engine selection:
+   - **Videowright (default)** — HTML/TypeScript/WAAPI with the **Motion Engineering** design language (aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry).
+   - **Manim (optional alternative)** — Python/Cairo for mathematical formulas, calculus, coordinate geometry, or LaTeX animations.
+5. Pronunciations for words that are not already in [pronunciations.md](pronunciations.md): names, acronyms, symbols, and ticket ids. Ask for the spoken form. On-screen labels keep the real spelling. The voice uses the spoken form.
+6. Where the finished file goes:
    - **Keep local.** Ask for a folder. Default `~/Videos/explainers/<topic-slug>/`. Do not `git add` the video.
    - **Pull request description.** Ask which pull request. Do not commit the mp4. Do not push.
 
@@ -27,6 +30,7 @@ Read [pronunciations.md](pronunciations.md) before asking. Ask only what is stil
 
 Show this and wait for a yes:
 
+- Engine & Style: Videowright (Motion Engineering) [default] or Manim
 - Scene list: one idea per scene, diagram only, no paragraph on screen
 - Spoken lines, written with [ste100.md](ste100.md)
 - Pronunciations you will add to [pronunciations.md](pronunciations.md)
@@ -36,29 +40,60 @@ Show this and wait for a yes:
 
 After approval, follow these steps in this order. Do not skip or reorder them.
 
-```
-Explain [TOPIC] to me as a short video.
-Write the script in ASD-STE100 Simplified English.
-Show each idea as a diagram, not as long text.
-Animate it with Manim. Use one scene per idea.
-Add the local Kokoro voice with manim-voiceover.
-Render a draft, check the frames, fix the layout.
-```
+Always use the **local Kokoro 82M voice** (`af_heart`, 24 kHz). The voice runs on your machine. Do not use a cloud voice. Do not clone a person's voice.
 
-Use the local Kokoro 82M voice. Run [setup.sh](setup.sh) once before the first render. It installs Manim, manim-voiceover, and Kokoro 82M into `~/.venvs/explain-video`, and caches the model weights. Render with that venv's `manim`. In the scene, pass `KokoroService` from [kokoro_service.py](kokoro_service.py) to `set_speech_service`:
+### Option A: Videowright (Default)
 
-```python
-from manim_voiceover import VoiceoverScene
-from kokoro_service import KokoroService
+Use Videowright for technical architecture, system flowcharts, software pipelines, and HUD-styled explainers.
 
-class Explainer(VoiceoverScene):
-    def construct(self):
-        self.set_speech_service(KokoroService())  # af_heart, local, 24 kHz
-```
+1. **Project structure & Config:**
+   In the explainer folder (e.g. `~/Videos/explainers/<topic-slug>/`):
+   - Set `defaultStyle: 'motion-engineering'` in `videowright.config.ts`.
+   - Create `timeline.ts` importing `styles/motion-engineering/tokens.css` and `styles/fonts.css`.
+   - Organize segments under `segments/<segment-id>/index.ts`.
 
-Default voice: `af_heart`. Pick another voice with `KokoroService(voice=...)` or the `KOKORO_VOICE` env var. The voice runs on your machine. Do not use a cloud voice. Do not clone a person's voice.
+2. **Audio & Beat Timestamps:**
+   - Synthesize the spoken lines using Kokoro-82M locally.
+   - Measure timestamps for each spoken beat.
+   - Configure the audio track in `audio/tracks/v1/track.ts` with `duration` and `perSegment` advance arrays (e.g. `[3.425, 8.225]`).
 
-Render a low-quality draft. Read one frame from each scene. Fix overlap, clipped text, and labels that sit on the diagram. Render the draft again once. If the layout is still wrong, stop and show the frames. Do not keep looping.
+3. **Motion Engineering Visual Standards:**
+   - **Canvas & Palette:** 1920×1080 canvas. Charcoal background (`var(--color-bg)`: `#0e141a`), 64px blueprint grid lines, slate borders (`#1e2a36`).
+   - **Type:** Space Grotesk (display & body) and JetBrains Mono (telemetry, coordinates, code terminals). Sized for 1080p display (display titles 72–96px, subheadings 32–38px, body 24–28px, mono readouts 12–16px).
+   - **HUD Elements:** Use corner brackets (ticks), reticle crosshairs, dimension lines with centered pixel callouts, and bottom telemetry bars.
+   - **Layout Discipline:** Containers must fill 80–90% of the canvas. Keep generous padding and distinct modular cards to prevent text overlapping.
+
+4. **Segment Authoring & Render-Safety Rules:**
+   - Define segments with `defineSegment({ id, advances, voiceover, mount, play, unmount })`.
+   - Use WAAPI (`element.animate(...)`) with `fill: "forwards"` and `cubic-bezier(0.2, 0.8, 0.2, 1)`.
+   - **Never use `iterations: Infinity`** in WAAPI animations; looping animations freeze under headless Puppeteer rendering. Use finite durations matching the beat window.
+   - Synchronize visual reveals with audio beats using `await ctx.waitForNext()`.
+   - Ensure clean unmount: clear host references and cancel active timers.
+
+5. **Render & Inspect:**
+   - Render headless to MP4: `npx videowright render <timeline-path> --output <output-path>.mp4`.
+   - Extract sample frames from each segment with `ffmpeg` and verify there are no overlapping labels or clipped elements.
+
+---
+
+### Option B: Manim (Alternative for Math/Geometry)
+
+Use Manim when the user requests mathematical proofs, LaTeX equations, or coordinate geometry.
+
+1. Run [setup.sh](setup.sh) once to prepare `~/.venvs/explain-video` with Manim and Kokoro 82M.
+2. In the scene, use `VoiceoverScene` and pass `KokoroService` from [kokoro_service.py](kokoro_service.py) to `set_speech_service`:
+   ```python
+   from manim_voiceover import VoiceoverScene
+   from kokoro_service import KokoroService
+
+   class Explainer(VoiceoverScene):
+       def construct(self):
+           self.set_speech_service(KokoroService())  # af_heart, local, 24 kHz
+   ```
+3. Render a draft: `manim render -ql scene.py`.
+4. Inspect one frame from each scene. Fix any overlap or clipped labels. Re-render once.
+
+---
 
 Append each approved pronunciation to [pronunciations.md](pronunciations.md).
 
