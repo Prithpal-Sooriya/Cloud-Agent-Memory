@@ -57,6 +57,10 @@ Append each approved pronunciation to [pronunciations.md](pronunciations.md).
 
 **Pull request description.** Read the current body. Put the video in an existing Screenshots/Recordings section, or add a Video section. Do not delete existing text.
 
+Add a one-line note under the video that says the walkthrough is AI-generated. A synthetic voice can feel uncanny when the reviewer does not expect it. Use this note, or a close variant:
+
+> 🤖 AI-generated walkthrough — script, animation, and voice made by an agent
+
 The description can play a video only from a GitHub-hosted URL. Do not invent that URL. Do not commit the mp4 to get one. If you cannot upload the file from the shell, stop. Give the local path and ask the user to drop the file into the pull request description. When they send the attachment URL, add it with `gh pr edit`.
 
 A description edit is not a commit. If any step needs a commit, stop and ask the user to sign it. Do not push an unsigned commit. Do not pass `--no-gpg-sign`.
