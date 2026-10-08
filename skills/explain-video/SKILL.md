@@ -2,10 +2,11 @@
 name: explain-video
 description: >-
   Makes a short technical explainer or PR walkthrough video with a local Kokoro voice.
-  Reads PR diffs, triages changes, chooses depth (Overview, Standard, Deep dive), and
-  uses Videowright (Motion Engineering style) by default, with Manim as an optional
-  alternative for math and equations. Asks for facts and pronunciations, then asks
-  whether to keep the file local or add it to a pull request description, before any render.
+  Reads PR diffs, triages changes, chooses depth (Overview, Standard, Deep dive) and
+  script style (Natural default or Strict STE100), and uses Videowright (Motion
+  Engineering style) by default, with Manim as an optional alternative for math and
+  equations. Asks for facts and pronunciations, then asks whether to keep the file local
+  or add it to a pull request description, before any render.
 ---
 
 # Explain as a short video
@@ -29,11 +30,12 @@ Ask only what is still unknown. One round of questions, then the plan:
    - **Overview:** diagrams only, no code, ~60–90 seconds, 3–5 scenes. For a high-level picture.
    - **Standard (default):** diagrams plus 2–4 short code snippets, ~2–3 minutes.
    - **Deep dive:** annotated diffs, ~4–5 minutes, 8–10 scenes. Only when asked.
-4. Engine selection:
+4. Script style: **Natural (default)** or **Strict STE100** (see [script-style.md](script-style.md)).
+5. Engine selection:
    - **Videowright (default)** — HTML/TypeScript/WAAPI with the **Motion Engineering** design language (aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry).
    - **Manim (optional alternative)** — Python/Cairo for mathematical formulas, calculus, coordinate geometry, or LaTeX animations.
-5. Pronunciations for words that are not already in [pronunciations.md](pronunciations.md): names, acronyms, symbols, and ticket ids. Ask for the spoken form. On-screen labels keep the real spelling. The voice uses the spoken form.
-6. Where the finished file goes:
+6. Pronunciations for words that are not already in [pronunciations.md](pronunciations.md): names, acronyms, symbols, and ticket ids. Ask for the spoken form. On-screen labels keep the real spelling. The voice uses the spoken form.
+7. Where the finished file goes:
    - **Keep local.** Ask for a folder. Default `~/Videos/explainers/<topic-slug>/`. Do not `git add` the video.
    - **Pull request description.** Ask which pull request. Do not commit the mp4. Do not push.
 
@@ -45,13 +47,14 @@ Show this and wait for a yes:
 
 - Engine & Style: Videowright (Motion Engineering) [default] or Manim
 - Depth & estimated length (e.g. Standard, ~2–3 minutes)
+- Script style: Natural (default) or Strict STE100
 - Triage table (user can correct before anything renders):
   - **Covered:** scene number, file, function, and snippet excerpt
   - **Mentioned in one line:** changes collapsed into one spoken line (e.g. "the rest is renames and test updates")
   - **Skipped:** files omitted and why (e.g. lockfiles, generated docs)
 - On-screen snippets: exact code hunks and source files (max 10 lines per snippet, ~4 snippets in Standard; Overview shows no code)
 - Scene list: one idea per scene, diagrams and code snippets only, no paragraphs on screen
-- Spoken lines, written with [ste100.md](ste100.md) (explains why and what, names file and function, never reads code aloud)
+- Spoken lines, written per [script-style.md](script-style.md) (explains why and what, names file and function, never reads code aloud)
 - Pronunciations you will add to [pronunciations.md](pronunciations.md)
 - Destination: local path, or the pull request you will edit
 
