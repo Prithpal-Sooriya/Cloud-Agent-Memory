@@ -5,8 +5,9 @@ description: >-
   Reads PR diffs, triages changes, chooses depth (Overview, Standard, Deep dive) and
   script style (Natural default or Strict STE100), and uses Videowright (Motion
   Engineering style) by default, with Manim as an optional alternative for math and
-  equations. Asks for facts and pronunciations, then asks whether to keep the file local
-  or add it to a pull request description, before any render.
+  equations. Speaks identifiers, acronyms, and ids with pronunciation rules, asks for
+  remaining facts, then asks whether to keep the file local or add it to a pull request
+  description, before any render.
 ---
 
 # Explain as a short video
@@ -15,7 +16,7 @@ Do not install packages, write scene files, render, commit, push, or edit a pull
 
 ## Ask first
 
-Read [pronunciations.md](pronunciations.md) before asking.
+Read [pronunciations.md](pronunciations.md). Run [pronounce.py](pronounce.py) on every spoken line. Do not ask the user to confirm a pronunciation the script already produced.
 
 For pull request walkthroughs, read the PR first:
 - Run `gh pr view <n> --json title,body,commits,files` and `gh pr diff <n>`.
@@ -34,7 +35,7 @@ Ask only what is still unknown. One round of questions, then the plan:
 5. Engine selection:
    - **Videowright (default)** — HTML/TypeScript/WAAPI with the **Motion Engineering** design language (aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry).
    - **Manim (optional alternative)** — Python/Cairo for mathematical formulas, calculus, coordinate geometry, or LaTeX animations.
-6. Pronunciations for words that are not already in [pronunciations.md](pronunciations.md): names, acronyms, symbols, and ticket ids. Ask for the spoken form. On-screen labels keep the real spelling. The voice uses the spoken form.
+6. Pronunciations are not a question. Run `python3 pronounce.py` (the script next to this file) on every spoken line and use the rewritten line for the voice. On-screen labels keep the real spelling. The script speaks camelCase, file names, acronyms such as EVM, ticket ids such as ISS-158, hex, and paths. Ask only about a person's name. Do not ask how to say an identifier, acronym, or id.
 7. Where the finished file goes:
    - **Keep local.** Ask for a folder. Default `~/Videos/explainers/<topic-slug>/`. Do not `git add` the video.
    - **Pull request description.** Ask which pull request. Do not commit the mp4. Do not push.
@@ -54,8 +55,8 @@ Show this and wait for a yes:
   - **Skipped:** files omitted and why (e.g. lockfiles, generated docs)
 - On-screen snippets: exact code hunks and source files (max 10 lines per snippet, ~4 snippets in Standard; Overview shows no code)
 - Scene list: one idea per scene, diagrams and code snippets only, no paragraphs on screen
-- Spoken lines, written per [script-style.md](script-style.md) (explains why and what, names file and function, never reads code aloud)
-- Pronunciations you will add to [pronunciations.md](pronunciations.md)
+- Spoken lines, written per [script-style.md](script-style.md), then passed through [pronounce.py](pronounce.py) (explains why and what, names file and function, never reads code aloud)
+- Pronunciation table from `pronounce.py`. Correct a row in this yes if the spoken form is wrong. A row you leave alone is not a question.
 - Destination: local path, or the pull request you will edit
 
 ## Production
@@ -79,7 +80,7 @@ Use Videowright for technical architecture, system flowcharts, software pipeline
    - Measure timestamps for each spoken beat.
    - Configure the audio track in `audio/tracks/v1/track.ts` with `duration` and `perSegment` advance arrays (e.g. `[3.425, 8.225]`).
    - Generate captions using local Whisper word-level timings, grouped into 5–7 word chunks and broken on pauses (>450 ms).
-   - Apply a substitution table so code names and symbols appear with real on-screen spelling (e.g. `onAfterChange`, not `on after change`).
+   - Apply the `pronounce.py` table in reverse so captions use the written spelling (e.g. `onAfterChange`, not `on after change`).
 
 3. **Motion Engineering Visual Standards & Code Scenes:**
    - **Canvas & Palette:** 1920×1080 canvas. Charcoal background (`var(--color-bg)`: `#0e141a`), 64px blueprint grid lines, slate borders (`#1e2a36`).
@@ -124,13 +125,13 @@ Use Manim when the user requests mathematical proofs, LaTeX equations, or coordi
        def construct(self):
            self.set_speech_service(KokoroService())  # af_heart, local, 24 kHz
    ```
-3. For code or math diffs, follow snippet limits (max 10 lines) and triage from [triage.md](triage.md). Generate Whisper captions with real-spelling substitutions.
+3. For code or math diffs, follow snippet limits (max 10 lines) and triage from [triage.md](triage.md). Generate Whisper captions with the `pronounce.py` table reversed so on-screen spelling is restored.
 4. Render a draft: `manim render -ql scene.py`.
 5. Verification: Extract a frame from each scene with `ffmpeg`. Verify that no snippet or caption overlaps or is clipped, every named file or function matches the diff, and length is within the chosen depth. Fix issues and re-render once.
 
 ---
 
-Append each approved pronunciation to [pronunciations.md](pronunciations.md).
+If the user corrects a spoken form, update that row in [pronunciations.md](pronunciations.md). Do not add a row for camelCase, a file name, an acronym, a ticket id, hex, or a path that `pronounce.py` already speaks.
 
 ## After the render
 
