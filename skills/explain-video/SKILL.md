@@ -146,8 +146,11 @@ The description plays a video from a GitHub-hosted asset URL. Upload the video d
 ```bash
 gh pr edit <pr-num> --attach <video-path>
 ```
+
+`--attach` needs `gh` 2.102+, a user token (`gho_` / `ghp_` / `github_pat_`) — a GitHub App token (`ghs_`) gets a 404 from the upload endpoint — and an mp4/mov/webm file under 100 MB. The upload appends an `https://github.com/user-attachments/assets/<id>` URL to the body.
+
 If `--attach` succeeds, format the PR body to place the video URL under the `## Video Walkthrough` section with the AI disclosure note.
 
-If `gh` does not support `--attach` (older than v2.99.0) or the upload fails, stop. Give the local path and ask the user to drop the file into the pull request description. When they send the attachment URL, add it with `gh pr edit`. Do not commit the mp4 to get a URL.
+If `gh` does not support `--attach` (older than 2.102) or the upload fails, stop. Give the local path and ask the user to drop the file into the pull request description. When they send the attachment URL, add it with `gh pr edit`. Do not commit the mp4 to get a URL.
 
 A description edit is not a commit. If any step needs a commit, stop and ask the user to sign it. Do not push an unsigned commit. Do not pass `--no-gpg-sign`.
