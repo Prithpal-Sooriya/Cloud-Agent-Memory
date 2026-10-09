@@ -12,7 +12,7 @@ The voice should sound like a colleague explaining their own work.
 - **Explain reasoning:** Why this approach, the alternative, the edge case, what could break. Connect facts with "because", "so", and "which means".
 - **Visual complement:** The voice may add reasoning or a short trade-off remark that isn't on screen. It must never conflict with the screen and never state an invented fact.
 - **Don't read the screen aloud:** The voice adds meaning, and the visual shows the evidence.
-- **Identifiers:** Run `pronounce.py` on the spoken line and use the rewritten line. The voice says "section header" while the screen shows `SectionHeader`. Do the read-back on that rewritten line.
+- **Identifiers:** `spoken` is already expanded, so `onAfterChange` is said "on after change" while the screen shows `SectionHeader`'s real spelling in `display`. Say `id` as eye-dee. Do the read-back on `spoken`.
 - **Clarity rules:** Keep the same word for the same thing, define a technical term on first use, use the active voice, and use no jokes, metaphors as explanation, or rhetorical questions.
 - **Kokoro pacing chunks:** Write spoken chunks of about 75–150 words (100–200 tokens) because Kokoro is weak on very short lines and rushes on long ones. Merge short beats and split long ones.
 - **Read-back check:** Before showing the script, read it back once. If three sentences in a row start the same way or are all under 8 words, rewrite them.

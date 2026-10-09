@@ -38,4 +38,4 @@ Applies to Standard and Deep dive modes:
    - The narration explains why the change was made and what it does.
    - **Never read code aloud** line-by-line or character-by-character.
    - Always name the file and function so the viewer connects the narration to the code on screen.
-4. **Captions & Spelling:** Subtitles use Whisper word-level timings grouped in chunks of 5–7 words and broken on natural speech pauses (>450 ms). Use a substitution table so code symbols and brand names retain their real on-screen spelling (e.g. `onAfterChange`, not `on after change`).
+4. **Captions & Spelling:** Subtitles use the one Whisper pass from `scripts/verify_audio.py`, grouped in chunks of 5–7 words and broken on pauses (>450 ms). Caption text is the line's `display` spelling (`onAfterChange`, not `on after change`).

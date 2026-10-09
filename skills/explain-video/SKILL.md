@@ -5,9 +5,9 @@ description: >-
   Reads PR diffs, triages changes, chooses depth (Overview, Standard, Deep dive) and
   script style (Natural default or Strict STE100), and uses Videowright (Motion
   Engineering style) by default, with Manim as an optional alternative for math and
-  equations. Speaks identifiers, acronyms, and ids with pronunciation rules, asks for
-  remaining facts, then asks whether to keep the file local or add it to a pull request
-  description, before any render.
+  equations. Keeps on-screen spelling in `display` and speech in `spoken`, runs
+  local pronunciation scripts, asks for remaining facts, then asks whether to keep
+  the file local or add it to a pull request description, before any render.
 ---
 
 # Explain as a short video
@@ -16,7 +16,9 @@ Do not install packages, write scene files, render, commit, push, or edit a pull
 
 ## Ask first
 
-Read [pronunciations.md](pronunciations.md). Run [pronounce.py](pronounce.py) on every spoken line. Do not ask the user to confirm a pronunciation the script already produced.
+`scenes.json` in the explainer folder is the only script. Each line has `display` (real on-screen spelling) and `spoken` (what the voice says). Write `spoken` already expanded: `onAfterChange` → "on after change", `API` → "A P I", `.ts` → "dot T S", `==` → "equals equals". `spoken` must not contain camelCase, snake_case, symbols, paths, digits glued to identifiers, or all-caps tokens.
+
+Read [lexicon.json](lexicon.json). Its entries win over [scripts/speak_prep.py](scripts/speak_prep.py). A `phonemes` field is Misaki's own symbols, written `[term](/phonemes/)`, not IPA. Misaki drops symbols it does not know. `id`, `ID`, and an `Id` suffix are the abbreviation eye-dee: Misaki `ˌIˈdi`, which is `/ˌaɪˈdiː/` (`a` and `ː` are not Misaki symbols). Listen once with [scripts/audition.py](scripts/audition.py) before keeping an override. That audition is a one-time setup check, not part of every video.
 
 For pull request walkthroughs, read the PR first:
 - Run `gh pr view <n> --json title,body,commits,files` and `gh pr diff <n>`.
@@ -35,7 +37,7 @@ Ask only what is still unknown. One round of questions, then the plan:
 5. Engine selection:
    - **Videowright (default)** — HTML/TypeScript/WAAPI with the **Motion Engineering** design language (aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry).
    - **Manim (optional alternative)** — Python/Cairo for mathematical formulas, calculus, coordinate geometry, or LaTeX animations.
-6. Pronunciations are not a question. Run `python3 pronounce.py` (the script next to this file) on every spoken line and use the rewritten line for the voice. On-screen labels keep the real spelling. The script speaks camelCase, file names, acronyms such as EVM, ticket ids such as ISS-158, hex, and paths. Ask only about a person's name. Do not ask how to say an identifier, acronym, or id.
+6. Pronunciations are not a question. Ask only about a person's name. Do not ask how to say an identifier, acronym, or id.
 7. Where the finished file goes:
    - **Keep local.** Ask for a folder. Default `~/Videos/explainers/<topic-slug>/`. Do not `git add` the video.
    - **Pull request description.** Ask which pull request. Do not commit the mp4. Do not push.
@@ -55,8 +57,8 @@ Show this and wait for a yes:
   - **Skipped:** files omitted and why (e.g. lockfiles, generated docs)
 - On-screen snippets: exact code hunks and source files (max 10 lines per snippet, ~4 snippets in Standard; Overview shows no code)
 - Scene list: one idea per scene, diagrams and code snippets only, no paragraphs on screen
-- Spoken lines, written per [script-style.md](script-style.md), then passed through [pronounce.py](pronounce.py) (explains why and what, names file and function, never reads code aloud)
-- Pronunciation table from `pronounce.py`. Correct a row in this yes if the spoken form is wrong. A row you leave alone is not a question.
+- Spoken lines, written per [script-style.md](script-style.md) (explains why and what, names file and function, never reads code aloud). `spoken` is already expanded.
+- Unknowns table from `python3 scripts/speak_prep.py <scenes.json>`. Correct a row in this yes if the spoken form is wrong. Do not paste a longer list than the report.
 - Destination: local path, or the pull request you will edit
 
 ## Production
@@ -76,11 +78,11 @@ Use Videowright for technical architecture, system flowcharts, software pipeline
    - Organize segments under `segments/<segment-id>/index.ts`.
 
 2. **Audio, Beat Timestamps & Captions:**
-   - Synthesize the spoken lines using Kokoro-82M locally.
-   - Measure timestamps for each spoken beat.
-   - Configure the audio track in `audio/tracks/v1/track.ts` with `duration` and `perSegment` advance arrays (e.g. `[3.425, 8.225]`).
-   - Generate captions using local Whisper word-level timings, grouped into 5–7 word chunks and broken on pauses (>450 ms).
-   - Apply the `pronounce.py` table in reverse so captions use the written spelling (e.g. `onAfterChange`, not `on after change`).
+   - Prepare speech, if `scenes.json` changed since approval: `python3 scripts/speak_prep.py <scenes.json>`. Read only that report.
+   - Synthesize with the venv Python: `~/.venvs/explain-video/bin/python scripts/synth.py <scenes.json> --out <explainer>`. It writes audio, `durations.json`, and `audio/tracks/v1/track.ts`.
+   - Videowright's track field is `length_s`, and `timing.perSegment` values are cumulative advance times (for example `[3.425, 8.225]`). Copy each segment `voiceover` and those advances into `defineSegment`. Do not keep a second script.
+   - Verify with `~/.venvs/explain-video/bin/python scripts/verify_audio.py <scenes.json> --out <explainer>`. Read only its report. Captions are the `display` text in `captions.json` from that same Whisper pass.
+   - For each flagged token, run `verify_audio.py --repair` once. That tries one respelling or one Misaki phoneme override and re-checks only the flagged chunks. If it is still flagged, stop and name the token. After approval, append a fix that worked to [lexicon.json](lexicon.json). Do not loop.
 
 3. **Motion Engineering Visual Standards & Code Scenes:**
    - **Canvas & Palette:** 1920×1080 canvas. Charcoal background (`var(--color-bg)`: `#0e141a`), 64px blueprint grid lines, slate borders (`#1e2a36`).
@@ -115,7 +117,7 @@ Use Videowright for technical architecture, system flowcharts, software pipeline
 
 Use Manim when the user requests mathematical proofs, LaTeX equations, or coordinate geometry.
 
-1. Run [setup.sh](setup.sh) once to prepare `~/.venvs/explain-video` with Manim and Kokoro 82M.
+1. Run [setup.sh](setup.sh) once to prepare `~/.venvs/explain-video` with Manim, Kokoro 82M, Misaki, and Whisper.
 2. In the scene, use `VoiceoverScene` and pass `KokoroService` from [kokoro_service.py](kokoro_service.py) to `set_speech_service`:
    ```python
    from manim_voiceover import VoiceoverScene
@@ -125,13 +127,17 @@ Use Manim when the user requests mathematical proofs, LaTeX equations, or coordi
        def construct(self):
            self.set_speech_service(KokoroService())  # af_heart, local, 24 kHz
    ```
-3. For code or math diffs, follow snippet limits (max 10 lines) and triage from [triage.md](triage.md). Generate Whisper captions with the `pronounce.py` table reversed so on-screen spelling is restored.
+3. For code or math diffs, follow snippet limits (max 10 lines) and triage from [triage.md](triage.md). `KokoroService` runs the same normalizer as `speak_prep.py`. Verify with `scripts/verify_audio.py`; captions use `display`.
 4. Render a draft: `manim render -ql scene.py`.
 5. Verification: Extract a frame from each scene with `ffmpeg`. Verify that no snippet or caption overlaps or is clipped, every named file or function matches the diff, and length is within the chosen depth. Fix issues and re-render once.
 
 ---
 
-If the user corrects a spoken form, update that row in [pronunciations.md](pronunciations.md). Do not add a row for camelCase, a file name, an acronym, a ticket id, hex, or a path that `pronounce.py` already speaks.
+If the user corrects a spoken form, or `--repair` clears a token, add that term to [lexicon.json](lexicon.json) after approval. Do not add a row the normalizer already speaks.
+
+## Cost
+
+Read script reports only. Do not paste audio, a full transcript, or an uncut token list into context. Re-run flagged chunks, not the whole video. Do not call a subagent or another model for pronunciation.
 
 ## After the render
 

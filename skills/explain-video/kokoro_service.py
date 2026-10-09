@@ -7,10 +7,10 @@ from __future__ import annotations
 
 import os
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
-import numpy as np
 import soundfile as sf
 
 from manim_voiceover._typing import VoiceoverData
@@ -23,12 +23,21 @@ from manim_voiceover.services.base import (
 )
 
 SAMPLE_RATE = 24_000
-CHUNK_GAP_S = 0.15  # silence between pipeline chunks (sentence-ish)
 _BOOKMARK_RE = re.compile(r"\[\[[^\]]*\]\]")  # manim-voiceover [[bookmark]] tags
+_SCRIPTS = Path(__file__).resolve().parent / "scripts"
 
 
 def _strip_bookmarks(text: str) -> str:
     return _BOOKMARK_RE.sub("", remove_bookmarks(text)).strip()
+
+
+def _prepare(text: str) -> str:
+    """Same normalizer as scripts/speak_prep.py. Lexicon wins."""
+    if str(_SCRIPTS) not in sys.path:
+        sys.path.insert(0, str(_SCRIPTS))
+    from speak_prep import load_lexicon, normalize_spoken
+
+    return normalize_spoken(_strip_bookmarks(text), load_lexicon())
 
 
 class KokoroService(SpeechService):
@@ -39,26 +48,18 @@ class KokoroService(SpeechService):
     """
 
     def __init__(self, voice: str | None = None, speed: float | None = None, **kwargs: Any) -> None:
-        from kokoro import KPipeline  # heavy import: keep it inside __init__
-
-        self.pipeline = KPipeline(lang_code="a")  # American English, 82M weights
         self.voice = voice or os.environ.get("KOKORO_VOICE", "af_heart")
         self.speed = float(
             speed if speed is not None else os.environ.get("KOKORO_SPEED", 1.0)
         )
         initialize_speech_service(self, kwargs)
 
-    def _synthesize(self, text: str) -> np.ndarray:
-        chunks = [
-            audio for _, _, audio in self.pipeline(text, voice=self.voice, speed=self.speed)
-        ]
-        parts: list[np.ndarray] = []
-        gap = np.zeros(int(SAMPLE_RATE * CHUNK_GAP_S), dtype=np.float32)
-        for i, chunk in enumerate(chunks):
-            if i:
-                parts.append(gap)
-            parts.append(np.asarray(chunk, dtype=np.float32))
-        return np.concatenate(parts) if parts else np.zeros(SAMPLE_RATE, dtype=np.float32)
+    def _synthesize(self, text: str):
+        if str(_SCRIPTS) not in sys.path:
+            sys.path.insert(0, str(_SCRIPTS))
+        from synth import synthesize_array
+
+        return synthesize_array(_prepare(text), self.voice, self.speed)
 
     def generate_from_text(
         self,
@@ -70,6 +71,7 @@ class KokoroService(SpeechService):
         if cache_dir is None:
             cache_dir = self.cache_dir
 
+        text = _prepare(text)
         input_data = {
             "input_text": text,
             "service": "kokoro",
@@ -85,7 +87,7 @@ class KokoroService(SpeechService):
         else:
             audio_path = path_to_string(path)
 
-        wav = self._synthesize(_strip_bookmarks(text))
+        wav = self._synthesize(text)
         sf.write(str(Path(cache_dir) / audio_path), wav, SAMPLE_RATE)
 
         json_dict: VoiceoverData = {
