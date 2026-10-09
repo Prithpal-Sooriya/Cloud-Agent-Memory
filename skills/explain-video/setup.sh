@@ -33,13 +33,15 @@ export VIRTUAL_ENV="$VENV"
 # Install kokoro without deps, then a modern transformers instead.
 uv pip install --no-deps kokoro
 uv pip install loguru huggingface-hub numpy torch "misaki[en]" soundfile \
-  "transformers>=4.40,<4.50" "pycairo==1.28.0" manim manim-voiceover
+  "transformers>=4.40,<4.50" "pycairo==1.28.0" manim manim-voiceover openai-whisper
 
-# --- warm the model cache (downloads ~330 MB of Kokoro-82M weights) --------
+# --- warm the model cache and check speech deps ----------------------------
 "$VENV/bin/python" - <<'EOF'
 from kokoro import KPipeline
+import misaki
+import whisper
 KPipeline(lang_code="a") # American English
-print("Kokoro-82M weights cached.")
+print("Kokoro-82M weights cached. misaki and whisper import.")
 EOF
 
 echo "Setup complete."
