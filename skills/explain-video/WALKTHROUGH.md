@@ -1,6 +1,6 @@
 # explain-video overview
 
-A short overview of this skill, made with the skill itself. The video is attached to the pull request description. The mp4 is not in git.
+A short overview of this skill, made with the skill itself. The video is [explain-video-overview.mp4](explain-video-overview.mp4), linked from the pull request description. GitHub plays that file on its own page.
 
 ## What the video shows
 
