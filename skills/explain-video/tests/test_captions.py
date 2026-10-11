@@ -121,6 +121,30 @@ class CaptionCueTest(unittest.TestCase):
         self.assertEqual([c["text"] for c in cues], ["so half that"])  # "so" is not left on its own
         self.assertEqual(cues[0]["start"], 0.0)
 
+    def test_first_word_is_not_captioned_before_the_speech_starts(self) -> None:
+        heard = words([("hello", 0.0, 0.4), ("world", 0.4, 0.9)])  # Whisper clamps the first word to 0.0
+        clamped = va.clamp_to_onset(heard, onset=0.6)
+        self.assertAlmostEqual(clamped[0]["start"], 0.57, places=2)
+        cues = va.caption_cues(clamped, "hello world")
+        self.assertAlmostEqual(cues[0]["start"], 0.57, places=2)
+        self.assertEqual(va.clamp_to_onset(heard, onset=0.0)[0]["start"], 0.0)
+
+    def test_speech_onset_measures_leading_silence(self) -> None:
+        import math, struct, tempfile, wave
+
+        rate = 24000
+        silence = [0] * int(rate * 0.5)
+        tone = [int(8000 * math.sin(2 * math.pi * 220 * i / rate)) for i in range(rate // 2)]
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "x.wav"
+            with wave.open(str(path), "wb") as handle:
+                handle.setnchannels(1)
+                handle.setsampwidth(2)
+                handle.setframerate(rate)
+                handle.writeframes(struct.pack("<%dh" % (len(silence) + len(tone)), *(silence + tone)))
+            self.assertAlmostEqual(va.speech_onset(path), 0.5, delta=0.02)
+            self.assertEqual(va.speech_onset(Path(d) / "missing.wav"), 0.0)
+
     def test_empty_inputs(self) -> None:
         self.assertEqual(va.caption_cues([], ""), [])
         self.assertEqual(va.caption_cues([], "hello")[0]["text"], "hello")

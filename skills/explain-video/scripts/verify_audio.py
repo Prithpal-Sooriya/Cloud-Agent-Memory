@@ -11,6 +11,8 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import wave
+from array import array
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -105,6 +107,49 @@ def transcribe(wav: Path, cache_path: Path) -> dict:
 
 CUE_MAX_WORDS = 7
 CUE_PAUSE_S = 0.45
+ONSET_LEAD_S = 0.03  # a caption may lead the first word by this much, never more
+
+
+def speech_onset(wav: Path, window_s: float = 0.01, ratio: float = 0.04) -> float:
+    """Seconds of leading silence in a 16-bit PCM wav (0.0 if it cannot be read).
+
+    Whisper reports the first word of a short clip as starting at 0.0 even when the
+    synthesized audio opens with silence, so first captions would appear early.
+    """
+    try:
+        with wave.open(str(wav), "rb") as handle:
+            if handle.getsampwidth() != 2:
+                return 0.0
+            rate, channels = handle.getframerate(), handle.getnchannels()
+            samples = array("h")
+            samples.frombytes(handle.readframes(handle.getnframes()))
+    except (OSError, wave.Error, EOFError):
+        return 0.0
+    if channels > 1:
+        samples = samples[::channels]
+    if not samples:
+        return 0.0
+    peak = max(max(samples), -min(samples))
+    if peak == 0:
+        return 0.0
+    size = max(1, int(rate * window_s))
+    threshold = peak * ratio
+    for start in range(0, len(samples) - size + 1, size):
+        window = samples[start : start + size]
+        rms = (sum(x * x for x in window) / size) ** 0.5
+        if rms > threshold:
+            return start / rate
+    return 0.0
+
+
+def clamp_to_onset(words: list[dict], onset: float) -> list[dict]:
+    """No word may start before the speech does. Returns new word dicts."""
+    floor = max(0.0, onset - ONSET_LEAD_S)
+    fixed = []
+    for word in words:
+        start = max(word["start"], floor)
+        fixed.append({**word, "start": round(start, 3), "end": round(max(word["end"], start), 3)})
+    return fixed
 
 
 def _norm_word(word: str) -> str:
@@ -239,12 +284,13 @@ def _flagged(durations: dict, out_dir: Path, only: set[str] | None) -> tuple[lis
             wav = out_dir / wav
         transcript = transcribe(wav, out_dir / "cache" / f"{chunk['hash']}.json")
         missed = mismatched_tokens(chunk["spoken"], transcript["text"])
+        words = clamp_to_onset(transcript["words"], speech_onset(wav))
         captions.append(
             {
                 "id": chunk["id"],
                 "scene_id": chunk["scene_id"],
                 "display": chunk["display"],
-                "cues": caption_cues(transcript["words"], chunk["display"]),
+                "cues": caption_cues(words, chunk["display"]),
             }
         )
         if missed:
