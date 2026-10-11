@@ -475,8 +475,10 @@ export function buildFfmpegArgs(fps: number, outputPath: string, audioFilePath?:
 const write = (stream: NodeJS.WritableStream, data: Buffer) =>
 	new Promise<void>((resolve, reject) => {
 		if (stream.write(data)) return resolve();
-		stream.once("drain", resolve);
-		stream.once("error", reject);
+		const onDrain = () => (stream.off("error", onError), resolve());
+		const onError = (e: Error) => (stream.off("drain", onDrain), reject(e));
+		stream.once("drain", onDrain);
+		stream.once("error", onError);
 	});
 
 // ---------------------------------------------------------------------------------------------------

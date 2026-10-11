@@ -84,7 +84,7 @@ After approval, follow these steps in this order. Do not skip or reorder them.
 Run [setup.sh](setup.sh) once if `~/.venvs/explain-video` is not yet set up (Kokoro 82M, Misaki, and Whisper).
 Always use the **local Kokoro 82M voice** (`af_heart`, 24 kHz). The voice runs on your machine. Do not use a cloud voice. Do not clone a person's voice.
 
-Videos are built with [render/vw.ts](render/vw.ts), a single-file renderer for HTML/TypeScript/Web Animations segments: a copy of <https://github.com/Prithpal-Sooriya/tiny-video-renderer> at `v0.1.0` (sha256 `b79dfa0d5b18e08e2bcc525aed8aaef56dd3f082e831535fb93ee11899a58b59`), derived from Videowright (MIT). It needs **no npm install, no `package.json` and no `node_modules`**: Node 22.18+ (verified on 24), Chrome, and ffmpeg. To update it, re-download a newer tag and verify its hash as that repo's README describes; do not edit it in place.
+Videos are built with [render/vw.ts](render/vw.ts), a single-file renderer for HTML/TypeScript/Web Animations segments: a copy of <https://github.com/Prithpal-Sooriya/tiny-video-renderer> at `v0.1.1` (sha256 `8ffd959ff999196f882cbec4f935376397ccde49446e871d0f9a00cfb5336e4f`), derived from Videowright (MIT). It needs **no npm install, no `package.json` and no `node_modules`**: Node 22.18+ (verified on 24), Chrome, and ffmpeg. To update it, re-download a newer tag and verify its hash as that repo's README describes; do not edit it in place.
 
 1. **Project structure & Config:**
    In the explainer folder (e.g. `~/Videos/explainers/<topic-slug>/`):
