@@ -15,7 +15,7 @@ good_for:
   - Flow and data-shape diagrams with a few coloured categories
 bad_for:
   - Dense blueprint-style annotation (use motion-engineering)
-  - Maths / LaTeX (use Manim)
+  - Dense maths / LaTeX equations
 tags: [metamask, brand, dark-mode, rounded, product]
 references: [MetaMask mobile dark theme, MetaMask 2026 rebrand, design-system token docs]
 ---
