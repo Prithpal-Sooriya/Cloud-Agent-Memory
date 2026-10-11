@@ -4,6 +4,9 @@ slug: metamask
 picker_description: 'MetaMask brand: OLED black, white Inter type, fox-orange accent, rounded stepped-grey surfaces.'
 font_sources:
   - self-hosted in fonts.css (Inter variable 400-700, JetBrains Mono 400/500, latin subset)
+assets:
+  - fox.svg (official refreshed fox, unmodified)
+  - fox.ts (same artwork as animatable facets: foxMark, assembleFox)
 mood: [confident, modern, friendly, product-led, crisp]
 good_for:
   - MetaMask engineering walkthroughs and PR explainers
@@ -31,7 +34,9 @@ Load [brand.md](brand.md) for the exact token sources. `tokens.css` and `fonts.c
 - **Generous padding.** 32–40px inside cards, 24–32px gaps. Safe margin `--safe-x` / `--safe-y`.
 - **Left-aligned headlines, big.** Title 88–112px / 700 / -0.03em. Subheads 36px. Body 28px. Mono 20px+.
 - **Chips and pills** (`--radius-pill`) for labels, file names, and statuses. A scene header is a small orange pill + a big title, not a CAD label.
-- **Bottom strip** is a captions pill, centered, `rgba(24,24,27,0.92)`, 30px Inter 500, 20px radius. A tiny `MetaMask` wordmark top-left of the frame.
+- **Bottom strip** is a captions pill, centered, `rgba(24,24,27,0.92)`, 30px Inter 500, 20px radius.
+- **Brand lockup, top-left of every scene:** the fox (40px, `foxMark(40)`) followed by the word "MetaMask" in Inter 700, 30px.
+- **Hero fox** (~220px, top-right, beside the title) on the opening and closing scenes only. It assembles with `assembleFox` and sits in front of the orange glow.
 
 ## Colour application
 
@@ -52,6 +57,7 @@ Load [brand.md](brand.md) for the exact token sources. `tokens.css` and `fonts.c
 
 - **Slide up and settle.** Elements enter with `translateY(24px) → 0` plus `opacity 0 → 1`, 420–560ms, `--ease-out`. Cards may also scale `0.97 → 1`.
 - **Stagger 60ms** between siblings.
+- **Fox assemble (signature move):** the fox's facets fly in from just outside the head, nose first and ears last (45ms stagger, 640ms each), lock together, then the eyes blink once. Use it on the first scene and the last scene, never mid-video. Import from `styles/metamask/fox.ts`. One hero fox per scene, never looped.
 - **Arrows and connectors draw** (scaleX / stroke) in 400–600ms, blue.
 - **Highlights**: the active card gets an orange 1px border and a soft orange glow, animated in 300ms, not looping.
 - **Scene transition:** fade-through-black, 300ms. No wipes.
@@ -65,17 +71,17 @@ Calm and confident. 4–6s per beat. Let each card land before the next. Reveal 
 
 | Scene | Recipe |
 |---|---|
-| **Title** | Orange glow behind the title; small orange pill (`PR WALKTHROUGH`, `OVERVIEW`); title in 700; subtitle in muted. |
+| **Title** | Orange glow behind the title; hero fox assembling top-right; small orange pill (`PR WALKTHROUGH`, `OVERVIEW`); title in 700; subtitle in muted. |
 | **Flow** | 3–4 rounded cards in a row, blue arrows drawn between them; the card being narrated turns orange-bordered. |
 | **Before / After** | Two cards side by side. Left in muted grey with strikethrough values; right with lime border and the new values. |
 | **Swatches / tokens** | Rows of colour chips (rounded 12px) with mono hex labels; old → new with an arrow. |
 | **Stat** | One very large number in white, orange unit or delta pill beside it, caption in muted. |
 | **Code** | Rounded surface-2 block, max 10 lines, changed lines highlighted lime/red with a left bar. |
-| **CTA / Summary** | One sentence, large, with one word in orange; three recap chips below. |
+| **CTA / Summary** | One sentence, large, with one word in orange; three recap chips below; hero fox assembling top-right. |
 
 ## Pitfalls
 
 - Don't mix in Motion Engineering elements (grid, corner ticks, crosshairs, amber).
 - Don't use more than one orange element per beat; if everything is orange nothing is.
-- Don't draw the fox by hand. Use the official asset or just the text wordmark.
+- Don't draw or redraw the fox. Use `fox.ts` / `fox.svg` as published, unrecoloured, and keep it away from busy content.
 - Don't use pure-white card fills; the canvas is black and cards are stepped greys.
