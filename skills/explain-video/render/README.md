@@ -2,6 +2,8 @@
 
 Renders a Videowright-style project (segments written as TypeScript that drive the DOM with Web Animations) to an MP4 by stepping a virtual clock one frame at a time, screenshotting Chrome, and piping the frames to ffmpeg. For agents only. Derived from [videowright](https://github.com/scosman/videowright) 0.1.1 (MIT), cut down to rendering: see [UPSTREAM.md](UPSTREAM.md) for what was kept, changed, and verified.
 
+This folder is a vendored copy of the standalone repo <https://github.com/Prithpal-Sooriya/tiny-video-renderer>, which has the same files at its root plus a runnable example. Fix bugs in one place and copy the change to the other: the renderer files (`*.ts`, `runtime/`, `test/`) are identical.
+
 **No npm.** There is no `package.json`, no install, and no `node_modules`. It uses Node's built-ins, a Chrome you already have, and ffmpeg.
 
 ## Requirements

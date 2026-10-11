@@ -1,6 +1,6 @@
 # Lineage and verification
 
-This folder is a cut-down renderer derived from **videowright 0.1.1**, <https://github.com/scosman/videowright>, MIT licensed (copy in `LICENSE.videowright`). Based on repository commit `b2edc7d` (the commit 79 seconds before the npm publish; the published tarball's `dist/` rebuilds byte-for-byte from it).
+This folder is a vendored copy of <https://github.com/Prithpal-Sooriya/tiny-video-renderer> (same renderer files, plus an example and a README written for general use). It is a cut-down renderer derived from **videowright 0.1.1**, <https://github.com/scosman/videowright>, MIT licensed (copy in `LICENSE.videowright`). Based on repository commit `b2edc7d` (the commit 79 seconds before the npm publish; the published tarball's `dist/` rebuilds byte-for-byte from it).
 
 ## What came from where
 
