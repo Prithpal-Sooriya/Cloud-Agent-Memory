@@ -77,7 +77,7 @@ Use Videowright for technical architecture, system flowcharts, software pipeline
    In the explainer folder (e.g. `~/Videos/explainers/<topic-slug>/`):
    - Set `defaultStyle` in `videowright.config.ts` to the chosen theme slug: `'motion-engineering'` or `'metamask'`.
    - **Motion Engineering:** `timeline.ts` imports `styles/motion-engineering/tokens.css` and `styles/fonts.css`.
-   - **MetaMask:** copy [styles/metamask/](styles/metamask/) (including `fox.ts` and `fox.svg`) to `<explainer>/styles/metamask/` and import `styles/metamask/tokens.css` and `styles/metamask/fonts.css` in `timeline.ts`. Read `styles/metamask/STYLE.md` and `brand.md` before authoring segments, and follow them instead of the Motion Engineering HUD rules below. Set `meta.style: 'metamask'`. Show the fox in the brand lockup on every scene, and assemble the hero fox (`assembleFox` from `styles/metamask/fox.ts`) on the first and last scene.
+   - **MetaMask:** copy [styles/metamask/](styles/metamask/) (including `fox.ts`, `fox.svg`, `wordmark.ts`, `wordmark-white.svg`) to `<explainer>/styles/metamask/` and import `styles/metamask/tokens.css` and `styles/metamask/fonts.css` in `timeline.ts`. Read `styles/metamask/STYLE.md` and `brand.md` before authoring segments, and follow them instead of the Motion Engineering HUD rules below. Set `meta.style: 'metamask'`. Show the lockup (fox + official wordmark via `foxMark` and `wordmark`) on every scene, and assemble the hero fox (`assembleFox` from `styles/metamask/fox.ts`) on the first and last scene.
    - Organize segments under `segments/<segment-id>/index.ts`.
 
 2. **Audio, Beat Timestamps & Captions:**

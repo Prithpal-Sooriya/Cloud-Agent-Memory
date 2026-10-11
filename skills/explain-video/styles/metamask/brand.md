@@ -53,4 +53,9 @@ paths as facets so they can be animated (`foxMark`, `assembleFox`).
 - The official Lottie/Rive fox animations in `metamask-mobile/app/animations/` were not used:
   the Lottie files are 5-6 MB each and predate the refresh, and Rive needs a runtime. The
   built-in assemble animation uses the current artwork and renders deterministically.
-- No standalone wordmark artwork was found. The wordmark is "MetaMask" set in Inter 700.
+- `wordmark-white.svg` is the official stacked "Meta / Mask" wordmark, unmodified, from the
+  MetaMask logo pack linked on metamask.io/assets (`MetaMask/MetaMask-logo-white.svg`). `wordmark.ts`
+  inlines the same path as `wordmark(height, fill)`. It is single-colour and palette-neutral, so
+  it is safe against the refresh. Use it white on black; do not tint, outline, or animate it.
+- The same pack's fox is the **pre-refresh** palette (`#FF5C16`, `#E34807`), so the fox comes
+  from metamask-mobile instead. Only take the wordmark from the pack.

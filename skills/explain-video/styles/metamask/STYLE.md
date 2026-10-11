@@ -7,6 +7,7 @@ font_sources:
 assets:
   - fox.svg (official refreshed fox, unmodified)
   - fox.ts (same artwork as animatable facets: foxMark, assembleFox)
+  - wordmark-white.svg + wordmark.ts (official stacked wordmark, single path)
 mood: [confident, modern, friendly, product-led, crisp]
 good_for:
   - MetaMask engineering walkthroughs and PR explainers
@@ -35,7 +36,7 @@ Load [brand.md](brand.md) for the exact token sources. `tokens.css` and `fonts.c
 - **Left-aligned headlines, big.** Title 88–112px / 700 / -0.03em. Subheads 36px. Body 28px. Mono 20px+.
 - **Chips and pills** (`--radius-pill`) for labels, file names, and statuses. A scene header is a small orange pill + a big title, not a CAD label.
 - **Bottom strip** is a captions pill, centered, `rgba(24,24,27,0.92)`, 30px Inter 500, 20px radius.
-- **Brand lockup, top-left of every scene:** the fox (40px, `foxMark(40)`) followed by the word "MetaMask" in Inter 700, 30px.
+- **Brand lockup, top-left of every scene:** the fox (48px, `foxMark(48)`) followed by the official stacked wordmark (44px tall, white, `wordmark(44)` from `wordmark.ts`).
 - **Hero fox** (~220px, top-right, beside the title) on the opening and closing scenes only. It assembles with `assembleFox` and sits in front of the orange glow.
 
 ## Colour application
@@ -76,7 +77,7 @@ Calm and confident. 4–6s per beat. Let each card land before the next. Reveal 
 | **Before / After** | Two cards side by side. Left in muted grey with strikethrough values; right with lime border and the new values. |
 | **Swatches / tokens** | Rows of colour chips (rounded 12px) with mono hex labels; old → new with an arrow. |
 | **Stat** | One very large number in white, orange unit or delta pill beside it, caption in muted. |
-| **Code** | Rounded surface-2 block, max 10 lines, changed lines highlighted lime/red with a left bar. |
+| **Code** | Rounded surface-2 block with a mono file-path header (blue-soft), max 10 lines. Changed lines get a 5px left bar and 10% tint: lime for `+`, red for `-`; context lines in muted. Use `-` then `+` pairs. Pair it with a short chip or card for the "why". |
 | **CTA / Summary** | One sentence, large, with one word in orange; three recap chips below; hero fox assembling top-right. |
 
 ## Pitfalls
