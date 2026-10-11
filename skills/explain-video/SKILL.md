@@ -4,7 +4,7 @@ description: >-
   Makes a short technical explainer or PR walkthrough video with a local Kokoro voice.
   Reads PR diffs, triages changes, chooses depth (Overview, Standard, Deep dive) and
   script style (Natural default or Strict STE100), and uses Videowright (Motion
-  Engineering style) by default, with Manim as an optional alternative for math and
+  Engineering theme by default, or the bundled MetaMask brand theme), with Manim as an optional alternative for math and
   equations. Keeps on-screen spelling in `display` and speech in `spoken`, runs
   local pronunciation scripts, asks for remaining facts, then asks whether to keep
   the file local or add it to a pull request description, before any render.
@@ -35,7 +35,9 @@ Ask only what is still unknown. One round of questions, then the plan:
    - **Deep dive:** annotated diffs, ~4–5 minutes, 8–10 scenes. Only when asked.
 4. Script style: **Natural (default)** or **Strict STE100** (see [script-style.md](script-style.md)).
 5. Engine selection:
-   - **Videowright (default)** — HTML/TypeScript/WAAPI with the **Motion Engineering** design language (aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry).
+   - **Videowright (default)** — HTML/TypeScript/WAAPI. Pick a theme:
+     - **Motion Engineering (default)** — aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry. Ships with Videowright.
+     - **MetaMask** — OLED black, Inter, fox-orange accent, rounded cards. Bundled in this skill at [styles/metamask/](styles/metamask/STYLE.md). Default it when the topic is a MetaMask product, repo, or PR and the user wants it to look on-brand.
    - **Manim (optional alternative)** — Python/Cairo for mathematical formulas, calculus, coordinate geometry, or LaTeX animations.
 6. Pronunciations are not a question. Ask only about a person's name. Do not ask how to say an identifier, acronym, or id.
 7. Where the finished file goes:
@@ -48,7 +50,7 @@ Before writing the plan, run importance triage per [triage.md](triage.md) to ran
 
 Show this and wait for a yes:
 
-- Engine & Style: Videowright (Motion Engineering) [default] or Manim
+- Engine & Style: Videowright (theme: Motion Engineering [default] or MetaMask) or Manim
 - Depth & estimated length (e.g. Standard, ~2–3 minutes)
 - Script style: Natural (default) or Strict STE100
 - Triage table (user can correct before anything renders):
@@ -73,8 +75,9 @@ Use Videowright for technical architecture, system flowcharts, software pipeline
 
 1. **Project structure & Config:**
    In the explainer folder (e.g. `~/Videos/explainers/<topic-slug>/`):
-   - Set `defaultStyle: 'motion-engineering'` in `videowright.config.ts`.
-   - Create `timeline.ts` importing `styles/motion-engineering/tokens.css` and `styles/fonts.css`.
+   - Set `defaultStyle` in `videowright.config.ts` to the chosen theme slug: `'motion-engineering'` or `'metamask'`.
+   - **Motion Engineering:** `timeline.ts` imports `styles/motion-engineering/tokens.css` and `styles/fonts.css`.
+   - **MetaMask:** copy [styles/metamask/](styles/metamask/) to `<explainer>/styles/metamask/` and import `styles/metamask/tokens.css` and `styles/metamask/fonts.css` in `timeline.ts`. Read `styles/metamask/STYLE.md` and `brand.md` before authoring segments, and follow them instead of the Motion Engineering HUD rules below. Set `meta.style: 'metamask'`.
    - Organize segments under `segments/<segment-id>/index.ts`.
 
 2. **Audio, Beat Timestamps & Captions:**
@@ -84,7 +87,7 @@ Use Videowright for technical architecture, system flowcharts, software pipeline
    - Verify with `~/.venvs/explain-video/bin/python scripts/verify_audio.py <scenes.json> --out <explainer>`. Read only its report. Captions are the `display` text in `captions.json` from that same Whisper pass.
    - For each flagged token, run `verify_audio.py --repair` once. That tries one respelling or one Misaki phoneme override and re-checks only the flagged chunks. If it is still flagged, stop and name the token. After approval, append a fix that worked to [lexicon.json](lexicon.json). Do not loop.
 
-3. **Motion Engineering Visual Standards & Code Scenes:**
+3. **Visual Standards & Code Scenes** (the canvas, type, and HUD bullets below are for Motion Engineering; with the MetaMask theme follow `styles/metamask/STYLE.md` for those and keep Layout Discipline and Code Scenes):
    - **Canvas & Palette:** 1920×1080 canvas. Charcoal background (`var(--color-bg)`: `#0e141a`), 64px blueprint grid lines, slate borders (`#1e2a36`).
    - **Type:** Space Grotesk (display & body) and JetBrains Mono (telemetry, coordinates, code terminals). Sized for 1080p display (display titles 72–96px, subheadings 32–38px, body 24–28px, mono readouts 12–16px).
    - **HUD Elements:** Use corner brackets (ticks), reticle crosshairs, dimension lines with centered pixel callouts, and bottom telemetry bars.
