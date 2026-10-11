@@ -159,7 +159,7 @@ def _norm_word(word: str) -> str:
 def _align_display_to_heard(dwords: list[str], heard: list[dict]) -> list[tuple[float, float]]:
     """Give every display word a (start, end) time taken from the words Whisper heard.
 
-    Display and speech differ: `$62.85M` is one display word but about seven spoken
+    Display and speech differ: `$41.25M` is one display word but about seven spoken
     words, `out-earning` is one display word but two heard words. Matching words anchor
     the timing; everything between two anchors is spread over its time span in
     proportion to word length, so the caption text never drifts away from the audio.

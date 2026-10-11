@@ -16,16 +16,16 @@ def words(spec: list[tuple[str, float, float]]) -> list[dict]:
     return [{"word": w, "start": s, "end": e} for w, s, e in spec]
 
 
-# "It earned $62.85M over 30 days. Then we left." as spoken: the number is seven words.
+# "It earned $41.25M over 30 days. Then we left." as spoken: the number is seven words.
 HEARD = words(
     [
-        ("It", 0.0, 0.2), ("earned", 0.2, 0.6), ("sixty", 0.6, 0.9), ("two", 0.9, 1.1),
-        ("point", 1.1, 1.3), ("eight", 1.3, 1.5), ("five", 1.5, 1.8), ("million", 1.8, 2.2),
+        ("It", 0.0, 0.2), ("earned", 0.2, 0.6), ("forty", 0.6, 0.9), ("one", 0.9, 1.1),
+        ("point", 1.1, 1.3), ("two", 1.3, 1.5), ("five", 1.5, 1.8), ("million", 1.8, 2.2),
         ("dollars", 2.2, 2.6), ("over", 2.6, 2.8), ("thirty", 2.8, 3.2), ("days", 3.2, 3.6),
         ("Then", 4.4, 4.6), ("we", 4.6, 4.7), ("left", 4.7, 5.1),
     ]
 )
-DISPLAY = "It earned $62.85M over 30 days. Then we left."
+DISPLAY = "It earned $41.25M over 30 days. Then we left."
 
 
 class CaptionCueTest(unittest.TestCase):
@@ -42,7 +42,7 @@ class CaptionCueTest(unittest.TestCase):
 
     def test_number_cue_starts_with_the_number(self) -> None:
         cues = va.caption_cues(HEARD, DISPLAY)
-        number = next(c for c in cues if "$62.85M" in c["text"])
+        number = next(c for c in cues if "$41.25M" in c["text"])
         self.assertGreaterEqual(number["end"], 2.2)  # the voice finishes the number at ~2.6
         self.assertLessEqual(number["start"], 0.6)
 
