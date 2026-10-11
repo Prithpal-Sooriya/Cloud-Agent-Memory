@@ -646,7 +646,10 @@ async function launchOnce(chrome: string, noSandbox: boolean) {
 	const proc: ChildProcess = spawn(chrome, [...CHROME_FLAGS, "--remote-debugging-port=0", `--user-data-dir=${profile}`, ...(noSandbox ? ["--no-sandbox"] : [])], { stdio: ["ignore", "ignore", "pipe"] });
 	const cleanup = () => {
 		proc.kill("SIGKILL");
-		rmSync(profile, { recursive: true, force: true });
+		try {
+			// Chrome's helper processes can still be writing here as it dies; a leftover temp dir must never fail a finished render.
+			rmSync(profile, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+		} catch {}
 	};
 	try {
 		const ws = await new Promise<string>((resolve, reject) => {
