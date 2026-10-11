@@ -6,7 +6,7 @@ description: >-
   content profile from the source (code-change, technical-doc, product-doc), then picks
   depth (Overview, Standard, Deep dive), script style (Natural default or Strict STE100),
   and theme (Motion Engineering, MetaMask, or MetaMask Developer), rendered by a small bundled
-  Videowright-derived renderer with no npm install, with Manim as an optional alternative for math. Traces every on-screen number, date, and
+  Videowright-derived renderer with no npm install. Traces every on-screen number, date, and
   name to the source in a facts ledger and checks it, keeps on-screen spelling in
   `display` and speech in `spoken`, runs local pronunciation scripts, asks for missing
   facts, shows the plan for approval, and keeps the file local until the user names a
@@ -55,12 +55,10 @@ Read the source first, as the profile says. Ask only what is still unknown. One 
 2. Facts that must be exact: names, numbers, dates, paths, ticket ids. Do not invent these. If a fact is missing, ask. Do not guess. Follow [facts.md](facts.md) and write `facts.json`.
 3. Depth, with the default from the profile and the source size: **Overview**, **Standard**, or **Deep dive**. Scene count and length follow depth, not a fixed count.
 4. Script style: **Natural (default)** or **Strict STE100** (see [script-style.md](script-style.md)).
-5. Engine and theme:
-   - **Bundled renderer (default)** — HTML/TypeScript/WAAPI segments rendered by [render/](render/README.md). Pick a theme (the profile suggests one):
-     - **Motion Engineering (default)** — aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry. Bundled at [styles/motion-engineering/](styles/motion-engineering/STYLE.md).
-     - **MetaMask** — OLED black, Inter, fox-orange accent, rounded cards. Bundled at [styles/metamask/](styles/metamask/STYLE.md). Use for MetaMask product topics and any audience wider than engineers.
-     - **MetaMask Developer** — `#0A0A0A` canvas, wireframe four-colour fox, horizontal "MetaMask Developer" lockup, code-first and mono-led. Bundled at [styles/metamask-developer/](styles/metamask-developer/STYLE.md). Prefer it for SDK, API, docs, tooling, token, or code-heavy topics aimed at engineers.
-   - **Manim (optional alternative)** — Python/Cairo for mathematical formulas, calculus, coordinate geometry, or LaTeX animations.
+5. Theme (HTML/TypeScript/WAAPI segments rendered by the bundled renderer in [render/](render/README.md); the profile suggests one):
+   - **Motion Engineering (default)** — aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry. Bundled at [styles/motion-engineering/](styles/motion-engineering/STYLE.md).
+   - **MetaMask** — OLED black, Inter, fox-orange accent, rounded cards. Bundled at [styles/metamask/](styles/metamask/STYLE.md). Use for MetaMask product topics and any audience wider than engineers.
+   - **MetaMask Developer** — `#0A0A0A` canvas, wireframe four-colour fox, horizontal "MetaMask Developer" lockup, code-first and mono-led. Bundled at [styles/metamask-developer/](styles/metamask-developer/STYLE.md). Prefer it for SDK, API, docs, tooling, token, or code-heavy topics aimed at engineers.
 6. Pronunciations are not a question. Ask only about a person's name. Do not ask how to say an identifier, acronym, or id.
 7. Where the finished file goes:
    - **Keep local (default).** Ask for a folder. Default `~/Videos/explainers/<topic-slug>/`. Do not `git add` the video or the source material.
@@ -70,7 +68,7 @@ Read the source first, as the profile says. Ask only what is still unknown. One 
 
 Prepare the plan in this order: read the source per the profile, build the facts ledger, run `python3 scripts/verify_facts.py <scenes.json> --facts <facts.json>` on the draft script, and fix what it reports. Then show this and wait for a yes:
 
-- **Reading this as:** profile · audience · depth and estimated length · theme · script style · engine (bundled renderer or Manim)
+- **Reading this as:** profile · audience · depth and estimated length · theme · script style
 - **Source stamp:** what you read (title, owner, status, as-of date, how much of it) — for documents
 - **The profile's plan contents** (triage table for code; narrative outline, omitted sections, and confidential-content list for docs)
 - **Scene list:** one idea per scene
@@ -83,11 +81,10 @@ Prepare the plan in this order: read the source per the profile, build the facts
 
 After approval, follow these steps in this order. Do not skip or reorder them.
 
+Run [setup.sh](setup.sh) once if `~/.venvs/explain-video` is not yet set up (Kokoro 82M, Misaki, and Whisper).
 Always use the **local Kokoro 82M voice** (`af_heart`, 24 kHz). The voice runs on your machine. Do not use a cloud voice. Do not clone a person's voice.
 
-### Option A: Bundled renderer (Default)
-
-Use the bundled renderer in [render/](render/README.md) for technical architecture, system flowcharts, software pipelines, HUD-styled explainers, code walkthroughs, and product explainers. It is a cut-down Videowright (MIT) that needs **no npm install, no `package.json` and no `node_modules`**: Node 22.18+ (verified on 24), Chrome, and ffmpeg. Read [render/README.md](render/README.md) before authoring segments; it lists what segment code may and may not use (erasable TypeScript only, relative imports, Web Animations only).
+Videos are built with the **bundled renderer** in [render/](render/README.md) (HTML/TypeScript/WAAPI segments) for technical architecture, system flowcharts, software pipelines, HUD-styled explainers, code walkthroughs, and product explainers. It is a cut-down Videowright (MIT) that needs **no npm install, no `package.json` and no `node_modules`**: Node 22.18+ (verified on 24), Chrome, and ffmpeg. Read [render/README.md](render/README.md) before authoring segments; it lists what segment code may and may not use (erasable TypeScript only, relative imports, Web Animations only).
 
 1. **Project structure & Config:**
    In the explainer folder (e.g. `~/Videos/explainers/<topic-slug>/`):
@@ -135,26 +132,6 @@ Use the bundled renderer in [render/](render/README.md) for technical architectu
      - Nothing says more than its fact's kind allows (a hypothesis is not shown as a result).
      - Total duration is within the target range for the chosen depth.
    - Fix layout clipping or discrepancies and re-render once.
-
----
-
-### Option B: Manim (Alternative for Math/Geometry)
-
-Use Manim when the user requests mathematical proofs, LaTeX equations, or coordinate geometry.
-
-1. Run [setup.sh](setup.sh) once to prepare `~/.venvs/explain-video` with Manim, Kokoro 82M, Misaki, and Whisper.
-2. In the scene, use `VoiceoverScene` and pass `KokoroService` from [kokoro_service.py](kokoro_service.py) to `set_speech_service`:
-   ```python
-   from manim_voiceover import VoiceoverScene
-   from kokoro_service import KokoroService
-
-   class Explainer(VoiceoverScene):
-       def construct(self):
-           self.set_speech_service(KokoroService())  # af_heart, local, 24 kHz
-   ```
-3. For code or math diffs, follow snippet limits (max 10 lines) and the triage in [triage.md](triage.md) (see [profiles/code-change.md](profiles/code-change.md)). `KokoroService` runs the same normalizer as `speak_prep.py`. Verify with `scripts/verify_audio.py`; captions use `display`.
-4. Render a draft: `manim render -ql scene.py`.
-5. Verification: Extract a frame from each scene with `ffmpeg`. Verify that no snippet or caption overlaps or is clipped, every named file or function matches the diff, and length is within the chosen depth. Fix issues and re-render once.
 
 ---
 
