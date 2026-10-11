@@ -103,25 +103,70 @@ def transcribe(wav: Path, cache_path: Path) -> dict:
     return payload
 
 
-def _group_words(words: list[dict]) -> list[list[dict]]:
-    groups: list[list[dict]] = []
-    current: list[dict] = []
-    for word in words:
-        if current:
-            gap = word["start"] - current[-1]["end"]
-            if gap > 0.45 or len(current) >= 7:
-                groups.append(current)
-                current = []
-        current.append(word)
-    if current:
-        groups.append(current)
-    return groups
+CUE_MAX_WORDS = 7
+CUE_PAUSE_S = 0.45
+
+
+def _norm_word(word: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", word.lower())
+
+
+def _align_display_to_heard(dwords: list[str], heard: list[dict]) -> list[tuple[float, float]]:
+    """Give every display word a (start, end) time taken from the words Whisper heard.
+
+    Display and speech differ: `$62.85M` is one display word but about seven spoken
+    words, `out-earning` is one display word but two heard words. Matching words anchor
+    the timing; everything between two anchors is spread over its time span in
+    proportion to word length, so the caption text never drifts away from the audio.
+    """
+    a = [_norm_word(w) for w in dwords]
+    b = [_norm_word(w["word"]) for w in heard]
+    times: list[tuple[float, float] | None] = [None] * len(dwords)
+    for tag, i1, i2, j1, j2 in SequenceMatcher(None, a, b, autojunk=False).get_opcodes():
+        if tag == "equal":
+            for k in range(i2 - i1):
+                times[i1 + k] = (heard[j1 + k]["start"], heard[j1 + k]["end"])
+        elif tag == "replace":
+            start, end = heard[j1]["start"], heard[j2 - 1]["end"]
+            weights = [max(1, len(a[i])) for i in range(i1, i2)]
+            total = float(sum(weights))
+            cursor = start
+            for offset, weight in enumerate(weights):
+                step = (end - start) * weight / total
+                times[i1 + offset] = (cursor, cursor + step)
+                cursor += step
+        # "delete" (display word nobody said) and "insert" (heard word not shown) are
+        # handled by the interpolation below and by simply not captioning the extra word.
+    # Display words with no spoken counterpart sit between their neighbours' times.
+    k = 0
+    while k < len(times):
+        if times[k] is not None:
+            k += 1
+            continue
+        run_end = k
+        while run_end < len(times) and times[run_end] is None:
+            run_end += 1
+        left = times[k - 1][1] if k > 0 and times[k - 1] else heard[0]["start"]
+        right = times[run_end][0] if run_end < len(times) and times[run_end] else heard[-1]["end"]
+        right = max(right, left)
+        step = (right - left) / (run_end - k)
+        for offset in range(run_end - k):
+            times[k + offset] = (left + step * offset, left + step * (offset + 1))
+        k = run_end
+    # Times never run backwards.
+    fixed: list[tuple[float, float]] = []
+    floor = 0.0
+    for start, end in times:  # type: ignore[misc]
+        start = max(start, floor)
+        end = max(end, start)
+        fixed.append((start, end))
+        floor = start
+    return fixed
 
 
 def caption_cues(words: list[dict], display: str) -> list[dict]:
-    groups = _group_words(words)
     dwords = display.split()
-    if not groups:
+    if not words:
         return [{"start": 0.0, "end": 0.0, "text": display}] if display else []
     if not dwords:
         return [
@@ -130,25 +175,48 @@ def caption_cues(words: list[dict], display: str) -> list[dict]:
                 "end": group[-1]["end"],
                 "text": " ".join(word["word"] for word in group).strip(),
             }
-            for group in groups
+            for group in _group_words(words)
         ]
-    size = max(1, round(len(dwords) / len(groups)))
-    cues = []
-    cursor = 0
-    for index, group in enumerate(groups):
-        if index == len(groups) - 1:
-            piece = dwords[cursor:]
-        else:
-            piece = dwords[cursor : cursor + size]
-            cursor += size
-        cues.append(
-            {
-                "start": round(group[0]["start"], 3),
-                "end": round(group[-1]["end"], 3),
-                "text": " ".join(piece).strip(),
-            }
-        )
-    return [cue for cue in cues if cue["text"]]
+    times = _align_display_to_heard(dwords, words)
+    cues: list[dict] = []
+    current: list[int] = []
+
+    def flush() -> None:
+        if current:
+            cues.append(
+                {
+                    "start": round(times[current[0]][0], 3),
+                    "end": round(times[current[-1]][1], 3),
+                    "text": " ".join(dwords[k] for k in current),
+                }
+            )
+            current.clear()
+
+    for k, word in enumerate(dwords):
+        if current:
+            gap = times[k][0] - times[current[-1]][1]
+            sentence_end = dwords[current[-1]].endswith((".", "?", "!", ":"))
+            # A one-word cue is merged forward so it appears when it is spoken, not alone.
+            if len(current) >= CUE_MAX_WORDS or (gap > CUE_PAUSE_S and len(current) >= 2) or (sentence_end and len(current) >= 3):
+                flush()
+        current.append(k)
+    flush()
+    return cues
+
+
+def _group_words(words: list[dict]) -> list[list[dict]]:
+    groups: list[list[dict]] = []
+    current: list[dict] = []
+    for word in words:
+        if current:
+            gap = word["start"] - current[-1]["end"]
+            if gap > CUE_PAUSE_S or len(current) >= CUE_MAX_WORDS:
+                groups.append(current)
+                current = []
+        current.append(word)
+    if current:
+        groups.append(current)
+    return groups
 
 
 def _load_durations(scenes_path: Path, out_dir: Path) -> dict:
