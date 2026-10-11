@@ -33,7 +33,7 @@ Each project below was rendered with upstream (`videowright` 0.1.1 + Playwright 
 | MetaMask theme test (fade transitions, fox) | 266 | bit-identical video and audio |
 | MetaMask Developer, design-tokens (code blocks, clip-path reveal) | 321 | bit-identical |
 | MetaMask, Geist to Inter (diff blocks, fox assemble) | 321 | bit-identical |
-| Trader Grade PRD deep dive (331 s, 10 scenes, 9 fades) | 663 | bit-identical |
+| Deep dive (331 s, 10 scenes, 9 fades) | 663 | bit-identical |
 | GitHub Lite (Motion Engineering, older layout) | 565 | 564 identical; frame 501, a fade boundary, differs in 46 pixels by at most 3 levels out of 255 (92 dB) |
 
 Both renderers are deterministic against themselves (two runs bit-identical). A real render also completes, bit-identical, with all outbound network blocked.

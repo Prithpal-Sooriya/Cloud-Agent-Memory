@@ -61,11 +61,11 @@ class VerifyFactsTest(unittest.TestCase):
         self.assertEqual(errors, [])
 
     def test_derived_needs_derivation(self) -> None:
-        errors, _ = run(["Total $62.85M."], {"facts": [fact(shown="$62.85M", kind="derived")]})
+        errors, _ = run(["Total $41.25M."], {"facts": [fact(shown="$41.25M", kind="derived")]})
         self.assertTrue(any("derivation" in e for e in errors))
         errors, _ = run(
-            ["Total $62.85M."],
-            {"facts": [fact(shown="$62.85M", kind="derived", derivation="39.44 + 23.41")]},
+            ["Total $41.25M."],
+            {"facts": [fact(shown="$41.25M", kind="derived", derivation="28.5 + 12.75")]},
         )
         self.assertEqual(errors, [])
 
@@ -80,7 +80,7 @@ class VerifyFactsTest(unittest.TestCase):
         self.assertTrue(any("missing" in e for e in errors))
 
     def test_unresolved_discrepancy_fails(self) -> None:
-        ledger = {"facts": [], "discrepancies": [{"topic": "earnings", "values": ["$96M", "$62.85M"], "resolution": ""}]}
+        ledger = {"facts": [], "discrepancies": [{"topic": "earnings", "values": ["$55M", "$41.25M"], "resolution": ""}]}
         errors, _ = run(["No numbers here."], ledger)
         self.assertTrue(any("no resolution" in e for e in errors))
 
@@ -99,6 +99,20 @@ class VerifyFactsTest(unittest.TestCase):
         seg = '<span>SOURCE · PRD §0.1, §14 and §2.2</span>'
         errors, _ = run(["Nothing numeric."], {"facts": []}, also=seg)
         self.assertEqual(errors, [])
+
+    def test_text_passed_as_arguments_inside_placeholders_is_checked(self) -> None:
+        seg = '<div>${row("Deep dive", "663 frames", 24)}</div>${codeBlock("f.ts", [{ t: " ", text: "x" }], 21)}'
+        errors, _ = run(["Nothing numeric."], {"facts": []}, also=seg)
+        self.assertTrue(any("'663'" in e for e in errors))
+        self.assertFalse(any("'24'" in e or "'21'" in e for e in errors), "code around the strings is not text")
+        errors, _ = run(["Nothing numeric."], {"facts": [fact(shown="663 frames")]}, also=seg)
+        self.assertEqual(errors, [])
+
+    def test_escaped_quotes_inside_placeholder_strings(self) -> None:
+        seg = '${card("say \\"hi\\" to 12 people", 99)}'
+        errors, _ = run(["Nothing numeric."], {"facts": []}, also=seg)
+        self.assertTrue(any("'12'" in e for e in errors))
+        self.assertFalse(any("'99'" in e for e in errors))
 
     def test_markup_numbers_are_ignored(self) -> None:
         seg = '<div style="padding:24px;width:1920px" class="c12">hello</div>'
