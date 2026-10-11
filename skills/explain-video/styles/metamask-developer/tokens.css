@@ -1,0 +1,65 @@
+/* MetaMask Developer — design tokens for Videowright
+ * The developer-facing variant of the MetaMask style: #0A0A0A canvas (the developer fox's own
+ * black), code-first layouts, four syntax-style category colours.
+ * UI colours are the refreshed design-system values (MetaMask/metamask-design-system →
+ * packages/design-tokens). The developer fox artwork itself is published in the older palette;
+ * see brand.md. Import fonts from ../metamask/fonts.css (same Inter + JetBrains Mono).
+ */
+:root {
+	--color-bg: #0a0a0a; /* matches the developer fox body */
+	--color-fg: #ffffff;
+	--color-accent: #fa4b00; /* brand orange400 */
+
+	--color-muted: #a3a4a7; /* grey300 */
+	--color-muted-dim: #66676a; /* grey500 */
+	--color-border: rgba(226, 226, 255, 0.14);
+	--color-surface: #151517;
+	--color-surface-2: #1d1d21;
+
+	/* The four developer-fox colours, as UI "syntax" tones (refreshed values) */
+	--dev-orange: #fa4b00; /* orange400 — primary / the thing to look at */
+	--dev-purple: #c66ef5; /* purple300 — secondary category */
+	--dev-lime: #b9f302; /* lime100 — success, added lines, "result" */
+	--dev-blue: #73a6ff; /* indigo200 — structure, flow, links */
+	--dev-blue-soft: #b4d0ff; /* indigo100 */
+	--dev-red: #ff7584; /* error / removed lines, sparingly */
+
+	/* Aliases so metamask-style segment code keeps working */
+	--mm-orange: var(--dev-orange);
+	--mm-blue: var(--dev-blue);
+	--mm-blue-soft: var(--dev-blue-soft);
+	--mm-lime: var(--dev-lime);
+	--mm-purple: var(--dev-purple);
+	--mm-red: var(--dev-red);
+	--mm-yellow: #f0b034;
+
+	--font-display: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	--font-body: "Inter", "Helvetica Neue", Helvetica, Arial, sans-serif;
+	--font-mono: "JetBrains Mono", ui-monospace, monospace; /* leads in this variant */
+
+	--space-sm: 12px;
+	--space-md: 24px;
+	--space-lg: 48px;
+	--space-xl: 96px;
+
+	--radius-sm: 8px;
+	--radius-md: 14px; /* tighter than consumer MetaMask (20px) */
+	--radius-lg: 20px;
+	--radius-pill: 999px;
+
+	--duration-fast: 160ms;
+	--duration-normal: 380ms;
+	--duration-slow: 700ms;
+	--stagger: 50ms;
+	--ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+	--ease-in: cubic-bezier(0.4, 0, 1, 1);
+	--scene-hold: 4s;
+
+	--safe-x: 96px;
+	--safe-y: 80px;
+
+	--dot-grid: rgba(255, 255, 255, 0.055); /* faint 48px dot grid behind everything */
+	--glow-orange: radial-gradient(60% 60% at 50% 50%, rgba(250, 75, 0, 0.22) 0%, rgba(250, 75, 0, 0) 70%);
+	--glow-blue: radial-gradient(60% 60% at 50% 50%, rgba(115, 166, 255, 0.18) 0%, rgba(115, 166, 255, 0) 70%);
+	--glow-purple: radial-gradient(60% 60% at 50% 50%, rgba(198, 110, 245, 0.18) 0%, rgba(198, 110, 245, 0) 70%);
+}
