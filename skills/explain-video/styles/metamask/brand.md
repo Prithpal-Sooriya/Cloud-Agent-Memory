@@ -25,7 +25,7 @@ Rule of thumb: **one orange moment per scene**, blue for structure, lime for "go
 
 ## Typography
 
-- **Inter** for display and body (design-system default since PR #1489). Display is 700 with
+- **Inter** for display and body (design-system default since PR #1489). **Display face is in flux:** the Brand Migration plan (Confluence, 2026-09-03) says display moves to **Oswald** with Inter for body, and open design-system PRs #1499 (Oswald) and #1581 (Grotzec Cond) are still deciding. Revisit `--font-display` when one merges. Display is 700 with
   tight tracking (-0.03em); body is 400/500.
 - MetaMask's `MMSans` (accent) and `MMPoly` (hero) are the proprietary brand faces. They are
   not licensed for this repo, so they are *not* embedded. Two open PRs
@@ -56,6 +56,10 @@ paths as facets so they can be animated (`foxMark`, `assembleFox`).
 - `wordmark-white.svg` is the official stacked "Meta / Mask" wordmark, unmodified, from the
   MetaMask logo pack linked on metamask.io/assets (`MetaMask/MetaMask-logo-white.svg`). `wordmark.ts`
   inlines the same path as `wordmark(height, fill)`. It is single-colour and palette-neutral, so
-  it is safe against the refresh. Use it white on black; do not tint, outline, or animate it.
+  Use it white on black; do not tint, outline, or animate it.
+- **Not the rebrand wordmark.** The pack file is dated 2024. The Brand Migration Implementation Plan
+  (Confluence, DS space, 2026-09-03) says the new wordmark is a separate asset the brand team is still
+  iterating on (stacked vs horizontal undecided). This is the *current published* wordmark; swap it when
+  the new one lands (`wordmark-white.svg` + `wordmark.ts`).
 - The same pack's fox is the **pre-refresh** palette (`#FF5C16`, `#E34807`), so the fox comes
   from metamask-mobile instead. Only take the wordmark from the pack.
