@@ -27,7 +27,7 @@ Do not install packages, write scene files, render, commit, push, upload, or edi
 | **technical-doc** | ADR, RFC, design doc, API/SDK docs, runbook, postmortem | [profiles/technical-doc.md](profiles/technical-doc.md) |
 | **product-doc** | PRD, strategy, roadmap, readout, brief, Jira epic, Google Doc | [profiles/product-doc.md](profiles/product-doc.md) |
 
-Shared by all: [facts.md](facts.md) (nothing is invented), [script-style.md](script-style.md), [lexicon.json](lexicon.json), the themes under [styles/](styles/), the bundled renderer in [render/](render/README.md), and the production steps below. Depth (Overview / Standard / Deep dive) is a separate axis from profile; each profile says what each depth means for its material.
+Shared by all: [facts.md](facts.md) (nothing is invented), [script-style.md](script-style.md), [lexicon.json](lexicon.json), the themes under [styles/](styles/), the bundled renderer [render/vw.ts](render/vw.ts), and the production steps below. Depth (Overview / Standard / Deep dive) is a separate axis from profile; each profile says what each depth means for its material.
 
 ## Pick the profile
 
@@ -55,7 +55,7 @@ Read the source first, as the profile says. Ask only what is still unknown. One 
 2. Facts that must be exact: names, numbers, dates, paths, ticket ids. Do not invent these. If a fact is missing, ask. Do not guess. Follow [facts.md](facts.md) and write `facts.json`.
 3. Depth, with the default from the profile and the source size: **Overview**, **Standard**, or **Deep dive**. Scene count and length follow depth, not a fixed count.
 4. Script style: **Natural (default)** or **Strict STE100** (see [script-style.md](script-style.md)).
-5. Theme (HTML/TypeScript/WAAPI segments rendered by the bundled renderer in [render/](render/README.md); the profile suggests one):
+5. Theme (HTML/TypeScript/WAAPI segments rendered by the bundled renderer [render/vw.ts](render/vw.ts); the profile suggests one):
    - **Motion Engineering (default)** — aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry. Bundled at [styles/motion-engineering/](styles/motion-engineering/STYLE.md).
    - **MetaMask** — OLED black, Inter, fox-orange accent, rounded cards. Bundled at [styles/metamask/](styles/metamask/STYLE.md). Use for MetaMask product topics and any audience wider than engineers.
    - **MetaMask Developer** — `#0A0A0A` canvas, wireframe four-colour fox, horizontal "MetaMask Developer" lockup, code-first and mono-led. Bundled at [styles/metamask-developer/](styles/metamask-developer/STYLE.md). Prefer it for SDK, API, docs, tooling, token, or code-heavy topics aimed at engineers.
@@ -84,7 +84,7 @@ After approval, follow these steps in this order. Do not skip or reorder them.
 Run [setup.sh](setup.sh) once if `~/.venvs/explain-video` is not yet set up (Kokoro 82M, Misaki, and Whisper).
 Always use the **local Kokoro 82M voice** (`af_heart`, 24 kHz). The voice runs on your machine. Do not use a cloud voice. Do not clone a person's voice.
 
-Videos are built with the **bundled renderer** in [render/](render/README.md) (HTML/TypeScript/WAAPI segments) for technical architecture, system flowcharts, software pipelines, HUD-styled explainers, code walkthroughs, and product explainers. It is a cut-down Videowright (MIT) that needs **no npm install, no `package.json` and no `node_modules`**: Node 22.18+ (verified on 24), Chrome, and ffmpeg. Read [render/README.md](render/README.md) before authoring segments; it lists what segment code may and may not use (erasable TypeScript only, relative imports, Web Animations only).
+Videos are built with [render/vw.ts](render/vw.ts), a single-file renderer for HTML/TypeScript/Web Animations segments: a copy of <https://github.com/Prithpal-Sooriya/tiny-video-renderer> at `v0.1.0` (sha256 `b79dfa0d5b18e08e2bcc525aed8aaef56dd3f082e831535fb93ee11899a58b59`), derived from Videowright (MIT). It needs **no npm install, no `package.json` and no `node_modules`**: Node 22.18+ (verified on 24), Chrome, and ffmpeg. To update it, re-download a newer tag and verify its hash as that repo's README describes; do not edit it in place.
 
 1. **Project structure & Config:**
    In the explainer folder (e.g. `~/Videos/explainers/<topic-slug>/`):
@@ -117,7 +117,7 @@ Videos are built with the **bundled renderer** in [render/](render/README.md) (H
    - Define segments with `defineSegment({ id, advances, voiceover, mount, play, unmount })`.
    - Use WAAPI (`element.animate(...)`) with `fill: "forwards"` and `cubic-bezier(0.2, 0.8, 0.2, 1)`.
    - **Never use `iterations: Infinity`** in WAAPI animations; looping animations freeze under headless rendering. Use finite durations matching the beat window. Do not use CSS `animation` or `transition`; only WAAPI and `ctx.hold` run on the renderer's virtual clock.
-   - Segment code is **erasable TypeScript** (no `enum`, `namespace`, parameter properties or decorators; `import type` for types) and imports only relative files or `"videowright"`. There is no bundler and no node_modules. Details in [render/README.md](render/README.md).
+   - Segment code is **erasable TypeScript** (no `enum`, `namespace`, parameter properties or decorators; `import type` for types) and imports only relative files or `"videowright"` (`defineSegment`, `defineConfig`, `fade`, `cut`). There is no bundler and no node_modules. Query the DOM through the element given to `mount(el)`, never `document`: during a transition the previous segment is still in the page.
    - Synchronize visual reveals with audio beats using `await ctx.waitForNext()`.
    - Ensure clean unmount: clear host references and cancel active timers.
 

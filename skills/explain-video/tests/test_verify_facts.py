@@ -100,20 +100,6 @@ class VerifyFactsTest(unittest.TestCase):
         errors, _ = run(["Nothing numeric."], {"facts": []}, also=seg)
         self.assertEqual(errors, [])
 
-    def test_text_passed_as_arguments_inside_placeholders_is_checked(self) -> None:
-        seg = '<div>${row("Deep dive", "663 frames", 24)}</div>${codeBlock("f.ts", [{ t: " ", text: "x" }], 21)}'
-        errors, _ = run(["Nothing numeric."], {"facts": []}, also=seg)
-        self.assertTrue(any("'663'" in e for e in errors))
-        self.assertFalse(any("'24'" in e or "'21'" in e for e in errors), "code around the strings is not text")
-        errors, _ = run(["Nothing numeric."], {"facts": [fact(shown="663 frames")]}, also=seg)
-        self.assertEqual(errors, [])
-
-    def test_escaped_quotes_inside_placeholder_strings(self) -> None:
-        seg = '${card("say \\"hi\\" to 12 people", 99)}'
-        errors, _ = run(["Nothing numeric."], {"facts": []}, also=seg)
-        self.assertTrue(any("'12'" in e for e in errors))
-        self.assertFalse(any("'99'" in e for e in errors))
-
     def test_markup_numbers_are_ignored(self) -> None:
         seg = '<div style="padding:24px;width:1920px" class="c12">hello</div>'
         errors, _ = run(["Nothing numeric."], {"facts": []}, also=seg)

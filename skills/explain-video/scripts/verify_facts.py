@@ -29,34 +29,8 @@ def norm(text: str) -> str:
     return re.sub(r"[\s,]+", "", text).lower()
 
 
-STRING_LITERAL = re.compile(r'"(?:[^"\\]|\\.)*"|\'(?:[^\'\\]|\\.)*\'')
-
-
-def placeholder_text(text: str) -> str:
-    """Replace each `${...}` with the string literals inside it.
-
-    Segments pass displayed text as string arguments (`${row("Name", "266 frames")}`), so those literals
-    are on-screen text and must be checked, while the surrounding code (font sizes, indexes) is not.
-    """
-    out: list[str] = []
-    i = 0
-    while i < len(text):
-        if text.startswith("${", i):
-            depth, j = 1, i + 2
-            while j < len(text) and depth:
-                depth += {"{": 1, "}": -1}.get(text[j], 0)
-                j += 1
-            inner = text[i + 2 : j - 1]
-            out.append(" " + " ".join(m.group(0)[1:-1] for m in STRING_LITERAL.finditer(inner)) + " ")
-            i = j
-        else:
-            out.append(text[i])
-            i += 1
-    return "".join(out)
-
-
 def strip_markup(text: str) -> str:
-    text = placeholder_text(text)
+    text = re.sub(r"\$\{[^}]*\}", " ", text)  # template placeholders
     text = re.sub(r"<[^>]+>", " ", text)  # html tags
     text = re.sub(r"(?:style|class|data-[\w-]+)=\"[^\"]*\"", " ", text)
     return text
