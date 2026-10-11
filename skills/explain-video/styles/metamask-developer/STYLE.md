@@ -3,7 +3,7 @@ title: MetaMask Developer
 slug: metamask-developer
 picker_description: 'MetaMask Developer brand: #0A0A0A canvas, wireframe four-colour fox, code-first layouts, mono-forward.'
 font_sources:
-  - uses ../metamask/fonts.css (Inter variable 400-700, JetBrains Mono 400/500, latin subset)
+  - embedded in style.css (Inter variable 400-700, JetBrains Mono 400/500, latin subset)
 assets:
   - fox-developer.svg (official wireframe developer fox, unmodified)
   - wordmark-developer-white.svg (official horizontal "MetaMask Developer" lockup, unmodified)
@@ -22,7 +22,7 @@ references: [MetaMask Developer logo pack, MetaMask 2026 rebrand, design-system 
 
 # MetaMask Developer — STYLE.md
 
-The developer-facing sibling of [the MetaMask style](../metamask/STYLE.md). Read that first: it owns motion principles, card shapes, type rules and the per-scene recipes. This file only lists what is **different** for the Developer variant. Colours and radii come from `tokens.css` here, and `brand.md` has the asset provenance.
+The developer-facing sibling of [the MetaMask style](../metamask/STYLE.md). Read that first: it owns motion principles, card shapes, type rules and the per-scene recipes. This file only lists what is **different** for the Developer variant. Colours and radii come from `style.css` here, and `brand.md` has the asset provenance.
 
 ## What changes
 
