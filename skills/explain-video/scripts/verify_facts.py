@@ -37,6 +37,7 @@ def strip_markup(text: str) -> str:
 
 
 def numbers_in(text: str) -> list[str]:
+    text = re.sub(r"§\s*\d+(?:\.\d+)*", " ", text)  # section references are citations, not claims
     return [m.group(0).strip().rstrip(".,") for m in NUMBER.finditer(text)]
 
 

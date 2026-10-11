@@ -95,6 +95,11 @@ class VerifyFactsTest(unittest.TestCase):
         errors, _ = run(["Nothing numeric."], {"facts": [fact(shown="78%")]}, also=seg)
         self.assertEqual(errors, [])
 
+    def test_section_references_are_citations(self) -> None:
+        seg = '<span>SOURCE · PRD §0.1, §14 and §2.2</span>'
+        errors, _ = run(["Nothing numeric."], {"facts": []}, also=seg)
+        self.assertEqual(errors, [])
+
     def test_markup_numbers_are_ignored(self) -> None:
         seg = '<div style="padding:24px;width:1920px" class="c12">hello</div>'
         errors, _ = run(["Nothing numeric."], {"facts": []}, also=seg)

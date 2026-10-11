@@ -61,7 +61,7 @@ Written in the explainer folder before approval, shown in the plan, and checked 
 ```
 
 - `shown`: the exact text as displayed (digits and units). The checker matches on it.
-- `allow`: bare numbers that are harmless (scene counters, counting list items) and need no source.
+- `allow`: bare numbers that are harmless (scene counters like `01`, counting list items) and need no source. Section references such as `§10.1` are citations and are ignored automatically.
 - `derived` needs `derivation`; `external` needs `attribution`; every fact needs `id`, `shown`, `kind`, `source`.
 - A `discrepancy` is only done when `resolution` is filled in by the user's yes.
 
