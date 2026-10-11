@@ -1,68 +1,83 @@
 ---
 name: explain-video
 description: >-
-  Makes a short technical explainer or PR walkthrough video with a local Kokoro voice.
-  Reads PR diffs, triages changes, chooses depth (Overview, Standard, Deep dive) and
-  script style (Natural default or Strict STE100), and uses Videowright (Motion
-  Engineering theme by default, or the bundled MetaMask / MetaMask Developer brand themes), with Manim as an optional alternative for math and
-  equations. Keeps on-screen spelling in `display` and speech in `spoken`, runs
-  local pronunciation scripts, asks for remaining facts, then asks whether to keep
-  the file local or add it to a pull request description, before any render.
+  Turns a PR, branch, technical doc, ADR, PRD, strategy doc, or a Jira, Confluence, or
+  Google Doc into a short narrated explainer video with a local Kokoro voice. Infers the
+  content profile from the source (code-change, technical-doc, product-doc), then picks
+  depth (Overview, Standard, Deep dive), script style (Natural default or Strict STE100),
+  and theme (Motion Engineering, MetaMask, or MetaMask Developer) on Videowright, with
+  Manim as an optional alternative for math. Traces every on-screen number, date, and
+  name to the source in a facts ledger and checks it, keeps on-screen spelling in
+  `display` and speech in `spoken`, runs local pronunciation scripts, asks for missing
+  facts, shows the plan for approval, and keeps the file local until the user names a
+  destination. For engineers, PMs, EMs, designers, and leaders.
 ---
 
 # Explain as a short video
 
-Do not install packages, write scene files, render, commit, push, or edit a pull request until the user approves the plan in [Approval](#approval).
+Do not install packages, write scene files, render, commit, push, upload, or edit a pull request until the user approves the plan in [Approval](#approval).
+
+## How this skill is organized
+
+`SKILL.md` is the router and the shared pipeline. What changes with the *kind of source* lives in a profile:
+
+| Profile | For | Read |
+|---|---|---|
+| **code-change** | PR, branch, diff, code | [profiles/code-change.md](profiles/code-change.md) |
+| **technical-doc** | ADR, RFC, design doc, API/SDK docs, runbook, postmortem | [profiles/technical-doc.md](profiles/technical-doc.md) |
+| **product-doc** | PRD, strategy, roadmap, readout, brief, Jira epic, Google Doc | [profiles/product-doc.md](profiles/product-doc.md) |
+
+Shared by all: [facts.md](facts.md) (nothing is invented), [script-style.md](script-style.md), [lexicon.json](lexicon.json), the themes under [styles/](styles/), and the production steps below. Depth (Overview / Standard / Deep dive) is a separate axis from profile; each profile says what each depth means for its material.
+
+## Pick the profile
+
+Infer it from the source. Do not ask the user to choose a persona; the author's role does not predict the source or the audience.
+
+| Signal | Profile |
+|---|---|
+| PR URL or number, branch, commit range, diff, a path in a repo | code-change |
+| ADR, RFC, design doc, tech spec, API/SDK docs, runbook, postmortem; or a doc that describes how a system works or why a technical option was chosen | technical-doc |
+| PRD, one-pager, strategy, roadmap, research readout, brief, epic, or a Google Doc / Confluence / Notion page about product intent, users, metrics, or timing | product-doc |
+| Several sources | The one that carries the most of the story is primary; the others supply evidence. Say so in the plan |
+| Unclear, or a topic with no source | Ask one question: "Is this mainly about a code change, how a system works, or a product plan?" |
+
+State the inference in the plan as one correctable line: `Reading this as: <profile> · for <audience> · <depth> · <theme>`. If the user corrects it, switch profiles.
 
 ## Ask first
 
-`scenes.json` in the explainer folder is the only script. Each line has `display` (real on-screen spelling) and `spoken` (what the voice says). Write `spoken` already expanded: `onAfterChange` → "on after change", `API` → "A P I", `.ts` → "dot T S", `==` → "equals equals". `spoken` must not contain camelCase, snake_case, symbols, paths, digits glued to identifiers, or all-caps tokens.
+`scenes.json` in the explainer folder is the only script. Each line has `display` (real on-screen spelling) and `spoken` (what the voice says). Write `spoken` already expanded: `onAfterChange` → "on after change", `API` → "A P I", `.ts` → "dot T S", `==` → "equals equals". `spoken` must not contain camelCase, snake_case, symbols, paths, digits glued to identifiers, or all-caps tokens. Give each scene two spoken lines of about 20 words or more; very short lines are merged into one chunk and lose a visual beat. Captions are the `display` text timed to the voice, so `display` and `spoken` must carry the same words and differ only in spelling (`V1` vs "version one", `$62.85M` vs "sixty two point eight five million dollars"). Do not drop or add words in one of them (for example a leading "Meanwhile," that is spoken but not shown); the caption for that phrase will start early or late.
 
 Read [lexicon.json](lexicon.json). Its entries win over [scripts/speak_prep.py](scripts/speak_prep.py). A `phonemes` field is Misaki's own symbols, written `[term](/phonemes/)`, not IPA. Misaki drops symbols it does not know. `id`, `ID`, and an `Id` suffix are the abbreviation eye-dee: Misaki `ˌIˈdi`, which is `/ˌaɪˈdiː/` (`a` and `ː` are not Misaki symbols). Listen once with [scripts/audition.py](scripts/audition.py) before keeping an override. That audition is a one-time setup check, not part of every video.
 
-For pull request walkthroughs, read the PR first:
-- Run `gh pr view <n> --json title,body,commits,files` and `gh pr diff <n>`.
-- Filter out noisy and generated files: lockfiles (`package-lock.json`, `pnpm-lock.yaml`, `bun.lock`), changelogs, snapshots, API reports (`**/api-report.md`, `**/*.api.json`), generated reference docs, and anything marked `DO NOT EDIT`.
-- Note the problem, approach, and key mechanisms. Ask only about what the PR cannot tell you, such as the audience or exact business facts.
+Read the source first, as the profile says. Ask only what is still unknown. One round of questions, then the plan:
 
-Ask only what is still unknown. One round of questions, then the plan:
-
-1. Topic, who it is for, and the one thing they should understand at the end (for PRs, infer topic and mechanisms from the diff; ask who the audience is if unknown).
-2. Facts that must be exact: names, numbers, paths, ticket ids. Do not invent these. If a fact is missing, ask. Do not guess.
-3. Depth choice (default inferred from PR size; scene count and length follow depth rather than a fixed count):
-   - **Overview:** diagrams only, no code, ~60–90 seconds, 3–5 scenes. For a high-level picture.
-   - **Standard (default):** diagrams plus 2–4 short code snippets, ~2–3 minutes.
-   - **Deep dive:** annotated diffs, ~4–5 minutes, 8–10 scenes. Only when asked.
+1. Topic, who it is for, and the one thing they should understand at the end. Infer topic from the source; ask for the audience if it is not obvious (the profile lists its audience options).
+2. Facts that must be exact: names, numbers, dates, paths, ticket ids. Do not invent these. If a fact is missing, ask. Do not guess. Follow [facts.md](facts.md) and write `facts.json`.
+3. Depth, with the default from the profile and the source size: **Overview**, **Standard**, or **Deep dive**. Scene count and length follow depth, not a fixed count.
 4. Script style: **Natural (default)** or **Strict STE100** (see [script-style.md](script-style.md)).
-5. Engine selection:
-   - **Videowright (default)** — HTML/TypeScript/WAAPI. Pick a theme:
+5. Engine and theme:
+   - **Videowright (default)** — HTML/TypeScript/WAAPI. Pick a theme (the profile suggests one):
      - **Motion Engineering (default)** — aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry. Ships with Videowright.
-     - **MetaMask** — OLED black, Inter, fox-orange accent, rounded cards. Bundled in this skill at [styles/metamask/](styles/metamask/STYLE.md). Default it when the topic is a MetaMask product, repo, or PR and the user wants it to look on-brand.
-     - **MetaMask Developer** — the developer-facing variant: `#0A0A0A` canvas, wireframe four-colour fox, horizontal "MetaMask Developer" lockup, code-first and mono-led. Bundled at [styles/metamask-developer/](styles/metamask-developer/STYLE.md). Prefer it for SDK, API, docs, tooling, token, or code-heavy PR topics aimed at engineers.
+     - **MetaMask** — OLED black, Inter, fox-orange accent, rounded cards. Bundled at [styles/metamask/](styles/metamask/STYLE.md). Use for MetaMask product topics and any audience wider than engineers.
+     - **MetaMask Developer** — `#0A0A0A` canvas, wireframe four-colour fox, horizontal "MetaMask Developer" lockup, code-first and mono-led. Bundled at [styles/metamask-developer/](styles/metamask-developer/STYLE.md). Prefer it for SDK, API, docs, tooling, token, or code-heavy topics aimed at engineers.
    - **Manim (optional alternative)** — Python/Cairo for mathematical formulas, calculus, coordinate geometry, or LaTeX animations.
 6. Pronunciations are not a question. Ask only about a person's name. Do not ask how to say an identifier, acronym, or id.
 7. Where the finished file goes:
-   - **Keep local.** Ask for a folder. Default `~/Videos/explainers/<topic-slug>/`. Do not `git add` the video.
-   - **Pull request description.** Ask which pull request. Do not commit the mp4. Do not push.
+   - **Keep local (default).** Ask for a folder. Default `~/Videos/explainers/<topic-slug>/`. Do not `git add` the video or the source material.
+   - **A pull request description,** a chat message, or another place the user names. Ask which. Do not commit the mp4. Do not push.
 
 ## Approval
 
-Before writing the plan, run importance triage per [triage.md](triage.md) to rank each change into **Covered**, **Mentioned**, or **Skipped**. Group many similar changes into one scene instead of one scene each. Order scenes to build understanding (define types before usage), not by file order.
+Prepare the plan in this order: read the source per the profile, build the facts ledger, run `python3 scripts/verify_facts.py <scenes.json> --facts <facts.json>` on the draft script, and fix what it reports. Then show this and wait for a yes:
 
-Show this and wait for a yes:
-
-- Engine & Style: Videowright (theme: Motion Engineering [default], MetaMask, or MetaMask Developer) or Manim
-- Depth & estimated length (e.g. Standard, ~2–3 minutes)
-- Script style: Natural (default) or Strict STE100
-- Triage table (user can correct before anything renders):
-  - **Covered:** scene number, file, function, and snippet excerpt
-  - **Mentioned in one line:** changes collapsed into one spoken line (e.g. "the rest is renames and test updates")
-  - **Skipped:** files omitted and why (e.g. lockfiles, generated docs)
-- On-screen snippets: exact code hunks and source files (max 10 lines per snippet, ~4 snippets in Standard; Overview shows no code)
-- Scene list: one idea per scene, diagrams and code snippets only, no paragraphs on screen
-- Spoken lines, written per [script-style.md](script-style.md) (explains why and what, names file and function, never reads code aloud). `spoken` is already expanded.
-- Unknowns table from `python3 scripts/speak_prep.py <scenes.json>`. Correct a row in this yes if the spoken form is wrong. Do not paste a longer list than the report.
-- Destination: local path, or the pull request you will edit
+- **Reading this as:** profile · audience · depth and estimated length · theme · script style · engine
+- **Source stamp:** what you read (title, owner, status, as-of date, how much of it) — for documents
+- **The profile's plan contents** (triage table for code; narrative outline, omitted sections, and confidential-content list for docs)
+- **Scene list:** one idea per scene
+- **Facts ledger** and **discrepancies** from [facts.md](facts.md): every number, date, and name that will appear, its source, and any conflict with the proposed resolution. Ask the user to confirm or correct. A discrepancy with no resolution blocks the render.
+- **Spoken lines**, written per [script-style.md](script-style.md). `spoken` is already expanded.
+- **Unknowns table** from `python3 scripts/speak_prep.py <scenes.json>`. Correct a row in this yes if the spoken form is wrong. Do not paste a longer list than the report.
+- **Destination:** local path (default), or the place the user named
 
 ## Production
 
@@ -86,10 +101,11 @@ Use Videowright for technical architecture, system flowcharts, software pipeline
    - Prepare speech, if `scenes.json` changed since approval: `python3 scripts/speak_prep.py <scenes.json>`. Read only that report.
    - Synthesize with the venv Python: `~/.venvs/explain-video/bin/python scripts/synth.py <scenes.json> --out <explainer>`. It writes audio, `durations.json`, and `audio/tracks/v1/track.ts`.
    - Videowright's track field is `length_s`, and `timing.perSegment` values are cumulative advance times (for example `[3.425, 8.225]`). Copy each segment `voiceover` and those advances into `defineSegment`. Do not keep a second script.
-   - Verify with `~/.venvs/explain-video/bin/python scripts/verify_audio.py <scenes.json> --out <explainer>`. Read only its report. Captions are the `display` text in `captions.json` from that same Whisper pass.
+   - Generate the segment data with `python3 scripts/build_segment_data.py <explainer>`. It writes `timing.ts` (`advances`, `voiceover`) and `captions.ts` (`cues`, scene-relative) from `durations.json` and `captions.json`. Import them in the segments instead of copying numbers by hand.
+   - Verify with `~/.venvs/explain-video/bin/python scripts/verify_audio.py <scenes.json> --out <explainer>`. Read only its report. Captions are the `display` text in `captions.json` from that same Whisper pass. Each display word is aligned to the words Whisper heard (numbers and hyphenated words expand to several spoken words), then grouped by pauses, so caption text follows the voice even on long deep-dive lines.
    - For each flagged token, run `verify_audio.py --repair` once. That tries one respelling or one Misaki phoneme override and re-checks only the flagged chunks. If it is still flagged, stop and name the token. After approval, append a fix that worked to [lexicon.json](lexicon.json). Do not loop.
 
-3. **Visual Standards & Code Scenes** (the canvas, type, and HUD bullets below are for Motion Engineering; with the MetaMask themes follow `styles/metamask/STYLE.md` or `styles/metamask-developer/STYLE.md` for those and keep Layout Discipline and Code Scenes):
+3. **Visual Standards & Code Scenes** (the canvas, type, and HUD bullets below are for Motion Engineering; with the MetaMask themes follow `styles/metamask/STYLE.md` or `styles/metamask-developer/STYLE.md` for those and keep Layout Discipline. The code-scene rules apply to profiles that show code; product-doc scenes show no code, see the profile's scene list):
    - **Canvas & Palette:** 1920×1080 canvas. Charcoal background (`var(--color-bg)`: `#0e141a`), 64px blueprint grid lines, slate borders (`#1e2a36`).
    - **Type:** Space Grotesk (display & body) and JetBrains Mono (telemetry, coordinates, code terminals). Sized for 1080p display (display titles 72–96px, subheadings 32–38px, body 24–28px, mono readouts 12–16px).
    - **HUD Elements:** Use corner brackets (ticks), reticle crosshairs, dimension lines with centered pixel callouts, and bottom telemetry bars.
@@ -112,7 +128,8 @@ Use Videowright for technical architecture, system flowcharts, software pipeline
    - Extract a frame from each scene with `ffmpeg`.
    - Verify that:
      - No snippet, caption, or label overlaps or is clipped.
-     - Every file or function named in the narration matches the diff.
+     - Every fact on screen or in the narration matches the ledger; run `scripts/verify_facts.py <scenes.json> --facts <facts.json> --also segments/*/index.ts` and fix every error. For code, every file or function named matches the diff.
+     - Nothing says more than its fact's kind allows (a hypothesis is not shown as a result).
      - Total duration is within the target range for the chosen depth.
    - Fix layout clipping or discrepancies and re-render once.
 
@@ -132,7 +149,7 @@ Use Manim when the user requests mathematical proofs, LaTeX equations, or coordi
        def construct(self):
            self.set_speech_service(KokoroService())  # af_heart, local, 24 kHz
    ```
-3. For code or math diffs, follow snippet limits (max 10 lines) and triage from [triage.md](triage.md). `KokoroService` runs the same normalizer as `speak_prep.py`. Verify with `scripts/verify_audio.py`; captions use `display`.
+3. For code or math diffs, follow snippet limits (max 10 lines) and the triage in [triage.md](triage.md) (see [profiles/code-change.md](profiles/code-change.md)). `KokoroService` runs the same normalizer as `speak_prep.py`. Verify with `scripts/verify_audio.py`; captions use `display`.
 4. Render a draft: `manim render -ql scene.py`.
 5. Verification: Extract a frame from each scene with `ffmpeg`. Verify that no snippet or caption overlaps or is clipped, every named file or function matches the diff, and length is within the chosen depth. Fix issues and re-render once.
 
@@ -146,7 +163,7 @@ Read script reports only. Do not paste audio, a full transcript, or an uncut tok
 
 ## After the render
 
-**Local.** Give the mp4 path. Stop.
+**Local (default).** Give the mp4 path. Stop. Do not upload, attach, or paste the video, the source text, or the ledger anywhere the user has not named.
 
 **Pull request description.** Read the current body. Put the video in an existing Screenshots/Recordings section, or add a Video section. Do not delete existing text.
 
