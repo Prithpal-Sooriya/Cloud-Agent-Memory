@@ -3,7 +3,7 @@ title: MetaMask
 slug: metamask
 picker_description: 'MetaMask brand: OLED black, white Inter type, fox-orange accent, rounded stepped-grey surfaces.'
 font_sources:
-  - self-hosted in fonts.css (Inter variable 400-700, JetBrains Mono 400/500, latin subset)
+  - embedded in style.css (Inter variable 400-700, JetBrains Mono 400/500, latin subset)
 assets:
   - fox.svg (official refreshed fox, unmodified)
   - fox.ts (same artwork as animatable facets: foxMark, assembleFox)
@@ -26,7 +26,7 @@ references: [MetaMask mobile dark theme, MetaMask 2026 rebrand, design-system to
 
 The video should look like it was screen-recorded from the MetaMask app after the 2026 refresh: pure black canvas, white Inter type, stepped-grey rounded cards, and one hit of fox orange per scene. Confident and friendly rather than technical-blueprint.
 
-Load [brand.md](brand.md) for the exact token sources. `tokens.css` and `fonts.css` are the only things a timeline imports.
+Load [brand.md](brand.md) for the exact token sources. `style.css` (tokens plus embedded fonts) is the only thing a timeline imports.
 
 ## Layout principles
 
