@@ -10,8 +10,8 @@ Any number, percentage, currency amount, date, version, quarter, count, name of 
 
 1. **Trace it.** Every fact has a source location: PR number + file/line, doc section, table row, ticket, message link. If you cannot point at it, it does not go in the video. Ask the user or leave it out.
 2. **Say it as the source says it.** Do not round, convert, merge, or "tidy" a number. `~9.3%` stays `about 9.3 percent`, not "nearly 10". A range stays a range.
-3. **Show your arithmetic.** If you add, subtract, divide, or compare values, mark the fact `derived` and write the derivation (`39.44 + 23.41 = 62.85`). Prefer the source's own total when it has one.
-4. **Attribute external data.** Numbers from a third-party dashboard or estimate are `external`: say whose they are ("per DefiLlama", "an outside estimate"). If the source itself calls the number approximate or unreliable, carry that caveat.
+3. **Show your arithmetic.** If you add, subtract, divide, or compare values, mark the fact `derived` and write the derivation (`28.5 + 12.75 = 41.25`). Prefer the source's own total when it has one.
+4. **Attribute external data.** Numbers from a third-party dashboard or estimate are `external`: say whose they are ("per an industry report", "an outside estimate"). If the source itself calls the number approximate or unreliable, carry that caveat.
 5. **Keep status honest.** Do not narrate a plan as a result or a hypothesis as a finding. Use the right verb and mark the fact with its kind:
    - `verbatim`: stated in the source as fact.
    - `decision`: the source records it as decided ("the team decided", dated).
@@ -42,19 +42,19 @@ Written in the explainer folder before approval, shown in the plan, and checked 
   "facts": [
     {
       "id": "F1",
-      "shown": "62.85M",
+      "shown": "41.25M",
       "kind": "derived",
-      "source": "§2.2 table, GMGN row + fomo row",
-      "quote": "30d earnings $39.44M + $23.41M",
-      "derivation": "39.44 + 23.41 = 62.85",
-      "attribution": "per DefiLlama"
+      "source": "§2.2 table, Acme row + Bolt row",
+      "quote": "30d revenue $28.5M + $12.75M",
+      "derivation": "28.5 + 12.75 = 41.25",
+      "attribution": "per the analyst firm named in the source"
     }
   ],
   "discrepancies": [
     {
-      "topic": "GMGN + fomo 30-day earnings",
-      "values": ["$96M (§2.1 headline)", "$62.85M (§2.2 table)"],
-      "resolution": "Use $62.85M; the doc says the headline needs reconciling"
+      "topic": "Acme + Bolt 30-day revenue",
+      "values": ["$55M (§2.1 headline)", "$41.25M (§2.2 table)"],
+      "resolution": "Use $41.25M; the doc says the headline needs reconciling"
     }
   ]
 }

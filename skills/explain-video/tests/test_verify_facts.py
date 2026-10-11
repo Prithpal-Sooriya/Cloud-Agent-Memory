@@ -61,11 +61,11 @@ class VerifyFactsTest(unittest.TestCase):
         self.assertEqual(errors, [])
 
     def test_derived_needs_derivation(self) -> None:
-        errors, _ = run(["Total $62.85M."], {"facts": [fact(shown="$62.85M", kind="derived")]})
+        errors, _ = run(["Total $41.25M."], {"facts": [fact(shown="$41.25M", kind="derived")]})
         self.assertTrue(any("derivation" in e for e in errors))
         errors, _ = run(
-            ["Total $62.85M."],
-            {"facts": [fact(shown="$62.85M", kind="derived", derivation="39.44 + 23.41")]},
+            ["Total $41.25M."],
+            {"facts": [fact(shown="$41.25M", kind="derived", derivation="28.5 + 12.75")]},
         )
         self.assertEqual(errors, [])
 
@@ -80,7 +80,7 @@ class VerifyFactsTest(unittest.TestCase):
         self.assertTrue(any("missing" in e for e in errors))
 
     def test_unresolved_discrepancy_fails(self) -> None:
-        ledger = {"facts": [], "discrepancies": [{"topic": "earnings", "values": ["$96M", "$62.85M"], "resolution": ""}]}
+        ledger = {"facts": [], "discrepancies": [{"topic": "earnings", "values": ["$55M", "$41.25M"], "resolution": ""}]}
         errors, _ = run(["No numbers here."], ledger)
         self.assertTrue(any("no resolution" in e for e in errors))
 
