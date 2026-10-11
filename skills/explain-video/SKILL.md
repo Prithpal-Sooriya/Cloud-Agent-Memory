@@ -5,8 +5,8 @@ description: >-
   Google Doc into a short narrated explainer video with a local Kokoro voice. Infers the
   content profile from the source (code-change, technical-doc, product-doc), then picks
   depth (Overview, Standard, Deep dive), script style (Natural default or Strict STE100),
-  and theme (Motion Engineering, MetaMask, or MetaMask Developer) on Videowright, with
-  Manim as an optional alternative for math. Traces every on-screen number, date, and
+  and theme (Motion Engineering, MetaMask, or MetaMask Developer), rendered by a small bundled
+  Videowright-derived renderer with no npm install, with Manim as an optional alternative for math. Traces every on-screen number, date, and
   name to the source in a facts ledger and checks it, keeps on-screen spelling in
   `display` and speech in `spoken`, runs local pronunciation scripts, asks for missing
   facts, shows the plan for approval, and keeps the file local until the user names a
@@ -27,7 +27,7 @@ Do not install packages, write scene files, render, commit, push, upload, or edi
 | **technical-doc** | ADR, RFC, design doc, API/SDK docs, runbook, postmortem | [profiles/technical-doc.md](profiles/technical-doc.md) |
 | **product-doc** | PRD, strategy, roadmap, readout, brief, Jira epic, Google Doc | [profiles/product-doc.md](profiles/product-doc.md) |
 
-Shared by all: [facts.md](facts.md) (nothing is invented), [script-style.md](script-style.md), [lexicon.json](lexicon.json), the themes under [styles/](styles/), and the production steps below. Depth (Overview / Standard / Deep dive) is a separate axis from profile; each profile says what each depth means for its material.
+Shared by all: [facts.md](facts.md) (nothing is invented), [script-style.md](script-style.md), [lexicon.json](lexicon.json), the themes under [styles/](styles/), the bundled renderer in [render/](render/README.md), and the production steps below. Depth (Overview / Standard / Deep dive) is a separate axis from profile; each profile says what each depth means for its material.
 
 ## Pick the profile
 
@@ -56,8 +56,8 @@ Read the source first, as the profile says. Ask only what is still unknown. One 
 3. Depth, with the default from the profile and the source size: **Overview**, **Standard**, or **Deep dive**. Scene count and length follow depth, not a fixed count.
 4. Script style: **Natural (default)** or **Strict STE100** (see [script-style.md](script-style.md)).
 5. Engine and theme:
-   - **Videowright (default)** — HTML/TypeScript/WAAPI. Pick a theme (the profile suggests one):
-     - **Motion Engineering (default)** — aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry. Ships with Videowright.
+   - **Bundled renderer (default)** — HTML/TypeScript/WAAPI segments rendered by [render/](render/README.md). Pick a theme (the profile suggests one):
+     - **Motion Engineering (default)** — aerospace HUD, blueprint CAD, crisp systems diagrams, code terminals, telemetry. Bundled at [styles/motion-engineering/](styles/motion-engineering/STYLE.md).
      - **MetaMask** — OLED black, Inter, fox-orange accent, rounded cards. Bundled at [styles/metamask/](styles/metamask/STYLE.md). Use for MetaMask product topics and any audience wider than engineers.
      - **MetaMask Developer** — `#0A0A0A` canvas, wireframe four-colour fox, horizontal "MetaMask Developer" lockup, code-first and mono-led. Bundled at [styles/metamask-developer/](styles/metamask-developer/STYLE.md). Prefer it for SDK, API, docs, tooling, token, or code-heavy topics aimed at engineers.
    - **Manim (optional alternative)** — Python/Cairo for mathematical formulas, calculus, coordinate geometry, or LaTeX animations.
@@ -70,7 +70,7 @@ Read the source first, as the profile says. Ask only what is still unknown. One 
 
 Prepare the plan in this order: read the source per the profile, build the facts ledger, run `python3 scripts/verify_facts.py <scenes.json> --facts <facts.json>` on the draft script, and fix what it reports. Then show this and wait for a yes:
 
-- **Reading this as:** profile · audience · depth and estimated length · theme · script style · engine
+- **Reading this as:** profile · audience · depth and estimated length · theme · script style · engine (bundled renderer or Manim)
 - **Source stamp:** what you read (title, owner, status, as-of date, how much of it) — for documents
 - **The profile's plan contents** (triage table for code; narrative outline, omitted sections, and confidential-content list for docs)
 - **Scene list:** one idea per scene
@@ -85,22 +85,22 @@ After approval, follow these steps in this order. Do not skip or reorder them.
 
 Always use the **local Kokoro 82M voice** (`af_heart`, 24 kHz). The voice runs on your machine. Do not use a cloud voice. Do not clone a person's voice.
 
-### Option A: Videowright (Default)
+### Option A: Bundled renderer (Default)
 
-Use Videowright for technical architecture, system flowcharts, software pipelines, HUD-styled explainers, and code walkthroughs.
+Use the bundled renderer in [render/](render/README.md) for technical architecture, system flowcharts, software pipelines, HUD-styled explainers, code walkthroughs, and product explainers. It is a cut-down Videowright (MIT) that needs **no npm install, no `package.json` and no `node_modules`**: Node 22.18+ (verified on 24), Chrome, and ffmpeg. Read [render/README.md](render/README.md) before authoring segments; it lists what segment code may and may not use (erasable TypeScript only, relative imports, Web Animations only).
 
 1. **Project structure & Config:**
    In the explainer folder (e.g. `~/Videos/explainers/<topic-slug>/`):
    - Set `defaultStyle` in `videowright.config.ts` to the chosen theme slug: `'motion-engineering'` or `'metamask'`.
    - **MetaMask Developer:** copy [styles/metamask-developer/](styles/metamask-developer/) to `<explainer>/styles/metamask-developer/` **and** [styles/metamask/fonts.css](styles/metamask/fonts.css) to `<explainer>/styles/metamask/fonts.css` (the variants share fonts). Import `styles/metamask-developer/tokens.css` and `styles/metamask/fonts.css`, set `defaultStyle` and `meta.style` to `'metamask-developer'`, and read `styles/metamask-developer/STYLE.md` (it lists only what differs from MetaMask, so read `styles/metamask/STYLE.md` too). Lockup: `foxDeveloperMark` + `developerWordmark` from `styles/metamask-developer/developer.ts`; hero: `revealDeveloperFox` on the first and last scene.
-   - **Motion Engineering:** `timeline.ts` imports `styles/motion-engineering/tokens.css` and `styles/fonts.css`.
+   - **Motion Engineering:** copy [styles/motion-engineering/](styles/motion-engineering/STYLE.md) (STYLE, brand, tokens, fonts) to `<explainer>/styles/motion-engineering/` and import its `tokens.css` and `fonts.css` in `timeline.ts`.
    - **MetaMask:** copy [styles/metamask/](styles/metamask/) (including `fox.ts`, `fox.svg`, `wordmark.ts`, `wordmark-white.svg`) to `<explainer>/styles/metamask/` and import `styles/metamask/tokens.css` and `styles/metamask/fonts.css` in `timeline.ts`. Read `styles/metamask/STYLE.md` and `brand.md` before authoring segments, and follow them instead of the Motion Engineering HUD rules below (same for MetaMask Developer). Set `meta.style: 'metamask'`. Show the lockup (fox + official wordmark via `foxMark` and `wordmark`) on every scene, and assemble the hero fox (`assembleFox` from `styles/metamask/fox.ts`) on the first and last scene.
-   - Organize segments under `segments/<segment-id>/index.ts`.
+   - Organize segments under `segments/<segment-id>/index.ts`. The project root is the folder holding `videowright.config.ts` (`export default defineConfig({ projectStructure: "v1", defaultStyle, defaults: { resolution: [1920, 1080], fps: 60 } })`); `timeline.ts` sits at or below it. Import `defineSegment`, `defineConfig` and transitions from `"videowright"`; that resolves to the bundled runtime.
 
 2. **Audio, Beat Timestamps & Captions:**
    - Prepare speech, if `scenes.json` changed since approval: `python3 scripts/speak_prep.py <scenes.json>`. Read only that report.
    - Synthesize with the venv Python: `~/.venvs/explain-video/bin/python scripts/synth.py <scenes.json> --out <explainer>`. It writes audio, `durations.json`, and `audio/tracks/v1/track.ts`.
-   - Videowright's track field is `length_s`, and `timing.perSegment` values are cumulative advance times (for example `[3.425, 8.225]`). Copy each segment `voiceover` and those advances into `defineSegment`. Do not keep a second script.
+   - The track's field is `length_s`, and `timing.perSegment` values are cumulative advance times (for example `[3.425, 8.225]`). Copy each segment `voiceover` and those advances into `defineSegment`. Do not keep a second script.
    - Generate the segment data with `python3 scripts/build_segment_data.py <explainer>`. It writes `timing.ts` (`advances`, `voiceover`) and `captions.ts` (`cues`, scene-relative) from `durations.json` and `captions.json`. Import them in the segments instead of copying numbers by hand.
    - Verify with `~/.venvs/explain-video/bin/python scripts/verify_audio.py <scenes.json> --out <explainer>`. Read only its report. Captions are the `display` text in `captions.json` from that same Whisper pass. Each display word is aligned to the words Whisper heard (numbers and hyphenated words expand to several spoken words), then grouped by pauses, so caption text follows the voice even on long deep-dive lines.
    - For each flagged token, run `verify_audio.py --repair` once. That tries one respelling or one Misaki phoneme override and re-checks only the flagged chunks. If it is still flagged, stop and name the token. After approval, append a fix that worked to [lexicon.json](lexicon.json). Do not loop.
@@ -119,12 +119,15 @@ Use Videowright for technical architecture, system flowcharts, software pipeline
 4. **Segment Authoring & Render-Safety Rules:**
    - Define segments with `defineSegment({ id, advances, voiceover, mount, play, unmount })`.
    - Use WAAPI (`element.animate(...)`) with `fill: "forwards"` and `cubic-bezier(0.2, 0.8, 0.2, 1)`.
-   - **Never use `iterations: Infinity`** in WAAPI animations; looping animations freeze under headless Puppeteer rendering. Use finite durations matching the beat window.
+   - **Never use `iterations: Infinity`** in WAAPI animations; looping animations freeze under headless rendering. Use finite durations matching the beat window. Do not use CSS `animation` or `transition`; only WAAPI and `ctx.hold` run on the renderer's virtual clock.
+   - Segment code is **erasable TypeScript** (no `enum`, `namespace`, parameter properties or decorators; `import type` for types) and imports only relative files or `"videowright"`. There is no bundler and no node_modules. Details in [render/README.md](render/README.md).
    - Synchronize visual reveals with audio beats using `await ctx.waitForNext()`.
    - Ensure clean unmount: clear host references and cancel active timers.
 
 5. **Render & Verification:**
-   - Render headless to MP4: `npx videowright render <timeline-path> --output <output-path>.mp4`.
+   - Validate first, in about a second: `node render/vw.ts render <timeline.ts> --dry-run`. It loads every segment and checks the timeline and advances.
+   - Check layout cheaply: `node render/vw.ts render <timeline.ts> --fps 6 --output preview.mp4`, extract frames, fix, then render the final: `node render/vw.ts render <timeline.ts> --output <output-path>.mp4`. Throughput is about 15 frames per second at 1080p.
+   - Treat every `Warning:` line as a bug to fix, especially `a scheduled beat had no pending waitForNext()`. A segment that throws fails the render immediately with its message.
    - Extract a frame from each scene with `ffmpeg`.
    - Verify that:
      - No snippet, caption, or label overlaps or is clipped.
