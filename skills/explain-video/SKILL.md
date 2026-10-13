@@ -158,15 +158,39 @@ Add a one-line note under the video that says the walkthrough is AI-generated. A
 
 > 🤖 AI-generated walkthrough — script, animation, and voice made by an agent
 
-The description plays a video from a GitHub-hosted asset URL. Upload the video directly using the GitHub CLI:
-```bash
-gh pr edit <pr-num> --attach <video-path>
+The description plays a video only from a GitHub-hosted attachment URL: `https://github.com/user-attachments/assets/<id>` on its own line renders as an inline player. Release-asset links, personal-repo links, and raw S3 links render as plain links. Do not host the video elsewhere and link it.
+
+Attach in one step — put the video where it belongs in the body as an image reference alone in its own paragraph, and let `gh` rewrite it in place. In the body file (e.g. under `## Video Walkthrough`, with the AI disclosure note below it):
+
+```markdown
+![Walkthrough](./video.mp4)
 ```
 
-`--attach` needs `gh` 2.102+, a user token (`gho_` / `ghp_` / `github_pat_`) — a GitHub App token (`ghs_`) gets a 404 from the upload endpoint — and an mp4/mov/webm file under 100 MB. The upload appends an `https://github.com/user-attachments/assets/<id>` URL to the body.
+Then, from the directory that contains the video (the body reference and the `--attach` path must resolve to the same absolute file):
 
-If `--attach` succeeds, format the PR body to place the video URL under the `## Video Walkthrough` section with the AI disclosure note.
+```bash
+gh pr edit <pr-num> -R <owner>/<repo> --body-file body.md --attach ./video.mp4
+```
 
-If `gh` does not support `--attach` (older than 2.102) or the upload fails, stop. Give the local path and ask the user to drop the file into the pull request description. When they send the attachment URL, add it with `gh pr edit`. Do not commit the mp4 to get a URL.
+`gh` rewrites the reference to the bare attachment URL, which renders as a player. A text link like `[watch](./video.mp4)` becomes a link, not a player. With no reference in the body, the URL is appended to the end of the body. Alt text can also come from the flag: `--attach './video.mp4#alt'` (images only — videos take none). Up to 50 files per command.
+
+Requirements and failure modes (learned 2026-10, MetaMask/core#10811):
+
+- `gh` 2.99+ (verified on 2.102). Check `gh pr edit --help` for `--attach`.
+- The upload endpoint (`uploads.github.com/user-attachments/assets`) accepts `gho_` and `ghp_` tokens and some `ghu_` tokens. It **rejects fine-grained PATs (`github_pat_…`) with `403 Resource not accessible by personal access token` even with write access to the repo**, and GitHub App installation tokens (`ghs_`) with a 404.
+- **Agent harnesses often shadow `gh` with a credential shim.** Kandev does: `$KANDEV_GITHUB_CLI_SHIM_DIR/gh` is a symlink to `agentctl` placed first on `PATH`, and it injects a scoped fine-grained PAT into every `gh` call. `printenv` shows nothing, and `env -u GH_TOKEN` does not help — the only reliable bypass is a sanitized environment or the real binary by absolute path. The Kandev credential lease is also scoped to a single repo (`/MetaMask/core.git`), so shim-`gh` git operations on other repos fail with "does not match any credential lease scope".
+- Verify the credential `gh` will actually use before attaching:
+
+  ```bash
+  env -i HOME="$HOME" PATH="$PATH" TERM=xterm /opt/homebrew/bin/gh auth status
+  ```
+
+  It must show a `gho_`/`ghp_` token with `repo` scope. If not, `gh auth login` (browser flow) first, then use the same `env -i` prefix for the attach command.
+- Videos must be under 10 MB (GitHub's documented attachment cap for videos).
+- Verify afterwards with a ranged GET on the asset URL: `curl -sS -L -r 0-1023 -o /dev/null -w "%{http_code} %{content_type}" <url>` → `206 video/mp4`. A HEAD request returns 403 on the S3 redirect (the presigned URL is GET-only) — that is not a failure.
+
+Dead ends, do not retry: the old `uploads.github.com/repos/<owner>/<repo>/issues/<n>/assets` endpoint returns misleading errors ("Multipart form data required", "Bad Size"); the web upload flow (`github.com/upload/policies/assets`) requires browser session cookies; uploading as a release asset does not render a player.
+
+If `--attach` is unavailable or the upload still fails, stop. Give the local path and ask the user to drop the file into the pull request description. When they send the attachment URL, add it with `gh pr edit`. Do not commit the mp4 to get a URL.
 
 A description edit is not a commit. If any step needs a commit, stop and ask the user to sign it. Do not push an unsigned commit. Do not pass `--no-gpg-sign`.
