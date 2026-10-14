@@ -167,9 +167,10 @@ The description plays a video only from a GitHub-hosted attachment URL — a bar
 Then upload from the directory that contains the video:
 
 ```bash
-env -i HOME="$HOME" PATH="$PATH" TERM=xterm /opt/homebrew/bin/gh pr edit <pr-num> -R <owner>/<repo> --body-file body.md --attach ./video.mp4
+REAL_GH="$(which -a gh | tail -n 1)"   # last match = the real gh; harness shims prepend themselves to PATH
+env -i HOME="$HOME" PATH="$PATH" TERM=xterm "$REAL_GH" pr edit <pr-num> -R <owner>/<repo> --body-file body.md --attach ./video.mp4
 ```
 
-`gh` rewrites the reference to the bare asset URL, which renders as a player. The `env -i` prefix and the absolute gh path bypass agent-harness `gh` shims — Kandev's injects a fine-grained PAT the upload endpoint rejects. Prerequisites: a browser-flow `gh auth login` (`gho_` token with `repo` scope) in the keyring, and a video under 10 MB.
+`gh` rewrites the reference to the bare asset URL, which renders as a player. The sanitized environment plus the resolved real-gh path bypass agent-harness `gh` shims (e.g. Kandev's), which inject a fine-grained PAT the upload endpoint rejects. Prerequisites: a browser-flow `gh auth login` (`gho_` token with `repo` scope) in secure storage, and a video under 10 MB.
 
 A description edit is not a commit. If any step needs a commit, stop and ask the user to sign it. Do not push an unsigned commit. Do not pass `--no-gpg-sign`.
