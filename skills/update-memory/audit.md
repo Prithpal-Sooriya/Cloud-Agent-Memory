@@ -41,7 +41,17 @@ For `operation = UPDATE`, `target_id` must exist in the target file's index. If 
 
 If the `Evidence` block is empty **and** the `Reasoning` block is under ~200 characters or contains no concrete anchor (URL, PR reference, file path, error snippet, command output), opt out with `no-evidence`. Cloud-agent proposals without an anchor are the highest false-positive risk; the ACE workflow in `Memory.md` §1 explicitly requires "concrete evidence from this session's execution trace".
 
-### 2.6 `contradicts-existing`
+### 2.6 `low-value`
+
+Match the proposal against the Reject patterns in [meta-memory.md](meta-memory.md) (the working copy updated by [learn.md](learn.md) this run). If one clearly fits, opt out with `low-value: <meta-id>`, e.g. `low-value: meta-004 (too specific — one library version's internals)`.
+
+- Before rejecting, check the Accept patterns. If an Accept entry fits better, the Accept entry wins.
+- Borderline fits get a `— _judgement: …_` note naming the entry and what tipped it.
+- Routing hints (`meta-2xx`) never opt out. They only add a judgement note to the Applied row.
+
+Opted-out issues are closed as not planned when the PR merges ([close-out.md](close-out.md)), so `low-value` is a real rejection, not a deferral. Do not use it for proposals that would be fine after a revision. Use `contradicts-existing` or `no-evidence` for those.
+
+### 2.7 `contradicts-existing`
 
 If the proposed entry either:
 
@@ -50,7 +60,7 @@ If the proposed entry either:
 
 opt out with `contradicts-existing: <bullet-id>`. Do not silently supersede — force the author to file it as an UPDATE.
 
-### 2.7 `dedupe`
+### 2.8 `dedupe`
 
 Cluster the surviving proposals by target file + section. Two proposals are duplicates when **both** hold:
 
@@ -65,15 +75,15 @@ Pick the canonical one by, in order:
 
 Mark the canonical as `APPLY`; mark all siblings as `OPT_OUT (dedupe → #<canonical>)`. **Do not silently drop siblings** — every sibling still appears in the PR body's Opted-out list.
 
-### 2.8 `duplicate-target` (UPDATE conflict)
+### 2.9 `duplicate-target` (UPDATE conflict)
 
-If, after dedupe, two or more `APPLY` UPDATEs still target the same `target_id`, pick the winner with the §2.7 tiebreakers (evidence quality, then `updatedAt`, then issue number) and flip the losers to `OPT_OUT (duplicate-target → #<winner>)`. Never merge two UPDATE bodies into one, and never stall the batch waiting for a human to choose — note in the PR body that the collision was resolved automatically so the reviewer can second-guess it there.
+If, after dedupe, two or more `APPLY` UPDATEs still target the same `target_id`, pick the winner with the §2.8 tiebreakers (evidence quality, then `updatedAt`, then issue number) and flip the losers to `OPT_OUT (duplicate-target → #<winner>)`. Never merge two UPDATE bodies into one, and never stall the batch waiting for a human to choose — note in the PR body that the collision was resolved automatically so the reviewer can second-guess it there.
 
-### 2.9 `out-of-scope`
+### 2.10 `out-of-scope`
 
 Anything targeting a file the skill does not own (new `MetaMask/<something>.md`, `.github/*`, `automations/*`, `skills/*`) → opt out with `out-of-scope: <path>`. The skill only edits `Memory.md` and existing `MetaMask/*.md` playbooks.
 
-### 2.10 `verbose` (informational, does not opt out)
+### 2.11 `verbose` (informational, does not opt out)
 
 Not a blocker — a note for the PR body. Flag a proposal as
 `verbose` when any of the following hold on its `proposed_entry`:
