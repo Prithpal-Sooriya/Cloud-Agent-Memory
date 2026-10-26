@@ -1,11 +1,13 @@
 ---
 name: update-memory
-description: Batch-apply open `memory-update` GitHub issues on Prithpal-Sooriya/Cloud-Agent-Memory into a single reviewable PR that edits the ACE playbook files (Memory.md, MetaMask/*.md) and whose description doubles as the audit trail (applied issues auto-close on merge; opted-out issues remain open with a stated reason). Runs unattended end-to-end — the agent decides every verdict itself and the draft PR is the only human gate. Use when the user asks to update memory, audit, curate, triage, batch-apply, or merge memory-update issues, or mentions the memory delta backlog, ACE playbook updates, or closing memory issues via PR.
+description: Batch-apply open `memory-update` GitHub issues on Prithpal-Sooriya/Cloud-Agent-Memory into a single reviewable PR that edits the ACE playbook files (Memory.md, MetaMask/*.md) and whose description doubles as the audit trail (applied issues auto-close on merge; opted-out issues are closed as not planned by the post-merge close-out step). Learns the curator's taste from past PR reviews via a meta-memory file. Runs unattended end-to-end — the agent decides every verdict itself and the draft PR is the only human gate. Use when the user asks to update memory, audit, curate, triage, batch-apply, or merge memory-update issues, or mentions the memory delta backlog, ACE playbook updates, or closing memory issues via PR.
 ---
 
 # Update Memory
 
-Batch-triage open `memory-update` issues, audit each proposal against the current playbooks, apply the ones that survive, and open one draft PR per repo playbook whose body records **every** issue examined — applied ones with `Closes #N` (auto-close on merge), opted-out ones with a bare `#N` reference and a one-line reason.
+Batch-triage open `memory-update` issues, audit each proposal against the current playbooks, apply the ones that survive, and open one draft PR per repo playbook whose body records **every** issue examined — applied ones with `Closes #N` (auto-close on merge), opted-out ones with a bare `#N` reference and a one-line reason. After merge, [close-out.md](close-out.md) closes the opted-out issues as not planned, so every run drains the backlog.
+
+Verdicts are informed by [meta-memory.md](meta-memory.md), a record of what the curator has accepted and rejected on past curation PRs. [learn.md](learn.md) refreshes it at the start of every run.
 
 The skill runs **end-to-end without stopping for approval**. It judges every proposal itself, applies the survivors, and lands the batch as a draft PR — that PR is the review surface. Do not ask the user to sign off on verdicts mid-run.
 
@@ -17,7 +19,7 @@ The skill runs **end-to-end without stopping for approval**. It judges every pro
 - **Never `Closes #N` an opted-out issue.** The Applied and Opted-out sections of the PR body must be disjoint. The renderer fails loud if they overlap.
 - **Always open a draft PR.** The human's only gate is the PR review. No auto-merge, no non-draft PRs from this skill.
 - **Never pause for approval.** Every verdict is the skill's own call, decided by the rules in [audit.md](audit.md). Ambiguity is resolved by the documented tiebreakers, recorded in the PR body, and flagged in the review checklist — not escalated mid-run. Stop only for a hard blocker (wrong repo, missing write PAT, dirty tree, unreachable origin), and report it.
-- **Triage and audit stay read-only.** They only read files and run `gh` queries; the first mutation happens in Apply. That is a sequencing property, not an approval checkpoint.
+- **Triage and audit stay read-only.** They only read files and run `gh` queries; the first playbook mutation happens in Apply (Learn may commit `meta-memory.md` earlier, on its own branch). That is a sequencing property, not an approval checkpoint.
 - **Follow `[shr-005]` for `gh` writes on cloud VMs.** Prefix every write with `GH_TOKEN="$CLOUD_AGENT_WRITE_ISSUES_PAT"` — the default cloud `gh` auth is read-only and silently returns placeholder rows for search endpoints.
 - **Author every commit per `[shr-001]`.** `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`.
 - **Compress prose before committing.** Every applied bullet passes through the concision rules in [style.md](style.md). Technical substance stays byte-exact (commands, paths, addresses, error strings, URLs, IDs, code fences); prose fluff is cut. See [apply.md](apply.md) §4.3.
@@ -31,6 +33,7 @@ Memory.md                             ← global playbook (SHR/TS entries here)
 MetaMask/metamask-core.md             ← repo playbook
 MetaMask/metamask-extension.md        ← repo playbook
 MetaMask/metamask-mobile.md           ← repo playbook
+skills/update-memory/meta-memory.md   ← curation lessons (own branch + PR, see learn.md)
 ```
 
 If invoked from a different repo, stop and report — the skill has no work to do.
@@ -42,6 +45,7 @@ Copy this checklist and keep it updated in your working notes:
 ```
 Memory curation progress:
 - [ ] Intake (confirm repo + write auth)
+- [ ] Learn (refresh meta-memory from new PR reviews; own draft PR if changed)
 - [ ] Triage (list + parse open memory-update issues)
 - [ ] Audit (dedupe / target-id / section / evidence / style)
 - [ ] Verdicts logged (table printed for the record — no approval wait)
@@ -58,6 +62,10 @@ Confirm three things before any tool call that writes:
 3. **Working tree is clean.** `git status --porcelain` must be empty. The skill creates its own branches; it will not stack curation on top of a dirty tree.
 
 Also read `Memory.md` §"Agentic Memory Update Process" once (lines 40-165 in the current file) to re-anchor on the ACE rules the skill is enforcing. That section is authoritative — if the skill's hard rules ever diverge from it, the Memory file wins and the skill needs updating.
+
+### 1b. Learn
+
+Read [learn.md](learn.md). Fold curator verdicts since the ledger marker into `meta-memory.md`, land any change as its own draft PR, and carry the updated working copy into Audit.
 
 ### 2. Triage
 
@@ -79,6 +87,7 @@ Read [audit.md](audit.md). For each issue emit `APPLY` or `OPT_OUT (reason)`. St
 - **`invalid-section`** — proposed Section is not one of `SHR | CODE | TS`, or does not exist in the target file yet (section creation is a human call, not a batch call).
 - **`no-evidence`** — Evidence block is empty and Reasoning is thin. Cloud agents are required to cite; a proposal without an anchor is not applied.
 - **`contradicts-existing`** — Proposed entry contradicts an existing rule without explaining why. Author must revise the issue.
+- **`low-value`** — Matches a Reject pattern in [meta-memory.md](meta-memory.md) (e.g. harness workarounds, too-specific one-off facts). Cite the `meta-NNN` ID.
 - **`out-of-scope`** — Proposal targets a file the skill does not own (e.g., a new `MetaMask/*.md`) or a repo label not on the allowlist.
 
 Every opt-out MUST cite the exact reason and, where relevant, the sibling issue or existing bullet it collides with.
@@ -89,7 +98,7 @@ Print the full verdict table so the run has a visible trail, then continue strai
 
 Judgement calls the skill makes on its own:
 
-- Which of two duplicate proposals is canonical, and which UPDATE wins when several target the same ID — both by the tiebreakers in [audit.md](audit.md) §2.7.
+- Which of two duplicate proposals is canonical, and which UPDATE wins when several target the same ID — both by the tiebreakers in [audit.md](audit.md) §2.8.
 - Whether thin evidence clears the `no-evidence` bar.
 - How aggressively to compress a `verbose` proposal.
 
@@ -106,7 +115,7 @@ Read [apply.md](apply.md). One branch and one commit-series per repo label:
 - UPDATE → locate the existing bullet by ID, replace the body verbatim, keep the ID.
 - **Every bullet is compressed per [style.md](style.md) before commit.** Verbatim-preserve rules keep every token an agent might grep for. If a proposal is already tight, this is a no-op.
 
-If nothing survives triage+audit for a given repo label, skip that branch entirely — do not open an empty PR.
+If nothing survives triage+audit for a given repo label, skip that branch entirely — do not open an empty PR. Carry that label's opt-outs into another PR's body under `### Opted out — other labels (no PR this run)` so they still close on merge ([pr.md](pr.md)). If no PR opens at all this run, leave them open and list them in the run summary.
 
 ### 6. PR
 
@@ -119,7 +128,7 @@ Hand back the PR URL and end the session. The human closes the loop by reviewing
 - It does not edit playbook files outside the `Memory.md` + `MetaMask/*.md` set.
 - It does not create new sections (SHR/CODE/TS) inside a playbook — that is a human decision, so proposals targeting a missing section are opted out with `invalid-section`.
 - It does not merge the PR, mark it ready-for-review, or run `git push --force`.
-- It does not close issues directly. Auto-close happens on merge via the `Closes #N` keywords in the PR body.
+- It does not close issues during the run. Applied issues auto-close on merge via `Closes #N`; opted-out issues are closed after merge by [close-out.md](close-out.md), which a separate post-merge trigger runs.
 
 ## Anti-patterns to avoid
 

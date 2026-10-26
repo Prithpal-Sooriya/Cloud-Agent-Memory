@@ -1,6 +1,6 @@
 # PR phase
 
-Goal: open one **draft** PR per pushed branch, whose body is the full audit trail — every open memory-update issue examined for this repo label appears in exactly one of two disjoint sections. Applied issues auto-close on merge via GitHub's [linked-issue keywords](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue); opted-out issues stay open.
+Goal: open one **draft** PR per pushed branch, whose body is the full audit trail — every open memory-update issue examined for this repo label appears in exactly one of two disjoint sections. Applied issues auto-close on merge via GitHub's [linked-issue keywords](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue). Opted-out issues are closed as not planned after merge by [close-out.md](close-out.md), which parses the Opted-out sections of this body. Keep those headings byte-exact.
 
 ## Auto-close mechanics
 
@@ -15,7 +15,7 @@ The skill uses `Closes #N` (title case, one per applied issue) so the intent is 
 
 Automated audit of open `memory-update` issues against `<target-file>`.
 Every verdict below was decided by the skill; this PR is the review gate.
-Applied issues auto-close on merge; opted-out issues remain open for follow-up.
+Applied issues auto-close on merge; opted-out issues are closed as not planned by the post-merge close-out. To keep one open, move it out of the Opted-out list before merging.
 
 Curated <N_examined> open issue(s): <N_applied> applied, <N_opted_out> opted out.
 
@@ -25,10 +25,15 @@ Curated <N_examined> open issue(s): <N_applied> applied, <N_opted_out> opted out
 - Closes #<num> — [<OP> <assigned-id>] "<short title>" — <one-line summary of what changed> — _judgement: compressed per style.md (flagged `verbose`)_
 - ...
 
-### Opted out (issues remain open)
+### Opted out (closed as not planned on merge)
 
 - #<num> — <reason>. <one-line context, e.g. "canonical is #<other-num>">
 - #<num> — <reason>. <one-line context> — _judgement: <what tipped the tiebreaker>_
+- ...
+
+### Opted out — other labels (no PR this run)
+
+- #<num> [<repo-label>] — <reason>. <one-line context>
 - ...
 
 ### ID assignments
@@ -43,7 +48,8 @@ Curated <N_examined> open issue(s): <N_applied> applied, <N_opted_out> opted out
 
 - [ ] Every applied bullet reads correctly in context (no ID collisions, no broken sub-bullet indentation).
 - [ ] Assigned IDs are sequential from the previous max per section — no gaps, no reuse.
-- [ ] Opted-out reasons are accurate; any `dedupe → #N` points at a still-applied canonical.
+- [ ] Opted-out reasons are accurate; any `dedupe → #N` points at a still-applied canonical. Every opted-out issue will be **closed on merge**.
+- [ ] `low-value: meta-NNN` verdicts match your taste. If not, say so on the meta-memory PR or comment `keep` here.
 - [ ] Placeholder-leak grep on the diff is clean: `git diff origin/main -- <file> | rg '\[(shr\|code\|ts)-NEW\]'` returns nothing.
 - [ ] Auto-resolved judgement calls (rows marked _judgement_) match what you would have picked.
 
@@ -62,7 +68,7 @@ Run the disjointness check. Extract the two lists:
 
 ```bash
 APPLIED=$(rg -o '^- Closes #(\d+)' -r '$1' body.md | sort -u)
-OPTED=$(rg -o '^- #(\d+) —' -r '$1' body.md | sort -u)
+OPTED=$(rg -o '^- #(\d+)( \[[^\]]+\])? —' -r '$1' body.md | sort -u)
 COMMON=$(comm -12 <(echo "$APPLIED") <(echo "$OPTED"))
 ```
 
