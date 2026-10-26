@@ -12,7 +12,7 @@ Ground truth is the **reviewer's verdict on a curation PR**, not the issue's clo
 ## Ledger
 
 ```
-last_reviewed_pr: 271
+last_reviewed_pr: 317
 last_reviewed_at: 2026-10-26
 ```
 
@@ -27,7 +27,7 @@ last_reviewed_at: 2026-10-26
 - [meta-003] **Agent-tooling mechanics.** How to drive Kandev/MCP/agent tools (reporting args, dead sessions, card moves, reading memory without MCP, recovering prompt attachments from the Kandev DB). Belongs in the tool's own docs or a skill, not a repo playbook.
   - Evidence: #144, #158, #216.
 - [meta-004] **Too specific / one-off facts.** Internals of one function, one library version, or one incident that the next agent is unlikely to hit: `tldts` 7.x internals, `executeAssetsPipeline` swallowing errors, native-asset zero-address fallback, preview-only state fields of one release, a single crash's build vintage. Test: would this help a *different* task in the same repo next month? If not, reject.
-  - Evidence: #143, #152, #197, #217, #239; PR #200 and PR #201 ("Remove, too specific." ×17); PR #269 ("Please remove, too scoped." on `code-002`, #232).
+  - Evidence: #143, #152, #197, #217, #239; PR #200 and PR #201 ("Remove, too specific." ×17); PR #269 ("Please remove, too scoped." on `code-002`, #232); #277 (PR #317, "remove this, we'll only add this back if this is raised again."); #300 (PR #315, "You can remove this, we've moved to vitest!").
 - [meta-005] **Fork-based workflows.** Pushing via forks, fork remotes, SSH transport for fork workflow-file pushes. Owner direction: "remove, we will not use forks now".
   - Evidence: #145, #219, #220; PR #269.
 - [meta-006] **Restating what a linter/formatter already enforces.** Lists of lint violations to fix, import-style rules the linter flags. The tool is the source of truth; memory adds nothing.
@@ -47,7 +47,7 @@ last_reviewed_at: 2026-10-26
 ## Routing hints (do not opt out; add a `_judgement:_` note in the PR body)
 
 - [meta-201] **Repo-agnostic guidance in a repo playbook.** If the rule would hold for any repo, note "candidate for global `Memory.md`" on the row. The reviewer asked this on PR #269 and PR #271.
-- [meta-202] **Multi-step procedural recipes.** If the bullet is a recipe with more than ~4 steps, or it belongs to an existing skill (e.g. walkthrough videos → `explain-video`), note "candidate for a skill". The reviewer asked this on PR #201 and PR #271.
+- [meta-202] **Multi-step procedural recipes.** If the bullet is a recipe with more than ~4 steps, or it belongs to an existing skill (e.g. walkthrough videos → `explain-video`), note "candidate for a skill". The reviewer asked this on PR #201 and PR #271; PR #315 applied the 6-step messenger-action recipe (#298, `shr-007`) as an UPDATE with this note.
 
 ## Entry format
 

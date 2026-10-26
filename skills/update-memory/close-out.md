@@ -19,7 +19,7 @@ Stop with no action unless all of these hold:
 
 ## 2. Extract the opted-out set
 
-Take every `#N` that starts a bullet under `### Opted out (closed as not planned on merge)`, plus any under `### Opted out — other labels (no PR this run)`:
+Fetch the body first (`gh pr view <N> --repo Prithpal-Sooriya/Cloud-Agent-Memory --json body -q .body > body.md`). Then take every `#N` that starts a bullet under `### Opted out (closed as not planned on merge)`, plus any under `### Opted out — other labels (no PR this run)`:
 
 ```bash
 awk '/^### Opted out/{f=1;next} /^### /{f=0} f' body.md | rg -o '^- #(\d+)' -r '$1' | sort -u
@@ -45,7 +45,9 @@ gh issue close <issue> --repo Prithpal-Sooriya/Cloud-Agent-Memory --reason "not 
   --comment "Closed by update-memory close-out after #<N> merged. Verdict: <opt-out row text>. Refile as a new memory-update issue if the proposal is revised."
 ```
 
-Writes follow `[shr-005]`: use `GH_TOKEN="$CLOUD_AGENT_WRITE_ISSUES_PAT"` when the default token is read-only.
+Writes follow `[shr-005]`: use `GH_TOKEN="$CLOUD_AGENT_WRITE_ISSUES_PAT"` when the default token is read-only. If it is unset and the default token cannot write, report that and stop rather than ignoring `gh` errors.
+
+The automation can fire more than once or race a manual run. Check `gh issue view <issue> --json state -q .state` first: an issue that is already `CLOSED` is skipped and listed under skipped, never re-closed or re-commented.
 
 ## 4. Report
 
