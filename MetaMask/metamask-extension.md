@@ -18,11 +18,13 @@ These are environment-specific guidelines and mandatory workflows.
 
 Reusable patterns and specific syntax requirements.
 
-- **[code-001] Mocha Type Fix**: When using `it.each` for table-driven tests, prepend the call with a TypeScript override to avoid type-definition errors. _Reference:_ `ui/components/app/alert-system/utils.test.ts`.
+- **[code-001] Mocha Type Fix**: When using `it.each` for table-driven tests, prepend the call with a TypeScript override to avoid type-definition errors, and annotate the callback arguments explicitly. The `@ts-expect-error` suppresses `it.each` itself, so parameter inference becomes implicit `any` (TS7031) unless the callback is typed. _Reference:_ `ui/components/app/alert-system/utils.test.ts`.
 
   ```typescript
   // @ts-expect-error This is missing from the Mocha type definitions
-  it.each([...])
+  it.each(cases)('handles $type', ({ type }: (typeof cases)[number]) => {
+    // ...
+  });
   ```
 - **[code-002] Arc / Stable dual-identity gas tokens (USDC, USDT0)**: On Arc (`0x13b2`/`eip155:5042`) the native gas token IS USDC; the same balance also exists as ERC-20 at `0x3600000000000000000000000000000000000000` (Stable: USDT0 at `0x779ded0c9e1022225f8e0630b35a9b54be713736`). Accounts API returns both: native `eip155:5042/slip44:5042` @ 18 decimals, ERC-20 @ 6 decimals, identical amounts, both priced. Never "unify" the two — they are deliberately opposite:
     - Asset-list / send keeps **native**, hides ERC-20 via `ui/components/app/assets/enablement/networks-customization.ts`.
