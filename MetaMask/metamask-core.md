@@ -12,7 +12,14 @@ These are environment-specific guidelines and mandatory workflows.
 - **[shr-004] Changelog Requirements**: Once a PR is made, update the related files changelog to reflect the file changes. Add the correct PR link to the changelog. Changelog users are developers consuming the package.
 - **[shr-005] Changelog Exceptions**: For ESLint cleanup PRs (adding return types, renaming identifiers, fixing lint violations) that don't change implementation behavior, **do not add changelog entries**. Changelogs are for changes that impact consumers of the package.
 - **[shr-006] Review-Comment Resolution Requires Code Push**: When asked to resolve PR review comments, implement the requested code changes and push in the same turn; do not stop at drafting reply text. Include commit hash and push confirmation. If the request is wording-only, explicitly state that no code changes were made.
-- **[shr-007] Regenerate messenger action types**: When adding methods to a controller/service's `MESSENGER_EXPOSED_METHODS` in metamask-core, regenerate the `*-method-action-types.ts` file with `yarn messenger-action-types:generate` (package script backed by `packages/messenger-cli`); never hand-edit it. Method JSDoc is copied verbatim into the generated public action-type docs — write the JSDoc carefully before generating.
+- **[shr-007] Expose cross-controller methods as messenger actions — never as constructor callbacks**: When controller A needs controller B's method, do NOT add a callback/option to A's constructor (reviewers reject it as overkill; it is a breaking change). Expose B's method as a messenger action:
+  1. `const MESSENGER_EXPOSED_METHODS = ['<method>'] as const` beside the module's other constants.
+  2. `this.messenger.registerMethodActionHandlers(this, MESSENGER_EXPOSED_METHODS)` in B's constructor.
+  3. Regenerate `packages/<pkg>/src/<Controller>-method-action-types.ts` with the package's `messenger-action-types:generate` script (`yarn messenger-action-types:generate`); never hand-edit it. Method JSDoc is copied verbatim into the generated public docs — see [shr-008].
+  4. Add `<Controller>MethodActions` to the `<Controller>Actions` union.
+  5. Export only the specific `<Controller><Method>Action` type from `index.ts` — not the `*MethodActions` union.
+  6. In A: add the action type to `AllowedActions`, call `this.messenger.call('<Controller>:<method>', ...)`, and register/forward the action in the test harness.
+  Verify with `yarn workspace @metamask/<pkg> run messenger-action-types:check` and the monorepo `yarn messenger-action-types:check`.
 - **[shr-008] Terse JSDoc/comments only**: In MetaMask repos, keep JSDoc to a one-to-two-line summary plus only the necessary `@param`/`@returns`/`@throws` tags. No multi-paragraph essays, rationale, or inline examples in code comments — rationale belongs in the PR description or README. Remember method JSDoc is copied verbatim into generated files (e.g. `*-method-action-types.ts`), so verbosity is amplified.
 
 ## Useful Code Snippets and Templates (CODE)
