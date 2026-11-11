@@ -20,6 +20,7 @@ These are environment-specific guidelines and mandatory workflows.
   - `IS_MINTABLE` present means the mintable row reads "Yes" (UNI has it; USDC/LINK/PEPE do not).
   - For a needed feature mix, sweep `https://token.api.cx.metamask.io/tokens/search?networks=eip155%3A1&query=<q>&first=25&includeTokenSecurityData=true`.
   - Deeplink format: `https://link.metamask.io/asset?assetId=eip155:1/erc20:0x…`.
+- **[shr-011] fm-adverse exit 3 with all personas failing in ~1s means the reviewer CLI is dead, not the diff**: `fm-adverse` runs `adverse review --agent "claude -p"`; when every persona exits 1 in ~1.2s with ~97B stdout and no artifacts, run `claude -p "Say OK"` directly — an account-level "individual spend limit" prints there. Per the brief's exit-3 rule: re-run fm-adverse once (optionally `--verbose`), then record `adverse: review failed` and stop the loop — do not substitute ADVERSE_AGENT with a different reviewer or open the PR without the review; report blocked with the options (wait for credits / first-mate decision). Note: `fm-adverse ... | tail` swallows the real exit code — check `$?` before a pipe or run without one.
 
 ## Useful Code Snippets and Templates (CODE)
 
