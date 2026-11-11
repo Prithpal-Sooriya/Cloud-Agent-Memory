@@ -21,6 +21,11 @@ These are environment-specific guidelines and mandatory workflows.
   - For a needed feature mix, sweep `https://token.api.cx.metamask.io/tokens/search?networks=eip155%3A1&query=<q>&first=25&includeTokenSecurityData=true`.
   - Deeplink format: `https://link.metamask.io/asset?assetId=eip155:1/erc20:0x…`.
 - **[shr-011] fm-adverse backup reviewer when `claude -p` is the failure, not the diff**: when exit 3 traces to the claude CLI itself (spend limit / auth), the sanctioned backup is `ADVERSE_AGENT="pi -p --no-session --no-tools --no-skills --model litellm/claude-opus-5-5" fm-adverse <base> <data-dir>/adverse-r<N>` run from the worktree root — never add `--no-extensions` (litellm is an extension), expect ~50s per run. Loop rules unchanged: exit 0 = SHIP/SHIP-WITH-CAVEATS/HOLD, exit 1 = BLOCK, exit 3 twice = record "adverse: review failed" and stop. In the PR adverse section, write the reviewer as `pi -p on litellm/claude-opus-5-5 via adverse 0.2.1 (backup reviewer; claude -p hit its spend limit)`.
+- **[shr-012] PR screenshots and visual test evidence go in a table**: in a PR description, do not stack full-width images with a caption paragraph between each. Put screenshots, before/after shots, and visual test evidence in a markdown table — header cells are the check (what the shot proves), the next row is the image, two or three columns. A video or Loom link stays a link above the table. Before and after, when both exist, are two columns or two tables of that shape. A written checklist with a shot per check is the same table: check, expected result, image. Example:
+
+  | A. Social tab keeps the bottom bar | B. Back from profile returns to the tab bar |
+  | --- | --- |
+  | ![A](https://github.com/user-attachments/assets/…) | ![B](https://github.com/user-attachments/assets/…) |
 
 ## Useful Code Snippets and Templates (CODE)
 
