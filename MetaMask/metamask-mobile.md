@@ -26,6 +26,7 @@ These are environment-specific guidelines and mandatory workflows.
   | A. Social tab keeps the bottom bar | B. Back from profile returns to the tab bar |
   | --- | --- |
   | ![A](https://github.com/user-attachments/assets/…) | ![B](https://github.com/user-attachments/assets/…) |
+- **[shr-013] metamask-mobile PR author checklist: check ALL boxes (incl. the 3 performance ones) and never delete rows** — mms-check fails on any unchecked box. Per `docs/readme/ready-for-review.md`, checked = consciously assessed, including "considered and not applicable", not proof the action ran. When a box's action wasn't literally performed (e.g. Android testing on an iOS-only QA run), check it and state the actual basis in the PR body so nothing is implied that didn't happen.
 
 ## Useful Code Snippets and Templates (CODE)
 
