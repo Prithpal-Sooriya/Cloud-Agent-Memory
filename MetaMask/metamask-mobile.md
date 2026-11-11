@@ -27,6 +27,7 @@ These are environment-specific guidelines and mandatory workflows.
   | --- | --- |
   | ![A](https://github.com/user-attachments/assets/…) | ![B](https://github.com/user-attachments/assets/…) |
 - **[shr-013] metamask-mobile PR author checklist: check ALL boxes (incl. the 3 performance ones) and never delete rows** — mms-check fails on any unchecked box. Per `docs/readme/ready-for-review.md`, checked = consciously assessed, including "considered and not applicable", not proof the action ran. When a box's action wasn't literally performed (e.g. Android testing on an iOS-only QA run), check it and state the actual basis in the PR body so nothing is implied that didn't happen.
+- **[shr-014] Replying in + resolving a PR review thread**: GraphQL `addPullRequestReviewComment` rejects `pullRequestReviewThreadID`. Reply via REST instead — `gh api -X POST repos/{owner}/{repo}/pulls/{n}/comments/{commentDatabaseId}/replies -f body='…'` — then resolve with GraphQL `resolveReviewThread(input: {threadId})` where threadId is the `PRRT_…` node ID found by querying `pullRequest { reviewThreads { id comments { nodes { databaseId } } } }` and matching the numeric comment ID you were given.
 
 ## Useful Code Snippets and Templates (CODE)
 
