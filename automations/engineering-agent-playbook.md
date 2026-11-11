@@ -69,9 +69,29 @@ TRANSITIONS YOU OWN:
    `<PullRequest>`), move the ticket to `IN REVIEW`.
 3. PR MERGED → `DONE`: You never merge the PR yourself (see `<PullRequest>`), but the merge
    is YOUR signal to close the ticket. After the PR is open, keep listening for it to be
-   merged by a human/automation; once merged, move the ticket to `DONE`. The listening
-   mechanic lives in `<SessionClose>`. Only `DONE` on an actual merge — never on close
-   without merge.
+   merged by a human/automation; once merged, set the Release Number (see below), then move
+   the ticket to `DONE`. The listening mechanic lives in `<SessionClose>`. Only `DONE` on an
+   actual merge — never on close without merge.
+
+RELEASE NUMBER (required before `DONE`):
+Our board expects the `Release Number` field (a multi-select dropdown; field id
+`customfield_16983`) to be filled before a ticket is closed. Set it right after the merge and
+BEFORE the `DONE` transition. Only ever pick an option that already exists in the dropdown.
+
+1. Find the version the merged PR ships in: read `"version"` from `package.json` of the
+   merged PR's repo at the merge commit (e.g.
+   `gh api repos/<owner>/<repo>/contents/package.json?ref=<mergeCommit.oid> --jq .content | base64 -d`).
+   - `MetaMask/metamask-mobile`: `main` always carries the NEXT release version (e.g.
+     `8.21.0`), so that is the Release Number.
+   - `MetaMask/metamask-extension`: same rule (e.g. `13.58.0`).
+   - Any other repo (e.g. `MetaMask/core`, libraries) does not ship directly: use
+     `Not part of release`.
+2. If the ticket had PRs in several repos, select every distinct value that applies.
+3. Set `Release Number` on the ticket through your Jira integration, then read the ticket back
+   to confirm the value stuck. Do not touch `Fix versions`.
+4. If the version is not in the dropdown, or you cannot write the field, do NOT guess and do
+   NOT move to `DONE`: leave the ticket in `IN REVIEW` with a Jira comment stating the
+   version you found and what is missing, then end the session.
 
 BLOCKED (use sparingly, your judgement):
 Move the ticket to `BLOCKED` only when you genuinely cannot make progress and stopping is the
@@ -118,6 +138,12 @@ your changes. Confirm everything is green before opening the PR.
 Open ONE pull request against the target repo. If the ticket genuinely spans multiple
 repos, open one PR per repo you change. Match the repo's PR template.
 
+READY, NOT DRAFT: open every PR as a normal, published, ready-for-review PR — do NOT pass
+`--draft` and do not use any "draft" option in a PR tool. Run VERIFY first, and only open the
+PR once it is green. If a PR ever ends up as a draft, publish it (`gh pr ready <number>`)
+BEFORE moving the ticket to `IN REVIEW`. The only exception is the partial-work case in
+`<JiraBoard>` BLOCKED, where the ticket is not moving to `IN REVIEW`.
+
 - LABELS: `team-assets`, `agent-assets` so these PRs
   stay filterable (the in-flight reminder automation will rely on this label).
 - TITLE: conventional commit style — `chore: <summary>` for cleanup/tech-debt,
@@ -139,10 +165,13 @@ repos, open one PR per repo you change. Match the repo's PR template.
   </PullRequest>
 
 <Babysit>
-A PR isn't "done" the moment it's open — keep it merge-ready while it waits for review. Run
-the `/babysit` skill on your PR and loop on it: keep CI green, resolve clear merge conflicts,
-and answer/triage review comments (including Bugbot). This runs alongside the merge watch in
-`<SessionClose>` — every time you wake to re-check the merge state, babysit the PR too.
+A PR isn't "done" the moment it's open — keep it merge-ready while it waits for review. This
+is AUTOPILOT and it is mandatory, not optional: as soon as the PR is open and ready, start
+the `/babysit` skill on it and keep looping — do not ask a human whether to continue, and do
+not end the session while the PR is open and unmerged. Keep CI green, resolve clear merge
+conflicts, and answer/triage review comments (including Bugbot). This runs alongside the
+merge watch in `<SessionClose>` — every time you wake to re-check the merge state, babysit
+the PR too.
 
 WHAT TO DO EACH PASS (per the `/babysit` skill):
 
@@ -153,7 +182,8 @@ WHAT TO DO EACH PASS (per the `/babysit` skill):
   this ticket's scope, stop and report rather than expanding scope.
 - Comments: Triage unresolved review comments (filter out already-resolved threads first).
   Address valid change requests/bug reports with scoped commits; validate Bugbot findings and
-  only act on the valid ones, explaining politely when you disagree or are unsure.
+  only act on the valid ones, explaining politely when you disagree or are unsure. Reply on
+  each thread with what you did, and resolve the thread once it is addressed.
 - Conflicts: Resolve clear merge conflicts, preserving the intent of both your branch and
   base. If intents genuinely conflict, don't guess — leave a comment and surface it.
 
@@ -171,7 +201,7 @@ GUARDRAILS:
 <SessionClose>
 Complete the memory file's close-out (Reflector + Curator) as described in Memory.md, and
 record what you did. Before moving to the merge watch, confirm: the PR is open, labeled,
-linked to the Jira ticket, verified green (or correctly left as a draft per WHEN TO STOP), the
+linked to the Jira ticket, verified green, published as a ready (non-draft) PR, the
 Jira ticket is in `IN REVIEW` (or `BLOCKED` with a Jira comment) per `<JiraBoard>`, and
 the PR link is posted as a Jira comment. Leave the PR for human review — do NOT merge it yourself.
 
@@ -182,10 +212,12 @@ the PR to be merged by a human/automation, then close out the ticket:
 - Poll the PR's merge state periodically (check, wait, re-check) rather than ending immediately.
 - On each pass while waiting, run the `<Babysit>` loop: keep CI green and triage new review
   comments so the PR stays merge-ready.
-- When the PR is MERGED, move the Jira ticket to `DONE` per `<JiraBoard>`, then end the session.
+- When the PR is MERGED, set the Release Number and move the Jira ticket to `DONE` per
+  `<JiraBoard>` (RELEASE NUMBER), then end the session.
 - If the PR is CLOSED WITHOUT MERGE, do NOT set `DONE`. Leave a Jira comment noting it was
   closed unmerged and stop.
 - If the merge hasn't happened within a reasonable wait, end the session with the ticket left
   in `IN REVIEW` and a brief note that `DONE` is pending merge — never force `DONE` without an
-  actual merge.
+  actual merge. Waiting is the default: keep babysitting for as long as the session allows
+  rather than stopping early.
   </SessionClose>
