@@ -16,7 +16,7 @@ This memory file acts as an evolving playbook that accumulates, refines, and org
 
 ### Strategies & Hard Rules (SHR)
 
-- **[shr-001] Commit Author Identity**: All commits MUST include the author flag: `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`. When amending commits, always verify the author is set correctly.
+- **[shr-001] Commit Author Identity**: All commits MUST include the author flag: `--author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"`. When amending commits, always verify the author is set correctly. `git merge` has no `--author` flag: immediately after a merge commit (and before pushing), run `git commit --amend --no-edit --author="Prithpal Sooriya <prithpal.sooriya@gmail.com>"` and check with `git log -1 --format='%an <%ae>'`.
 - **[shr-002] Traceability**: PRs must include the Jira ticket and GitHub issue link.
 - **[shr-003] Minimal Scoping**: Modifications must be scoped and minimal to avoid regression.
 - **[shr-004] Validation**: Ensure unit tests pass before requesting a memory update.
