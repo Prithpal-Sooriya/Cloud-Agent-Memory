@@ -81,6 +81,8 @@ Reusable patterns and specific syntax requirements.
 
 - **[code-032] Do not pass ref-capturing callbacks to Array.push or .map during render**: `actions.push({ onPress: handler })` where `handler` closes over a ref bails with `Cannot access refs during render` / `Passing a ref to a function may read its value during render`, even when the ref is only read inside `useCallback` and `ref={sheetRef}` itself is fine. An array of those callbacks still bails on `.map` in JSX. Render each item as its own conditional JSX child so `onPress` stays an event handler. After that family clears, re-run the marker: value blocks inside a `try` in the same component were hidden (ASSETS-4334: `&&` then `symbol || null`). Nested `if`s inside the try keep narrowing; a helper for `||` must be called from inside the try.
 
+- **[code-033] Do not wrap `useSelector` in `??`**: `const x = useSelector(...) ?? fallback` compiles after other bailouts are gone and still prunes one memo scope (`prunedMemoBlocks` 1, `prunedMemoValues` 1) because the logical expression contains a hook. Assign the selector first, then apply the fallback: `const selected = useSelector(...); const x = selected ?? fallback`. Verified on `ShareTokenBottomSheet` (ASSETS-4335). A green `CompileSuccess` is not done until pruned counts are 0.
+
 ## Troubleshooting and Pitfalls (TS)
 
 Lessons learned from past execution failures or resource constraints.
