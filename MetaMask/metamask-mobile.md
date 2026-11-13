@@ -135,3 +135,4 @@ Lessons learned from past execution failures or resource constraints.
   - The REAL react-native-pager-view works under both jest configs for tab-press tests — mock it only for activation-timing/swipe assertions.
   - jest.mock stub components that call hooks must be uppercase-named (`const TabStub: React.FC = ...`) or eslint rules-of-hooks errors.
   - `useState(SOME_CONST.NOW)` with an `as const` constant infers literal type → annotate `useState<number>(...)`.
+- **[ts-052] Reselect selectors are not `jest.Mock`**: `someSelector as jest.Mock` fails `yarn lint:tsc` with TS2352 when the selector is a reselect intersection (`clearCache`, `resultsCount`, `resultFunc`). Cast through unknown: `as unknown as jest.Mock`. Seen on `selectConversionRateBySymbol` in `ShareTokenBottomSheet.test.tsx` (ASSETS-4335).
