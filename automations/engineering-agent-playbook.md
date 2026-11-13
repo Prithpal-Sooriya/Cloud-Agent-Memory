@@ -86,7 +86,7 @@ the options have changed again, read them from the field's allowed values first.
      `8.21.0`), so that is the Release Number.
    - `MetaMask/metamask-extension`: same rule (e.g. `13.58.0`).
    - Any other repo (e.g. `MetaMask/core`, libraries) does not ship directly: use
-     `Not applicable` (the old `Not part of release` option no longer exists).
+     `Not applicable`.
 2. If the ticket had PRs in several repos, select every distinct value that applies.
 3. Set `Release Number` on the ticket through your Jira integration, then read the ticket back
    to confirm the value stuck. Do not touch `Fix versions`.
