@@ -76,7 +76,8 @@ TRANSITIONS YOU OWN:
 RELEASE NUMBER (required before `DONE`):
 Our board expects the `Release Number` field (a multi-select dropdown; field id
 `customfield_16983`) to be filled before a ticket is closed. Set it right after the merge and
-BEFORE the `DONE` transition. Only ever pick an option that already exists in the dropdown.
+BEFORE the `DONE` transition. Only ever pick an option that already exists in the dropdown; if
+the options have changed again, read them from the field's allowed values first.
 
 1. Find the version the merged PR ships in: read `"version"` from `package.json` of the
    merged PR's repo at the merge commit (e.g.
@@ -85,7 +86,7 @@ BEFORE the `DONE` transition. Only ever pick an option that already exists in th
      `8.21.0`), so that is the Release Number.
    - `MetaMask/metamask-extension`: same rule (e.g. `13.58.0`).
    - Any other repo (e.g. `MetaMask/core`, libraries) does not ship directly: use
-     `Not part of release`.
+     `Not applicable` (the old `Not part of release` option no longer exists).
 2. If the ticket had PRs in several repos, select every distinct value that applies.
 3. Set `Release Number` on the ticket through your Jira integration, then read the ticket back
    to confirm the value stuck. Do not touch `Fix versions`.
