@@ -83,6 +83,8 @@ Reusable patterns and specific syntax requirements.
 
 - **[code-033] Do not wrap `useSelector` in `??`**: `const x = useSelector(...) ?? fallback` compiles after other bailouts are gone and still prunes one memo scope (`prunedMemoBlocks` 1, `prunedMemoValues` 1) because the logical expression contains a hook. Assign the selector first, then apply the fallback: `const selected = useSelector(...); const x = selected ?? fallback`. Verified on `ShareTokenBottomSheet` (ASSETS-4335). A green `CompileSuccess` is not done until pruned counts are 0.
 
+- **[code-034] Keep the original keys when unrolling a mapped list into conditional JSX**: Replacing `items.push` / `.map` of ref-capturing callbacks with one JSX child per item clears `Passing a ref to a function may read its value during render` (ASSETS-4334, ASSETS-4336). If the map keyed same-type siblings (`key="send"`), put that same key on the conditional element. The compiler does not require the key, and the unkeyed form can still report pruned 0/0, but index reconciliation reuses the wrong instance when a middle sibling appears or disappears. `const showReceive = !hasPerpsMarket || !hasBalance` during render did not bail and did not prune.
+
 ## Troubleshooting and Pitfalls (TS)
 
 Lessons learned from past execution failures or resource constraints.
