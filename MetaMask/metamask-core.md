@@ -26,6 +26,7 @@ These are environment-specific guidelines and mandatory workflows.
 Reusable patterns and specific syntax requirements.
 
 - **[code-001] Integration-test house style — follow the skill**: When writing any new `*.integration.test.ts` in MetaMask/core (assets-controller fast-lane/controller pipelines especially), load and follow `skills/integration-test-house-style/SKILL.md` in this repo (raw: https://raw.githubusercontent.com/Prithpal-Sooriya/Cloud-Agent-Memory/main/skills/integration-test-house-style/SKILL.md) — it carries the 8-step house-style template (header docblock after imports, response-surface tables, `describe.each` rows, one `run<Thing>` helper, tiny named helpers, `toStrictEqual` assertions, shared fixture builders, numeric-range comments) plus the oxlint/jest/jsdoc authoring-gotchas checklist. Exemplar: `packages/assets-controller/src/pipeline/buildFastFetchSources.bsc-spam-token-filtering.integration.test.ts`.
+- **[code-002] AccountActivity balanceUpdated tests**: Delete a `flushPromises` that runs before publishing `AccountActivityService:balanceUpdated`. `#onBalanceUpdated` does not wait for startup. Put `waitFor` around the balance assertion. Do not add `waitUntilStable` on `assetsBalance` before the event. An early `return` in `#onBalanceUpdated` fails with `waitFor: timeout reached after 2000ms` and the stale amount still equal to the initial value.
 
 ## Troubleshooting and Pitfalls (TS)
 
