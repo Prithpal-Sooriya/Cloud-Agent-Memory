@@ -94,3 +94,12 @@ Lessons learned from past execution failures or resource constraints.
   - **Adding networks programmatically via CDP** (`window.stateHooks.submitRequestToBackground`, args array positional): `NetworkController:addNetwork` requires BOTH `defaultRpcEndpointIndex` and `defaultBlockExplorerUrlIndex` (validation fails otherwise). `LegacyBackgroundApiService:setEnabledNetworks` takes a single chainId, not an array. `mm cdp Runtime.evaluate '<json>'` works against the extension page and is the fastest driver.
   - **mm session recovery**: the tracked page handle can die mid-session (`MM_DISCOVERY_FAILED: no object with guid`) — `mm cleanup` + the SRP restore relaunch (`printf '%s\ncorrect horse battery staple\n' "$(cat /tmp/.../mnemonic.txt)" | mm launch --context prod --extension-path dist/chrome --self-onboarding`) recreates the profile; network setup must then be redone via the CDP calls above.
   - **PR body asset upload**: `gh pr edit --attach` needs a sanitized env (`env -i HOME="$HOME" PATH="$PATH" TERM=xterm gh ...`) to reach the keyring token without interactive prompts.
+- **[ts-025] Extension live check in a fresh worktree**: Live-check recipe without the full dev loop:
+  - In a fresh worktree, `yarn build:test` (and `yarn start*`) fails immediately with `ENOENT ... development/.webpack/launch.js`. Run `yarn webpack:tsc` once, then `yarn start:test --no-watch` (about 50s, LavaMoat off). That is enough for a live check.
+  - Seed a wallet without fixtures:
+    ```sh
+    printf '<srp>\n<password>\n' | npx mm launch --context prod --self-onboarding --extension-path dist/chrome
+    ```
+    Then open an asset with no balance via `mm navigate "chrome-extension://<id>/home.html#/asset/<caipChainId>/<urlencoded caipAssetId>"`. Get `<id>` from `mm get-state`.
+  - `mm list-testids` returns `{items:[...]}`, not `testIds`. Parsing the wrong key prints `[]`, which looks like the page has no actions.
+  - A rule against adding comments conflicts with `jsdoc/check-param-names`. Adding a positional param to a function with JSDoc forces a new `@param` line. To avoid this, append the new argument as a destructured trailing options object (`{ isRwa }: { isRwa: boolean }`). The existing `@param` lines then still pass.
