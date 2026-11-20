@@ -12,8 +12,8 @@ Ground truth is the **reviewer's verdict on a curation PR**, not the issue's clo
 ## Ledger
 
 ```
-last_reviewed_pr: 421
-last_reviewed_at: 2026-11-13
+last_reviewed_pr: 438
+last_reviewed_at: 2026-11-20
 ```
 
 [learn.md](learn.md) only scans curation PRs and issue closures newer than this marker, then bumps it.
@@ -27,7 +27,7 @@ last_reviewed_at: 2026-11-13
 - [meta-003] **Agent-tooling mechanics.** How to drive Kandev/MCP/agent tools (reporting args, dead sessions, card moves, reading memory without MCP, recovering prompt attachments from the Kandev DB). Belongs in the tool's own docs or a skill, not a repo playbook.
   - Evidence: #144, #158, #216, #344, #345; PR #382 ("lets remove." on the fm-adverse exit-3 SHR bullets); #412 (PR #420, removed on review — EditPullRequestLabels is GitHub-MCP mechanics, not mobile knowledge).
 - [meta-004] **Too specific / one-off facts.** Internals of one function, one library version, or one incident that the next agent is unlikely to hit: `tldts` 7.x internals, `executeAssetsPipeline` swallowing errors, native-asset zero-address fallback, preview-only state fields of one release, a single crash's build vintage. Test: would this help a *different* task in the same repo next month? If not, reject.
-  - Evidence: #143, #152, #197, #217, #239; PR #200 and PR #201 ("Remove, too specific." ×17); PR #269 ("Please remove, too scoped." on `code-002`, #232); #277 (PR #317, "remove this, we'll only add this back if this is raised again."); #300 (PR #315, "You can remove this, we've moved to vitest!"); #343, #372, #373 (PR #382, "too specific, remove" / "Bit too specific, remove" / "Not a fan of this, remove"); #390 (PR #420, "too specific, we can remove" — PriceChart PanResponder); #429 (PR #438, "remove to specific, maybe we should update meta-memory" — the 5-step TabView migration toolkit).
+  - Evidence: #143, #152, #197, #217, #239; PR #200 and PR #201 ("Remove, too specific." ×17); PR #269 ("Please remove, too scoped." on `code-002`, #232); #277 (PR #317, "remove this, we'll only add this back if this is raised again."); #300 (PR #315, "You can remove this, we've moved to vitest!"); #343, #372, #373 (PR #382, "too specific, remove" / "Bit too specific, remove" / "Not a fan of this, remove"); #390 (PR #420, "too specific, we can remove" — PriceChart PanResponder); #429 (PR #438, "remove to specific, maybe we should update meta-memory" — the 5-step TabView migration toolkit); PR #492/#493/#494 review pass 2026-11-20 (22 bullets removed as "too narrow" / "remove": single-test flush/waitUntilStable placement, one-off mm-CLI & agent-session recipes, route-registry & privacy-snapshot chores — "if I see this again we can think about it").
 - [meta-005] **Fork-based workflows.** Pushing via forks, fork remotes, SSH transport for fork workflow-file pushes. Owner direction: "remove, we will not use forks now".
   - Evidence: #145, #219, #220; PR #269.
 - [meta-006] **Restating what a linter/formatter already enforces.** Lists of lint violations to fix, import-style rules the linter flags. The tool is the source of truth; memory adds nothing.
@@ -35,7 +35,7 @@ last_reviewed_at: 2026-11-13
 - [meta-007] **Known flakes and generic shell/tooling hygiene.** "Rerun, don't bisect" for a flaky shard; `$?` after a pipe; generic gh/git flag semantics. Not repo knowledge.
   - Evidence: #164, #173; #384, #385 (PR #420, removed on review — "too tool-generic for the playbook": gh api GraphQL `-F` flag semantics, merge-base PR slicing).
 - [meta-008] **Routine merge/test chores.** "Update the `.snap`, don't fight it", deep-equal check after a hand-resolved locale merge, mock-vs-wrap for one hook in one suite.
-  - Evidence: #208, #250, #251; PR #271 (`skip` on `ts-019`…`ts-023`).
+  - Evidence: #208, #250, #251; PR #271 (`skip` on `ts-019`…`ts-023`); PR #494 review pass 2026-11-20 ("remove" on describeForPlatforms cache-reset and jest.mock-factory/no-use-before-define bullets, #477/#484).
 
 ## Accept patterns (lean `APPLY`)
 
