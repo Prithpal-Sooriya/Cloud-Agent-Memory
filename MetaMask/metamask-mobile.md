@@ -32,8 +32,8 @@ Reusable patterns and specific syntax requirements.
   - Unreleased flags: `inProd: false`, `productionDefault: false`, `status: FeatureFlagStatus.Active`.
   - Live flags: copy `inProd` / `productionDefault` from `https://client-config.api.cx.metamask.io/v1/flags?client=mobile&distribution=main&environment=prod`.
   - The registry object key may be the camelCase or quoted kebab-case form of the flag.
-  - Only add the constant to `.github/scripts/known-feature-flag-constants.ts` if it is defined in a different file from where it is referenced (same-file constants resolve via `resolveConstantFromSourceFile`).
-  - Validate with `yarn jest .github/scripts/check-feature-flag-registry.test.ts --coverage=false` (the full CI script requires `@actions/github` types not installed in dev).
+  - Only add the constant to `.github/scripts/qa-automation/feature-flags-registry/known-feature-flag-constants.ts` if it is defined in a different file from where it is referenced (same-file constants resolve via `resolveConstantFromSourceFile`).
+  - Validate with `yarn jest .github/scripts/qa-automation/feature-flags-registry/check-feature-flag-registry.test.ts --coverage=false` (the full CI script requires `@actions/github` types not installed in dev).
 - **[code-006] ESLint / JSDoc Conventions**: Apply these repo-wide rules up front when writing new TypeScript to avoid an extra `npx eslint` cycle:
   - `@typescript-eslint/array-type`: use `T[]` and `readonly T[]`. `Array<T>` and `ReadonlyArray<T>` are forbidden.
   - `@typescript-eslint/consistent-type-definitions`: use `interface Foo { ... }` for object shapes, not `type Foo = { ... }`.
