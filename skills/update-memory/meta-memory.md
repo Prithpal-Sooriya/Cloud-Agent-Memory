@@ -12,8 +12,8 @@ Ground truth is the **reviewer's verdict on a curation PR**, not the issue's clo
 ## Ledger
 
 ```
-last_reviewed_pr: 438
-last_reviewed_at: 2026-11-20
+last_reviewed_pr: 494
+last_reviewed_at: 2026-11-27
 ```
 
 [learn.md](learn.md) only scans curation PRs and issue closures newer than this marker, then bumps it.
