@@ -83,6 +83,7 @@ Reusable patterns and specific syntax requirements.
     - mocks of that fn must return a Promise — declare `const mockFn = jest.fn().mockResolvedValue(undefined)` (survives `jest.clearAllMocks`);
     - remove the now-stale `typescript/no-floating-promises` entry for that file from `oxlint-suppressions.json` by hand (see the oxlint suppressions entry).
   Check the gate via `curl -s "https://sonarcloud.io/api/issues/search?componentKeys=MetaMask_metamask-mobile&pullRequest=<N>&resolved=false&impactSoftwareQualities=RELIABILITY"`.
+- **[code-034] Deferred query fixtures must use ES2022 APIs**: Avoid `Promise.withResolvers` in Mobile tests, even when local Jest runs under Node 24. For loading/error tests, use `new Promise` with a captured, explicitly typed resolve/reject callback to control completion inside `act`.
 
 ## Troubleshooting and Pitfalls (TS)
 
