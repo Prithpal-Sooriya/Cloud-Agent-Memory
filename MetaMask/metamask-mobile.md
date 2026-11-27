@@ -84,6 +84,7 @@ Reusable patterns and specific syntax requirements.
     - remove the now-stale `typescript/no-floating-promises` entry for that file from `oxlint-suppressions.json` by hand (see the oxlint suppressions entry).
   Check the gate via `curl -s "https://sonarcloud.io/api/issues/search?componentKeys=MetaMask_metamask-mobile&pullRequest=<N>&resolved=false&impactSoftwareQualities=RELIABILITY"`.
 - **[code-034] Deferred query fixtures must use ES2022 APIs**: Avoid `Promise.withResolvers` in Mobile tests, even when local Jest runs under Node 24. For loading/error tests, use `new Promise` with a captured, explicitly typed resolve/reject callback to control completion inside `act`.
+- **[code-035] Icon-only design-system buttons need equal padding**: `ButtonBase` (`ButtonBase.constants` `getButtonBaseHorizontalPaddingTwClasses`) pads `pl-3 pr-4` for a start icon, `pl-4 pr-3` for an end icon and `px-4` for none, so a label-less `FilterButton`/`Button` sits off-centre (Sm: 44x32). Pass `twClassName="px-2"` (custom classes merge last and win) for a centred 32x32 circle. Verify with skulk: the frame width should be 32, and the icon centre should equal the pill centre.
 
 ## Troubleshooting and Pitfalls (TS)
 
