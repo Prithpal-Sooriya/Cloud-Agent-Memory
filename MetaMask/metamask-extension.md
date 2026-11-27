@@ -13,6 +13,7 @@ These are environment-specific guidelines and mandatory workflows.
 - **[shr-005] Search for in-flight PRs before implementing an issue fix**: Popular MetaMask issues often already have a community PR open. Before coding, run `gh api -X GET search/issues -f q='repo:MetaMask/<repo> is:pr is:open in:title <fix keywords>'` and search the issue number itself (`q='repo:... <issue-number>'`) to catch duplicates; call out any duplicate PR in the summary and PR body so the reviewer can pick.
     - Unquoted `in:title` with the *fix* phrasing (`in:title ERC-1155 transfer amount` found the PR after three keyword searches found nothing).
     - Read the issue number off a matching PR's `Fixes #N` line instead of hunting the issue separately — satisfies `[shr-002]` traceability in one call.
+- **[shr-006] Resume Bugbot triage from remote state**: Before switching branches or installing dependencies, query unresolved review threads with their reply bodies and fetch current remote heads. If an existing marked reply names a fix, verify the code on the current head, verify the fix and parent heads are already ancestors of the stacked child heads, and check CI buckets. If all agree, resolve the already-answered thread without repeating the reply, committing, or pushing.
 
 ## Useful Code Snippets and Templates (CODE)
 
